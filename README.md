@@ -19,7 +19,10 @@
 **Automatic naming conventions for ASP.NET Core** - Transform your routes, parameters, and responses to kebab-case, snake_case, camelCase, or PascalCase with zero boilerplate.
 
 <div align="center">
-    <img alt="AspNetConventions" src="./assets/banner.png" width="100%">
+    <picture>
+        <source media="(prefers-color-scheme: dark)" srcset="./assets/banner_dark.png" width="100%">
+        <img alt="AspNetConventions" src="./assets/banner.png" width="100%">
+  </picture>
 </div>
 
 ## Features
