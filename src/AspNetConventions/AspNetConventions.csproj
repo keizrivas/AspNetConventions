@@ -1,0 +1,198 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+	  <TargetFrameworks>net8.0;net9.0</TargetFrameworks>
+    <RollForward>LatestMajor</RollForward>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <WarningsAsErrors></WarningsAsErrors>
+    <NoWarn>$(NoWarn);CS1591</NoWarn>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+    <Optimize>true</Optimize>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+    <EnableNETAnalyzers>true</EnableNETAnalyzers>
+    <AnalysisLevel>latest</AnalysisLevel>
+    <AnalysisMode>AllEnabledByDefault</AnalysisMode>
+  </PropertyGroup>
+	
+  <PropertyGroup>
+    <!-- Package Information -->
+	  <PackageId>AspNetConventios</PackageId>
+	  <Version>1.0.0</Version>
+    <Authors>keizrivas</Authors>
+	  <Title>Automatic Naming Conventions for ASP.NET Core</Title>
+	  <Description>
+		  AspNetConventions automatically applies consistent naming conventions across your entire ASP.NET Core application—routes, parameters, JSON properties and API responses—with zero configuration.
+
+		  KEY FEATURES
+
+		  - Automatic Route Transformation - /GetUserById → /get-user-by-id
+		  - Smart Parameter Binding - {UserId} → {user-id} with automatic model binding
+		  - Universal Support - Works with MVC Controllers, Minimal APIs, and Razor Pages
+		  - JSON Serialization - Unified snake_case, camelCase, or custom naming for all responses
+		  - Response Wrapping - Standardized API envelope with status, data, and metadata
+		  - Exception Handling - Automatic error mapping with consistent error responses
+		  - Zero Overhead - Conventions applied at startup, not per-request
+		  - Fully Extensible - Custom converters, mappers, and formatters
+
+		  NAMING STYLES
+
+		  - kebab-case - /user-profile/get-by-id (SEO-friendly URLs)
+		  - snake_case - {"user_id": 1, "user_name": "John"} (API consistency)
+		  - camelCase - {"userId": 1, "userName": "John"} (JavaScript-friendly)
+		  - PascalCase - {"UserId": 1, "UserName": "John"} (C# style)
+		  - Custom - Implement ICaseConverter for your own conventions
+
+		  QUICK START
+		  ```csharp
+		  // Add conventions to MVC/Razor Pages
+		  builder.Services.AddControllersWithViews()
+		      .AddAspNetConventions();
+
+		  // Apply to Minimal APIs
+		  app.MapGet("/GetUser/{UserId}", (int UserId) =&gt; ...);
+		  app.UseAspNetConventions();
+		  // Result: GET /get-user/{user-id}
+		  ```
+
+		  ZERO CONFIGURATION
+
+		  Works out-of-the-box with sensible defaults:
+		  - Routes: kebab-case
+		  - JSON: snake_case
+		  - Responses: Standard envelope format
+		  - Exceptions: Automatic error handling
+
+		  FULLY CUSTOMIZABLE
+		  ```csharp
+		  builder.Services.AddControllersWithViews()
+		  .AddAspNetConventions(options =&gt;
+		  {
+		  options.UseKebabCaseRoutes()
+		  .UseCamelCaseJson()
+		  .ConfigureExceptionHandling(ex =&gt;
+		  {
+		  ex.Mappers.Add(new MyCustomExceptionMapper());
+		  });
+		  });
+		  ```
+
+		  REAL-WORLD EXAMPLE
+		  ```csharp
+		  // Your code
+		  [HttpGet("GetUserById/{UserId}")]
+		  public IActionResult GetUserById(int UserId)
+		  {
+		  return Ok(new { userId = UserId, userName = "John" });
+		  }
+
+		  // Actual endpoint: GET /get-user-by-id/{user-id}
+		  // Actual response:
+		  {
+		  "status": "success",
+		  "status_code": 200,
+		  "data": {
+		  "user_id": 1,
+		  "user_name": "John"
+		  },
+		  "metadata": {
+		  "timestamp": "2025-01-15T10:30:00Z",
+		  "request_id": "abc-123"
+		  }
+		  }
+		  ```
+
+		  USE CASES
+
+		  - Microservices - Consistent API contracts across services
+		  - REST APIs - RESTful naming without manual configuration
+		  - Legacy Modernization - Adopt conventions without rewriting code
+		  - Multi-language Teams - Standardized naming for Python/JS consumers
+		  - Enterprise Applications - Organization-wide API standards
+
+		   PRODUCTION READY
+
+		  - Thoroughly tested with 90%+ code coverage
+		  - Zero per-request overhead - optimized for performance
+		  - Thread-safe with concurrent request handling
+		  - Supports .NET 8.0 and .NET 9.0
+		  - Actively maintained with semantic versioning
+
+		  DOCUMENTATION
+
+		  Full documentation available at:
+		  https://github.com/keizrivas/AspNetConventions
+
+		  Includes:
+		  - Getting Started Guide
+		  - Configuration Examples
+		  - Custom Implementation Guides
+		  - Migration Guides
+		  - Performance Benchmarks
+		  - API Reference
+
+		  IDEAL FOR
+
+		  ✓ New greenfield projects needing consistent conventions
+		  ✓ Existing apps wanting to modernize without rewrites
+		  ✓ Teams requiring standardized API patterns
+		  ✓ Microservice architectures with multiple services
+		  ✓ APIs consumed by JavaScript/Python/mobile clients
+
+		  BENEFITS
+
+		  - Reduce Boilerplate - No manual route/parameter transformation
+		  - Improve Consistency - Unified naming across entire application
+		  - Enhance Productivity - Focus on business logic, not conventions
+		  - Better DX - Predictable, intuitive API endpoints
+		  - Future-proof - Easy to change conventions globally
+
+		  License: MIT
+	  </Description>
+	  <PackageTags>aspnetcore;conventions;naming-conventions;kebab-case;snake-case;camelcase;rest-api;minimal-api;mvc;razor-pages;routing;dotnet;csharp;web-api;json-serialization;api-conventions;dotnet8;dotnet9;dotnet10;</PackageTags>
+    <RepositoryUrl>https://github.com/keizrivas/AspNetConventions</RepositoryUrl>
+	  <PackageProjectUrl>https://github.com/keizrivas/AspNetConventions</PackageProjectUrl>
+    <RepositoryType>git</RepositoryType>
+	  <PackageIcon>logo_128.png</PackageIcon>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+	  <PackageLicenseExpression>MIT</PackageLicenseExpression>
+  
+	  <!-- Deterministic Build -->
+    <Deterministic>true</Deterministic>
+    <ContinuousIntegrationBuild Condition="'$(CI)' == 'true'">true</ContinuousIntegrationBuild>
+    
+    <!-- Source Link -->
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+  </PropertyGroup>
+	
+  <!-- Includes -->
+  <ItemGroup>
+	  <None Include="..\..\assets\logo_128.png" Pack="true" PackagePath="\" />
+	  <None Include="..\..\README.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- ASP.NET Core -->
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+	
+	  <!-- Source Link -->
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All" />
+    
+    <!-- Code Analysis -->
+    <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="10.0.101">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+</Project>
