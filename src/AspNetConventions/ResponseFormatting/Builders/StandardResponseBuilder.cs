@@ -3,6 +3,7 @@ using AspNetConventions.Configuration;
 using AspNetConventions.Http;
 using AspNetConventions.ResponseFormatting.Abstractions;
 using AspNetConventions.ResponseFormatting.Models;
+using Microsoft.Extensions.Options;
 
 namespace AspNetConventions.ResponseFormatting.Builders
 {

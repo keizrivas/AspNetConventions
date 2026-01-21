@@ -1,5 +1,5 @@
 using System;
-using AspNetConventions.Routing.Abstractions;
+using AspNetConventions.Common.Abstractions;
 
 namespace AspNetConventions.Serialization.Policies
 {

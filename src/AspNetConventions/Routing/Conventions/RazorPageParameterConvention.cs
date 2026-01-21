@@ -1,14 +1,7 @@
-using System;
-using System.Data.Common;
-using System.Linq;
-using System.Reflection.Metadata;
-using System.Xml.Linq;
 using AspNetConventions.Common.Abstractions;
 using AspNetConventions.Configuration;
 using AspNetConventions.Routing.ModelBinding;
 using AspNetConventions.Routing.Models;
-using AspNetConventions.Routing.Parsers;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Metadata;

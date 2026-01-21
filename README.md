@@ -45,9 +45,11 @@ dotnet add package AspNetConventions
 ### Basic Usage
 
 ```csharp
+// ./Program.cs
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add conventions to MVC/Razor Pages
+// Add conventions to MVC/Razor Pages (IMvcBuilder)
 builder.Services.AddControllersWithViews()
     .AddAspNetConventions();
 
@@ -55,7 +57,7 @@ var app = builder.Build();
 
 app.MapGet("/GetUser/{UserId}", (int UserId) => new { userId = UserId });
 
-// Apply conventions to Minimal APIs
+// Apply conventions to Minimal APIs (WebApplication)
 app.UseAspNetConventions();
 
 app.Run();
@@ -75,7 +77,7 @@ public class UserProfileController : ControllerBase
     public IActionResult GetById(int UserId) => Ok();
 }
 
-//Endpoint: GET /api/user-profile/get-by-id/{user-id}
+//Result: GET /api/user-profile/get-by-id/{user-id}
 ```
 
 ### Minimal APIs
@@ -84,18 +86,19 @@ public class UserProfileController : ControllerBase
 app.MapGet("/WeatherForecast/{CityName}", (string CityName) => 
     Results.Ok(new { city = CityName }));
     
-// Endpoint: GET /weather-forecast/{city-name}
+// Result: GET /weather-forecast/{city-name}
 ```
 
 ### Razor Pages
 
 ```csharp
-// Pages/UserProfile/Edit.cshtml.cs
+// ./Pages/UserProfile/Edit.cshtml.cs
 public class EditModel : PageModel
 {
     public void OnGet(int UserId) { }
 }
-// Route: /user-profile/edit/{user-id}
+
+// Result: /user-profile/edit/{user-id}
 ```
 
 ## License

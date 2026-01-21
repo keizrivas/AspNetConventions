@@ -55,15 +55,15 @@ namespace AspNetConventions.Extensions
                                 var transformed = transformer.TransformEndpoint(routeEndpoint);
                                 transformedEndpoints.Add(transformed);
                             }
-                            catch (Exception ex)
+                            catch (Exception)
                             {
                                 // Log error but don't fail the entire application
                                 //var handled = options.Route.Hooks.OnConventionError?.Invoke(ex) ?? false;
 
                                 //if (!handled)
                                 //{
-                                    // If not handled by hook, keep original endpoint
-                                    transformedEndpoints.Add(endpoint);
+                                // If not handled by hook, keep original endpoint
+                                transformedEndpoints.Add(endpoint);
                                 //}
                             }
                         }
@@ -88,15 +88,15 @@ namespace AspNetConventions.Extensions
                     builder.DataSources.Add(dataSource);
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 // If anything goes wrong, invoke error hook
                 //var handled = options.Route.Hooks.OnConventionError?.Invoke(ex) ?? false;
 
                 //if (!handled)
                 //{
-                    // Re-throw if not handled
-                    throw;
+                // Re-throw if not handled
+                throw;
                 //}
             }
         }
@@ -180,7 +180,7 @@ namespace AspNetConventions.Extensions
         {
             // Try to get the configured json options service
             var httpJsonOptions = app.Services.GetService<IOptions<Microsoft.AspNetCore.Http.Json.JsonOptions>>()?.Value;
-            if(!options.IsEnabled || httpJsonOptions == null)
+            if (!options.IsEnabled || httpJsonOptions == null)
             {
                 return app;
             }

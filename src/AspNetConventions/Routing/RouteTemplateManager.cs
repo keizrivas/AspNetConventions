@@ -1,15 +1,10 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
+using AspNetConventions.Common.Abstractions;
 using AspNetConventions.Common.Hooks;
-using AspNetConventions.Routing.Abstractions;
 using AspNetConventions.Routing.Models;
 using AspNetConventions.Routing.Parsers;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
-using Microsoft.Extensions.Options;
 
 namespace AspNetConventions.Routing
 {
@@ -70,7 +65,7 @@ namespace AspNetConventions.Routing
                 // Skip parameters and token segments or invalid segments
                 if (segment.StartsWith('{') || segment.StartsWith('[') ||
                     segment.IndexOf("..", StringComparison.Ordinal) > -1 ||
-                    segment.IndexOf('~', StringComparison.Ordinal)  > -1 ||
+                    segment.IndexOf('~', StringComparison.Ordinal) > -1 ||
                     segment.IndexOf('\\', StringComparison.Ordinal) > -1)
                 {
                     continue;

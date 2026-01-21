@@ -1,4 +1,4 @@
-using AspNetConventions.Routing.Converters;
+using AspNetConventions.Common.Converters;
 
 namespace AspNetConventions.Extensions
 {

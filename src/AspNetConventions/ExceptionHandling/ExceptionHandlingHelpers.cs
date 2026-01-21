@@ -11,6 +11,7 @@ using AspNetConventions.Extensions;
 using AspNetConventions.Http;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace AspNetConventions.ExceptionHandling
 {
@@ -19,13 +20,13 @@ namespace AspNetConventions.ExceptionHandling
     /// </summary>
     internal class ExceptionHandlingHelpers(AspNetConventionOptions options, RequestDescriptor requestDescriptor, ILogger? logger = null) : ResponseAdapter(options)
     {
-        private readonly AspNetConventionOptions _options = options;
-        private readonly IExceptionResponseBuilder _builder = options.ExceptionHandling.GetResponseBuilder(options);
+        private readonly IExceptionResponseBuilder _builder
+            = options.ExceptionHandling.GetResponseBuilder(options);
 
         public ExceptionHandlingHelpers(AspNetConventionOptions options, HttpContext httpContext, ILogger? logger = null)
             : this(options, httpContext.ToRequestDescriptor(), logger)
         {
-           logger ??= httpContext.GetLogger<ExceptionDescriptor>();
+            logger ??= httpContext.GetLogger<ExceptionDescriptor>();
         }
 
         public override bool IsWrappedResponse(object? data)
@@ -33,14 +34,14 @@ namespace AspNetConventions.ExceptionHandling
             return _builder.IsWrappedResponse(data);
         }
 
-        public bool ShouldHandleResponse(object? data =  null)
+        public bool ShouldHandleResponse(object? data = null)
         {
-            return _options.ExceptionHandling.IsEnabled && !IsWrappedResponse(data) && requestDescriptor.EndpointType == EndpointType.MvcController;
+            return Options.ExceptionHandling.IsEnabled && !IsWrappedResponse(data) && requestDescriptor.EndpointType == EndpointType.MvcController;
         }
 
         public Task TryHandleAsync(Exception exception)
         {
-            var hook = _options.ExceptionHandling.Hooks.TryHandleAsync;
+            var hook = Options.ExceptionHandling.Hooks.TryHandleAsync;
             if (hook != null)
             {
                 return hook.Invoke(exception);
@@ -54,7 +55,7 @@ namespace AspNetConventions.ExceptionHandling
         /// </summary>
         public async Task<(object? Response, HttpStatusCode StatusCode)> BuildExceptionResponseAsync(Exception exception)
         {
-            var hooks = _options.ExceptionHandling.Hooks;
+            var hooks = Options.ExceptionHandling.Hooks;
 
             var shouldHandle = await (
                 hooks.ShouldHandleAsync?.Invoke(exception, requestDescriptor)
@@ -67,11 +68,11 @@ namespace AspNetConventions.ExceptionHandling
             }
 
             // Create exception context
-            var statusCode = _options.ExceptionHandling.DefaultStatusCode;
+            var statusCode = Options.ExceptionHandling.DefaultStatusCode;
             var exceptionDescriptor = new ExceptionDescriptor(exception, statusCode);
 
             // Get mapper
-            var mapper = _options.ExceptionHandling.GetExceptionMapper(
+            var mapper = Options.ExceptionHandling.GetExceptionMapper(
                 exceptionDescriptor,
                 requestDescriptor);
 
@@ -105,8 +106,8 @@ namespace AspNetConventions.ExceptionHandling
             if ((exceptionEnvelope.ErrorCode == null || exceptionEnvelope.Message == null) &&
                 exceptionEnvelope.StatusCode == statusCode)
             {
-                exceptionEnvelope.ErrorCode ??= _options.ExceptionHandling.DefaultErrorCode;
-                exceptionEnvelope.Message   ??= _options.ExceptionHandling.DefaultErrorMessage;
+                exceptionEnvelope.ErrorCode ??= Options.ExceptionHandling.DefaultErrorCode;
+                exceptionEnvelope.Message ??= Options.ExceptionHandling.DefaultErrorMessage;
             }
 
             return await WrapResponseAsync(exceptionEnvelope, exceptionDescriptor).ConfigureAwait(false);
@@ -126,24 +127,24 @@ namespace AspNetConventions.ExceptionHandling
             ExceptionDescriptor? exceptionDescriptor = null)
         {
 
-            var hooks = _options.Response.Hooks;
+            var hooks = Options.Response.Hooks;
 
             // Log exception if needed
             exceptionEnvelope.LogException(logger, exceptionDescriptor?.Exception);
 
             // Set metadata if needed
-            if (_options.Response.IncludeMetadata)
+            if (Options.Response.IncludeMetadata)
             {
                 exceptionEnvelope.SetMetadata((Metadata)requestDescriptor);
 
                 // Include stack trace
-                if (exceptionDescriptor != null && ValidateCondition(_options.ExceptionHandling.IncludeStackTrace, requestDescriptor))
+                if (exceptionDescriptor != null && ValidateCondition(Options.ExceptionHandling.IncludeStackTrace, requestDescriptor))
                 {
-                    exceptionEnvelope.Metadata!.StackTrace = exceptionDescriptor.StackTrace?.ToList();
+                    exceptionEnvelope.Metadata!.StackTrace = exceptionDescriptor.StackTrace;
                 }
 
                 // Include exception details
-                if (exceptionDescriptor != null && ValidateCondition(_options.ExceptionHandling.IncludeExceptionDetails, requestDescriptor))
+                if (exceptionDescriptor != null && ValidateCondition(Options.ExceptionHandling.IncludeExceptionDetails, requestDescriptor))
                 {
                     exceptionEnvelope.Metadata!.ExceptionType = exceptionDescriptor.ExceptionType;
                 }

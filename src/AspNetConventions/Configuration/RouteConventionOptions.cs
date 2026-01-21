@@ -1,8 +1,8 @@
 using System;
+using AspNetConventions.Common.Abstractions;
+using AspNetConventions.Common.Converters;
 using AspNetConventions.Common.Enums;
 using AspNetConventions.Common.Hooks;
-using AspNetConventions.Routing.Abstractions;
-using AspNetConventions.Routing.Converters;
 
 namespace AspNetConventions.Configuration
 {
@@ -29,9 +29,8 @@ namespace AspNetConventions.Configuration
 
         /// <summary>
         /// Gets or sets a custom case converter.
-        /// Required when <see cref="CaseStyle"/> is <see cref="CasingStyle.Custom"/>.
         /// </summary>
-        public ICaseConverter? CustomCaseConverter { get; set; }
+        public ICaseConverter? CaseConverter { get; set; }
 
         /// <summary>
         /// Gets or sets whether to transform controller names.
@@ -86,7 +85,7 @@ namespace AspNetConventions.Configuration
                 TransformParameterNames = TransformParameterNames,
                 TransformMinimalApiParameterNames = TransformMinimalApiParameterNames,
                 PreserveExplicitBindingNames = PreserveExplicitBindingNames,
-                CustomCaseConverter = CustomCaseConverter,
+                CaseConverter = CaseConverter,
                 Hooks = Hooks,
             };
         }
@@ -96,14 +95,14 @@ namespace AspNetConventions.Configuration
         /// </summary>
         internal ICaseConverter GetCaseConverter()
         {
-            return CaseStyle switch
+            var defaultCaseConverter = CaseConverterFactory.CreateKebabCase();
+            return CaseConverter ?? CaseStyle switch
             {
-                CasingStyle.KebabCase  => CaseConverterFactory.CreateKebabCase(),
-                CasingStyle.SnakeCase  => CaseConverterFactory.CreateSnakeCase(),
-                CasingStyle.CamelCase  => CaseConverterFactory.CreateCamelCase(),
+                CasingStyle.KebabCase => defaultCaseConverter,
+                CasingStyle.SnakeCase => CaseConverterFactory.CreateSnakeCase(),
+                CasingStyle.CamelCase => CaseConverterFactory.CreateCamelCase(),
                 CasingStyle.PascalCase => CaseConverterFactory.CreatePascalCase(),
-                CasingStyle.Custom => CustomCaseConverter ?? throw new InvalidOperationException("CustomConverter not set"),
-                _ => CaseConverterFactory.CreateKebabCase()
+                _ => defaultCaseConverter,
             };
         }
     }

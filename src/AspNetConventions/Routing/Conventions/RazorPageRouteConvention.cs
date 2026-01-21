@@ -1,8 +1,6 @@
-using System;
 using AspNetConventions.Common.Abstractions;
 using AspNetConventions.Configuration;
 using AspNetConventions.Routing.Models;
-using AspNetConventions.Routing.Parsers;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.Extensions.Options;
 
@@ -11,7 +9,7 @@ namespace AspNetConventions.Routing.Conventions
     /// <summary>
     /// Applies naming conventions to Razor Page routes.
     /// </summary>
-    internal sealed class RazorPageRouteConvention(IOptions<AspNetConventionOptions> options) : ConventionOptions(options), IPageRouteModelConvention   
+    internal sealed class RazorPageRouteConvention(IOptions<AspNetConventionOptions> options) : ConventionOptions(options), IPageRouteModelConvention
     {
         public void Apply(PageRouteModel pageModel)
         {

@@ -1,6 +1,6 @@
 using System;
 
-namespace AspNetConventions.Routing.Converters
+namespace AspNetConventions.Common.Converters
 {
     /// <summary>
     /// Represents a range of word positions within a text, defined by a starting index and length.
@@ -31,7 +31,7 @@ namespace AspNetConventions.Routing.Converters
         public override bool Equals(object? obj)
         {
             ArgumentNullException.ThrowIfNull(obj);
-            return obj is WordRange other && this.Equals(other);
+            return obj is WordRange other && Equals(other);
         }
 
         public bool Equals(WordRange other)

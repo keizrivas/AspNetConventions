@@ -10,7 +10,7 @@ namespace AspNetConventions.ResponseFormatting.Models
     /// Encapsulates a standard response structure for responses.
     /// </summary>
     /// <remarks>Use this class to provide a consistent envelope for responses.</remarks>
-    public sealed class ResponseEnvelope: IResponseEnvelope
+    public sealed class ResponseEnvelope : IResponseEnvelope
     {
         public ResponseEnvelope() { }
 

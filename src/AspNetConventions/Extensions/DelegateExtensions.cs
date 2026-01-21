@@ -15,7 +15,7 @@ namespace AspNetConventions.Extensions
         /// <summary>
         /// Invokes the specified delegate asynchronously, if it is not <see langword="null"/>.
         /// </summary>
-        public static async Task<object?> InvokeAsync(this Delegate? del, params object?[] args)
+        internal static async Task<object?> InvokeAsync(this Delegate? del, params object?[] args)
         {
             if (del is null)
             {
@@ -67,7 +67,7 @@ namespace AspNetConventions.Extensions
         /// Invokes the specified delegate asynchronously, if it is not <see langword="null"/>,
         /// and returns a strongly typed result.
         /// </summary>
-        public static async Task<TResult?> InvokeAsync<TResult>(this Delegate? del, params object?[] args)
+        internal static async Task<TResult?> InvokeAsync<TResult>(this Delegate? del, params object?[] args)
         {
             var result = await del.InvokeAsync(args).ConfigureAwait(false);
 

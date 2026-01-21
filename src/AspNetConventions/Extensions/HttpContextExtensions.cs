@@ -1,6 +1,5 @@
 using System;
 using AspNetConventions.Http;
-using AspNetConventions.Internal;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 
@@ -115,8 +114,8 @@ namespace AspNetConventions.Extensions
 
             // Normalize
             return key.ToUpperInvariant()
-                .Replace("-", "", StringComparison.InvariantCulture)
-                .Replace("_", "", StringComparison.InvariantCulture);
+                .Replace("-", string.Empty, StringComparison.InvariantCulture)
+                .Replace("_", string.Empty, StringComparison.InvariantCulture);
         }
 
         internal static int? GetNumericParameter(this HttpContext httpContext, string parameterName)

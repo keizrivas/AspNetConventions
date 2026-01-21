@@ -1,8 +1,8 @@
 using System;
 using System.Linq;
-using AspNetConventions.Routing.Abstractions;
+using AspNetConventions.Common.Abstractions;
 
-namespace AspNetConventions.Routing.Converters
+namespace AspNetConventions.Common.Converters
 {
     /// <summary>
     /// Provides functionality to convert strings to "snake-case" format, where words are lowercase and
@@ -17,7 +17,7 @@ namespace AspNetConventions.Routing.Converters
                 return string.Empty;
             }
 
-            var span  = value.AsSpan();
+            var span = value.AsSpan();
             var words = CaseTokenizer.Tokenize(span);
 
             // Calculate total length needed for the output string (including separator)

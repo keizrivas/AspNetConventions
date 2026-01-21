@@ -1,7 +1,7 @@
 using System;
 using System.Linq;
+using AspNetConventions.Common.Abstractions;
 using AspNetConventions.Configuration;
-using AspNetConventions.Routing.Abstractions;
 using AspNetConventions.Routing.Parsers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;

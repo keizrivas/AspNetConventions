@@ -58,7 +58,7 @@ namespace AspNetConventions.Serialization.Formatters
         {
             ArgumentNullException.ThrowIfNull(context);
 
-            var data   = context.Object;
+            var data = context.Object;
             var helper = new ResponseHelpers(collectionResolver, _options.Value, context.HttpContext);
 
             // Check if the response is already wrapped

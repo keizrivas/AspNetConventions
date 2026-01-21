@@ -63,6 +63,11 @@ namespace AspNetConventions.Configuration
         public string DefaultErrorMessage { get; set; } = "An unexpected error occurred.";
 
         /// <summary>
+        /// Gets or sets the default error message for validation exceptions.
+        /// </summary>
+        public string DefaultValidationMessage { get; set; } = "One or more validation errors occurred.";
+
+        /// <summary>
         /// Gets or sets a custom exception response builder.
         /// </summary>
         public IExceptionResponseBuilder? CustomResponseBuilder { get; set; }
@@ -77,7 +82,8 @@ namespace AspNetConventions.Configuration
         /// </summary>
         internal IExceptionResponseBuilder GetResponseBuilder(AspNetConventionOptions options)
         {
-            return CustomResponseBuilder ?? new StandardExceptionResponseBuilder(options);
+            return CustomResponseBuilder
+                ?? new StandardExceptionResponseBuilder(options);
         }
 
         /// <summary>

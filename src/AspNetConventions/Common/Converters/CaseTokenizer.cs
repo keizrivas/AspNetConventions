@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace AspNetConventions.Routing.Converters
+namespace AspNetConventions.Common.Converters
 {
     /// <summary>
     /// Provides methods for splitting a character span into word ranges based on casing and common word separators.

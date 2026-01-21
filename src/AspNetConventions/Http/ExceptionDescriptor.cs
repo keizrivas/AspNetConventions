@@ -48,24 +48,23 @@ namespace AspNetConventions.Http
         /// <summary>
         /// Gets the stack trace information.
         /// </summary>
-        public ICollection<StackTraceInfo>? StackTrace => GetStackTrace(Exception);
+        public HashSet<StackTraceInfo>? StackTrace => GetStackTrace(Exception);
 
         /// <summary>
         /// Gets the raw stack trace information.
         /// </summary>
         public string? RawStackTrace => exception.StackTrace;
 
-        private static List<StackTraceInfo> GetStackTrace(Exception ex)
+        private static HashSet<StackTraceInfo> GetStackTrace(Exception ex)
         {
             var trace = new System.Diagnostics.StackTrace(ex, true);
 
             return trace.GetFrames()?
                 .Select(f => new StackTraceInfo(
                     Method: f.GetMethod()?.ToString() ?? "Unknow",
-                    File:   f.GetFileName(),
-                    Line:   f.GetFileLineNumber() == 0 ? null : f.GetFileLineNumber()
-                ))
-                .ToList()
+                    File: f.GetFileName(),
+                    Line: f.GetFileLineNumber() == 0 ? null : f.GetFileLineNumber()
+                )).ToHashSet()
                 ?? [];
         }
 

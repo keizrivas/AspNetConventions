@@ -1,4 +1,4 @@
-namespace AspNetConventions.Routing.Abstractions
+namespace AspNetConventions.Common.Abstractions
 {
     /// <summary>
     /// Defines a contract for converting strings between different naming conventions.

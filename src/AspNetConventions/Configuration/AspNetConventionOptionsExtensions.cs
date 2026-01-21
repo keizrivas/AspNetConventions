@@ -151,8 +151,7 @@ namespace AspNetConventions.Configuration
             ArgumentNullException.ThrowIfNull(options);
             ArgumentNullException.ThrowIfNull(options.Response);
 
-            options.Response.CustomResponseBuilder = builder;
-            options.Response.Style = ResponseStyle.Custom;
+            options.Response.ResponseBuilder = builder;
             return options;
         }
     }

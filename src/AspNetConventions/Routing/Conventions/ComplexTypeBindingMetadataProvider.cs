@@ -1,14 +1,7 @@
 using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Data.Common;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Reflection;
-using System.Reflection.Metadata;
-using System.Runtime.Intrinsics.X86;
-using System.Text;
-using System.Threading.Tasks;
 using AspNetConventions.Common.Abstractions;
 using AspNetConventions.Configuration;
 using AspNetConventions.Routing.Models;
@@ -159,7 +152,7 @@ namespace AspNetConventions.Routing.Conventions
             var key = context.Key;
 
             // Check if already processed
-            var prefix   = rootComplexType.Name;
+            var prefix = rootComplexType.Name;
             var cacheKey = $"{rootComplexType.FullName}.{key.Name}.{key.MetadataKind}";
             if (_processedProperties.ContainsKey(cacheKey))
             {

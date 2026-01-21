@@ -25,7 +25,7 @@ namespace AspNetConventions.Http
         /// <summary>
         /// Gets or sets the total number of pages.
         /// </summary>
-        public int TotalPages { get; set; } =  Math.Max((int)Math.Ceiling(totalRecords / (double)pageSize), 0);
+        public int TotalPages { get; set; } = Math.Max((int)Math.Ceiling(totalRecords / (double)pageSize), 0);
 
         /// <summary>
         /// Gets or sets the total number of records.
@@ -59,8 +59,8 @@ namespace AspNetConventions.Http
             Links = new PaginationLinks
             {
                 FirstPageUrl = BuildPageUri(baseUri, paramList, 1, pageSizeName, pageNumberName),
-                LastPageUrl  = BuildPageUri(baseUri, paramList, TotalPages, pageSizeName, pageNumberName),
-                NextPageUrl  = PageNumber < TotalPages
+                LastPageUrl = BuildPageUri(baseUri, paramList, TotalPages, pageSizeName, pageNumberName),
+                NextPageUrl = PageNumber < TotalPages
                         ? BuildPageUri(baseUri, paramList, PageNumber + 1, pageSizeName, pageNumberName)
                         : null,
                 PreviousPageUrl = PageNumber > 1

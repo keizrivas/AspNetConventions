@@ -1,8 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Metadata;
 
@@ -19,7 +16,7 @@ namespace AspNetConventions.Routing.Models
         public Type? ContainerType { get; set; }
         public ModelMetadataKind MetadataKind { get; set; }
         public bool IsBindable { get; set; }
-        public bool SupportsModelName {  get; set; }
+        public bool SupportsModelName { get; set; }
         public bool IsComplexBindableType { get; set; }
         public string? BinderModelName { get; set; }
         public BindingSource? BindingSource { get; set; }

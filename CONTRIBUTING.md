@@ -8,7 +8,7 @@ Please read the following guidelines to ensure a smooth and productive contribut
 
 ---
 
-## 🧭 Table of Contents
+## Table of Contents
 
 - [Code of Conduct](#code-of-conduct)
 - [How Can I Contribute?](#how-can-i-contribute)
@@ -25,14 +25,14 @@ Please read the following guidelines to ensure a smooth and productive contribut
 
 ---
 
-## 💬 Code of Conduct
+## Code of Conduct
 
 This project follows the **Contributor Covenant Code of Conduct**.
 By participating, you agree to maintain a respectful, inclusive environment.
 
 ---
 
-## 🌱 How Can I Contribute?
+## How Can I Contribute?
 
 There are several ways to contribute:
 
@@ -49,7 +49,7 @@ All contributions are valuable!
 
 ---
 
-## 🛠 Development Workflow
+## Development Workflow
 
 ### 1. Fork the repository
 Click **Fork** at the top-right of the GitHub page.
@@ -90,14 +90,14 @@ Go to your fork and click **New Pull Request**.
 
 ---
 
-## 📁 Repository Structure
+## Repository Structure
 
 ```
 AspNetConventions/
 ├── src/                   # Library source code
 │   └── AspNetConventions/
 ├── tests/                 # Unit tests (coming soon)
-├── samples/               # Sample apps (MVC, API, Razor Pages, Minimal APIs)
+├── samples/               # Sample apps (MVC, Razor Pages, Minimal APIs)
 ├── docs/                  # Documentation and guides
 ├── LICENSE
 ├── README.md
@@ -106,7 +106,7 @@ AspNetConventions/
 
 ---
 
-## 🌳 Branching Model
+## Branching Model
 
 We use a simplified flow:
 
@@ -120,7 +120,7 @@ PRs should target **dev**, not main.
 
 ---
 
-## 🧩 Coding Guidelines
+## Coding Guidelines
 
 Before contributing code, please follow these:
 
@@ -151,7 +151,7 @@ Especially for:
 
 ---
 
-## 📤 Submitting a Pull Request
+## Submitting a Pull Request
 
 A good PR includes:
 
@@ -170,7 +170,7 @@ PRs are reviewed for:
 
 ---
 
-## 🐛 Reporting Issues
+## Reporting Issues
 
 If you find a bug, please include:
 
@@ -186,7 +186,7 @@ Good issues get fixed faster!
 
 ---
 
-## 💡 Feature Requests
+## Feature Requests
 
 Before submitting a feature request, think about:
 
@@ -203,7 +203,7 @@ Open an issue with:
 
 ---
 
-## 🎨 Style & Formatting
+## Style & Formatting
 
 - Use **C# 12 / latest** where appropriate
 - Prefer expression-bodied members where clean
@@ -215,7 +215,7 @@ Open an issue with:
 
 ---
 
-## ✨ Commit Message Guidelines
+## Commit Message Guidelines
 
 Use conventional commits:
 
@@ -229,7 +229,7 @@ refactor: simplify parameter transformation logic
 
 ---
 
-## 📜 License
+## License
 
 By contributing, you agree that your contributions will be licensed
 under the **MIT License**, the same license as the project.

@@ -3,12 +3,11 @@ using System.Collections.Generic;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using AspNetConventions.Common.Abstractions;
+using AspNetConventions.Common.Converters;
 using AspNetConventions.Common.Enums;
 using AspNetConventions.Common.Hooks;
 using AspNetConventions.Http;
 using AspNetConventions.ResponseFormatting.Models;
-using AspNetConventions.Routing.Abstractions;
-using AspNetConventions.Routing.Converters;
 using AspNetConventions.Serialization.Policies;
 using AspNetConventions.Serialization.Resolvers;
 
@@ -17,7 +16,7 @@ namespace AspNetConventions.Configuration
     /// <summary>
     /// Provides configuration options for JSON serialization.
     /// </summary>
-    public sealed class JsonSerializationOptions: ICloneable
+    public sealed class JsonSerializationOptions : ICloneable
     {
         /// <summary>
         /// Gets or sets whether json serialization is enabled.
@@ -32,7 +31,7 @@ namespace AspNetConventions.Configuration
         /// <summary>
         /// Gets or sets a custom case converter.
         /// </summary>
-        public ICaseConverter? CustomCaseConverter { get; set; }
+        public ICaseConverter? CaseConverter { get; set; }
 
         /// <summary>
         /// Gets or sets an action to configure JSON ignore rules.
@@ -93,7 +92,7 @@ namespace AspNetConventions.Configuration
             return new JsonSerializationOptions
             {
                 CaseStyle = CaseStyle,
-                CustomCaseConverter = CustomCaseConverter,
+                CaseConverter = CaseConverter,
                 ConfigureIgnoreRules = ConfigureIgnoreRules,
                 DefaultIgnoreCondition = DefaultIgnoreCondition,
                 PropertyNameCaseInsensitive = PropertyNameCaseInsensitive,
@@ -155,16 +154,20 @@ namespace AspNetConventions.Configuration
         /// <summary>
         /// Get the JsonNamingPolicy from this configuration.
         /// </summary>
-        private JsonNamingPolicy? GetNamingPolicy() => CaseStyle switch
+        private JsonNamingPolicy? GetNamingPolicy()
         {
-            CasingStyle.CamelCase  => JsonNamingPolicy.CamelCase,
-            CasingStyle.SnakeCase  => JsonNamingPolicy.SnakeCaseLower,
-            CasingStyle.KebabCase  => JsonNamingPolicy.KebabCaseLower,
-            CasingStyle.PascalCase => new CustomJsonNamingPolicy(CaseConverterFactory.CreatePascalCase()),
-            CasingStyle.Custom => CustomCaseConverter != null
-                ? new CustomJsonNamingPolicy(CustomCaseConverter)
-                : JsonNamingPolicy.CamelCase,
-            _ => JsonNamingPolicy.CamelCase
-        };
+            var defaultJsonNamingPolicy = JsonNamingPolicy.CamelCase;
+            return CaseConverter != null
+                ? new CustomJsonNamingPolicy(CaseConverter)
+                : CaseStyle switch
+                {
+                    CasingStyle.CamelCase => defaultJsonNamingPolicy,
+                    CasingStyle.SnakeCase => JsonNamingPolicy.SnakeCaseLower,
+                    CasingStyle.KebabCase => JsonNamingPolicy.KebabCaseLower,
+                    CasingStyle.PascalCase => new CustomJsonNamingPolicy(
+                        CaseConverterFactory.CreatePascalCase()),
+                    _ => defaultJsonNamingPolicy
+                };
+        }
     }
 }

@@ -26,9 +26,6 @@ namespace AspNetConventions.Extensions
             // Apply user configuration
             configure?.Invoke(options);
 
-            // Validate the final options
-            options.ValidateOptionsAndLogWarnings(logger!);
-
             return options;
         }
 

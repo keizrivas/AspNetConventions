@@ -4,7 +4,7 @@ namespace AspNetConventions.Extensions
 {
     internal static class ActionResultExtensions
     {
-        public static object? GetContent(this IActionResult? result)
+        internal static object? GetContent(this IActionResult? result)
         {
             return result switch
             {
@@ -15,7 +15,7 @@ namespace AspNetConventions.Extensions
             };
         }
 
-        public static T? GetContent<T>(this IActionResult? result)
+        internal static T? GetContent<T>(this IActionResult? result)
         {
             return result switch
             {

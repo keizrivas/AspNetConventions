@@ -13,7 +13,7 @@ namespace AspNetConventions.Configuration
     /// Each property exposes a set of options for a specific aspect of convention handling, allowing fine-grained
     /// control over routing, response formatting, serialization, and error handling. All option properties are
     /// initialized with default values, but can be modified as needed before use.</remarks>
-    public sealed class AspNetConventionOptions: ICloneable
+    public sealed class AspNetConventionOptions : ICloneable
     {
         /// <summary>
         /// Gets or sets the route naming convention options.
@@ -47,27 +47,6 @@ namespace AspNetConventions.Configuration
                 Json = (JsonSerializationOptions)Json.Clone(),
                 ExceptionHandling = (ExceptionHandlingOptions)ExceptionHandling.Clone(),
             };
-        }
-
-        /// <summary>
-        /// Validates the configuration and log if any required settings are missing or invalid.
-        /// </summary>
-        internal void ValidateOptionsAndLogWarnings(ILogger logger)
-        {
-            if (Route.CaseStyle == CasingStyle.Custom && Route.CustomCaseConverter == null)
-            {
-                logger.LogWarning("Route.CustomConverter must be provided when Route.CaseStyle is \"Custom\".");
-            }
-
-            if (Response.Style == ResponseStyle.Custom && Response.CustomResponseBuilder == null)
-            {
-                logger.LogWarning("Response.CustomResponseBuilder must be provided when Response.Style is \"Custom\".");
-            }
-
-            if (Json.CaseStyle == CasingStyle.Custom && Json.CustomCaseConverter == null)
-            {
-                logger.LogWarning("Json.CustomConverter must be provided when Json.CaseStyle is \"Custom\".");
-            }
         }
     }
 }

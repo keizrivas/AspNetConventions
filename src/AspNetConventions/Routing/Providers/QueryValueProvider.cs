@@ -1,9 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using AspNetConventions.Common.Abstractions;
 using AspNetConventions.Configuration;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
@@ -20,7 +15,7 @@ namespace AspNetConventions.Routing.Providers
             IOptions<AspNetConventionOptions> options,
             IQueryCollection query)
         {
-           ArgumentNullException.ThrowIfNull(options, nameof(options));
+            ArgumentNullException.ThrowIfNull(options, nameof(options));
 
             _query = query;
             _convert = options.Value.Route.GetCaseConverter().Convert;
@@ -67,7 +62,7 @@ namespace AspNetConventions.Routing.Providers
             // Exact match
             if (_query.TryGetValue(convertedKey, out var value))
             {
-                return new (value);
+                return new(value);
             }
 
             // Remove fisrt segment (supports nesting)
@@ -82,7 +77,7 @@ namespace AspNetConventions.Routing.Providers
             // Dictionary lookup requires string
             if (_query.TryGetValue(withoutPrefix.ToString(), out value))
             {
-                return new (value);
+                return new(value);
             }
 
             return ValueProviderResult.None;

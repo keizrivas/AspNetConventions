@@ -1,7 +1,4 @@
-using System.Text.RegularExpressions;
 using AspNetConventions.Configuration;
-using Microsoft.AspNetCore.Mvc.TagHelpers;
-using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using Microsoft.Extensions.Options;
 

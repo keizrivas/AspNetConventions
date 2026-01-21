@@ -1,12 +1,14 @@
 using System;
 using System.Linq;
+using AspNetConventions.Configuration;
 using AspNetConventions.ExceptionHandling.Abstractions;
 using AspNetConventions.ExceptionHandling.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 
 namespace AspNetConventions.ExceptionHandling.Filters
 {
-    public sealed class ControllerInvalidModelStateFactory : IInvalidModelStateFactory
+    public sealed class ControllerInvalidModelStateFactory(IOptions<AspNetConventionOptions> options) : IInvalidModelStateFactory
     {
         public IActionResult Create(ActionContext context)
         {
@@ -23,7 +25,9 @@ namespace AspNetConventions.ExceptionHandling.Filters
                     ).ToArray()
                 );
 
-            return new BadRequestObjectResult(new ExceptionEnvelope(errors, "One or more validation errors occurred."));
+            return new BadRequestObjectResult(new ExceptionEnvelope(
+                errors,
+                options.Value.ExceptionHandling.DefaultValidationMessage));
         }
     }
 }

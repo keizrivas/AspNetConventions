@@ -4,6 +4,7 @@ using AspNetConventions.Common.Hooks;
 using AspNetConventions.ResponseFormatting.Abstractions;
 using AspNetConventions.ResponseFormatting.Builders;
 using AspNetConventions.ResponseFormatting.Enums;
+using Microsoft.Extensions.Options;
 
 namespace AspNetConventions.Configuration
 {
@@ -16,11 +17,6 @@ namespace AspNetConventions.Configuration
         /// Gets or sets whether response formatting is enabled.
         /// </summary>
         public bool IsEnabled { get; set; } = true;
-
-        /// <summary>
-        /// Gets or sets the response formatting style.
-        /// </summary>
-        public ResponseStyle Style { get; set; } = ResponseStyle.Standard;
 
         /// <summary>
         /// Gets or sets whether to include metadata in responses.
@@ -65,7 +61,7 @@ namespace AspNetConventions.Configuration
         /// <summary>
         /// Gets or sets a custom response builder.
         /// </summary>
-        public IResponseBuilder? CustomResponseBuilder { get; set; }
+        public IResponseBuilder? ResponseBuilder { get; set; }
 
         /// <summary>
         /// Creates a deep clone of <see cref="ResponseFormattingOptions"/> instance.
@@ -75,7 +71,6 @@ namespace AspNetConventions.Configuration
             return new ResponseFormattingOptions
             {
                 IsEnabled = IsEnabled,
-                Style = Style,
                 IncludeMetadata = IncludeMetadata,
                 IncludePaginationMetadata = IncludePaginationMetadata,
                 IncludePaginationLinks = IncludePaginationLinks,
@@ -84,7 +79,7 @@ namespace AspNetConventions.Configuration
                 DefaultPageSize = DefaultPageSize,
                 ResponseCollectionAdapters = ResponseCollectionAdapters,
                 Hooks = Hooks,
-                CustomResponseBuilder = CustomResponseBuilder,
+                ResponseBuilder = ResponseBuilder,
             };
         }
 
@@ -93,15 +88,7 @@ namespace AspNetConventions.Configuration
         /// </summary>
         internal IResponseBuilder GetResponseBuilder(AspNetConventionOptions options)
         {
-            var standardResponse = new StandardResponseBuilder(options);
-
-            return Style switch
-            {
-                ResponseStyle.Standard => standardResponse,
-                ResponseStyle.Custom => CustomResponseBuilder
-                    ?? throw new InvalidOperationException("CustomResponseBuilder not set"),
-                _ => standardResponse
-            };
+            return ResponseBuilder ?? new StandardResponseBuilder(options);
         }
     }
 }

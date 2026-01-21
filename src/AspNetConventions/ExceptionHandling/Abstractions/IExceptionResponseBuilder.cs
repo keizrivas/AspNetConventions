@@ -7,7 +7,7 @@ namespace AspNetConventions.ExceptionHandling.Abstractions
     /// <summary>
     /// Defines a contract for building exception responses.
     /// </summary>
-    public interface IExceptionResponseBuilder: IResponseAdapter
+    public interface IExceptionResponseBuilder : IResponseAdapter
     {
         /// <summary>
         /// Builds a response object from exception mapping result.

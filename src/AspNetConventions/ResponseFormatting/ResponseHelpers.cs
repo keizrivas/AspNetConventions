@@ -9,6 +9,7 @@ using AspNetConventions.Http;
 using AspNetConventions.ResponseFormatting.Abstractions;
 using AspNetConventions.ResponseFormatting.Models;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Options;
 
 namespace AspNetConventions.ResponseFormatting
 {
@@ -17,7 +18,6 @@ namespace AspNetConventions.ResponseFormatting
     /// </summary>
     internal sealed class ResponseHelpers(IResponseCollectionResolver collectionResolver, AspNetConventionOptions options, RequestDescriptor requestDescriptor) : ResponseAdapter(options)
     {
-        private readonly AspNetConventionOptions _options = options;
         private readonly IResponseBuilder _builder = options.Response.GetResponseBuilder(options);
 
         public ResponseHelpers(IResponseCollectionResolver collectionResolver, AspNetConventionOptions options, HttpContext httpContext)
@@ -32,7 +32,7 @@ namespace AspNetConventions.ResponseFormatting
 
         public bool ShouldHandleResponse(object? data = null)
         {
-            return _options.Response.IsEnabled && !IsWrappedResponse(data);
+            return Options.Response.IsEnabled && !IsWrappedResponse(data);
         }
 
         /// <summary>
@@ -40,7 +40,7 @@ namespace AspNetConventions.ResponseFormatting
         /// </summary>
         public async Task<(object? Response, HttpStatusCode StatusCode)> BuildResponseAsync(object? data)
         {
-            var hooks = _options.Response.Hooks;
+            var hooks = Options.Response.Hooks;
 
             IResponseEnvelope? baseEnvelope = null;
             ResponseEnvelope? responseEnvelope = null;
@@ -96,7 +96,7 @@ namespace AspNetConventions.ResponseFormatting
             }
 
             // Set metadata
-            if (_options.Response.IncludeMetadata)
+            if (Options.Response.IncludeMetadata)
             {
                 responseEnvelope.SetMetadata((Metadata)requestDescriptor);
             }
@@ -152,19 +152,19 @@ namespace AspNetConventions.ResponseFormatting
             ArgumentNullException.ThrowIfNull(requestDescriptor);
             ArgumentNullException.ThrowIfNull(responseCollection);
 
-            if (!_options.Response.IncludePaginationMetadata)
+            if (!Options.Response.IncludePaginationMetadata)
             {
                 return null;
             }
 
             // Get pagination parameters names
-            var pageSizeName = _options.Response.PageSizeQueryParameterName;
-            var pageNumberName = _options.Response.PageNumberQueryParameterName;
+            var pageSizeName = Options.Response.PageSizeQueryParameterName;
+            var pageNumberName = Options.Response.PageNumberQueryParameterName;
 
             // Determine page size
             var pageSize = responseCollection.PageSize
                 ?? requestDescriptor.HttpContext.GetNumericParameter(pageSizeName)
-                ?? _options.Response.DefaultPageSize;
+                ?? Options.Response.DefaultPageSize;
 
             // Determine page number
             var pageNumber = responseCollection.PageNumber
@@ -178,9 +178,9 @@ namespace AspNetConventions.ResponseFormatting
             );
 
             // Build pagination links
-            if (_options.Response.IncludePaginationLinks)
+            if (Options.Response.IncludePaginationLinks)
             {
-                var caseConverter = _options.Route.GetCaseConverter();
+                var caseConverter = Options.Route.GetCaseConverter();
                 paginationMetadata.BuildLinks(
                     requestDescriptor.HttpContext,
                     caseConverter.Convert(pageSizeName),

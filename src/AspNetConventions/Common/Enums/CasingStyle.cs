@@ -12,6 +12,5 @@ namespace AspNetConventions.Common.Enums
         PascalCase,
         KebabCase,
         SnakeCase,
-        Custom
     }
 }

@@ -24,7 +24,7 @@ namespace AspNetConventions.ResponseFormatting.Models
 
         public ResponseCollection(IEnumerable<T> items, int totalRecords, int pageNumber, int pageSize) : this(items, totalRecords)
         {
-            PageSize   = Math.Max(pageSize, 0);
+            PageSize = Math.Max(pageSize, 0);
             PageNumber = Math.Max(pageNumber, 0);
         }
 

@@ -1,8 +1,10 @@
+using System;
 using AspNetConventions.Common.Abstractions;
 using AspNetConventions.Configuration;
 using AspNetConventions.ExceptionHandling.Abstractions;
 using AspNetConventions.ExceptionHandling.Models;
 using AspNetConventions.Http;
+using Microsoft.Extensions.Options;
 
 namespace AspNetConventions.ExceptionHandling.Builders
 {
@@ -16,7 +18,7 @@ namespace AspNetConventions.ExceptionHandling.Builders
             return data is StandardExceptionResponse;
         }
 
-        public object BuildResponse(ExceptionEnvelope exceptionEnvelope, ExceptionDescriptor exceptionDescriptor, RequestDescriptor requestDescriptor)
+        public object BuildResponse(ExceptionEnvelope exceptionEnvelope, ExceptionDescriptor? exceptionDescriptor, RequestDescriptor requestDescriptor)
         {
             // Create standard response
             var response = new StandardExceptionResponse(exceptionEnvelope.StatusCode)

@@ -96,9 +96,9 @@ namespace AspNetConventions.Http
 
         private static bool IsStaticFileExtension(string path)
         {
-            #pragma warning disable CA1308 // Normalize strings to uppercase
+#pragma warning disable CA1308 // Normalize strings to uppercase
             var extension = Path.GetExtension(path).ToLowerInvariant();
-            #pragma warning restore CA1308 // Normalize strings to uppercase
+#pragma warning restore CA1308 // Normalize strings to uppercase
 
             return extension switch
             {

@@ -5,10 +5,11 @@ using System.Threading.Tasks;
 using AspNetConventions.Common.Enums;
 using AspNetConventions.Configuration;
 using AspNetConventions.Extensions;
-using AspNetConventions.Internal;
+using AspNetConventions.Http;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace AspNetConventions.ExceptionHandling.Handlers
 {
@@ -20,8 +21,8 @@ namespace AspNetConventions.ExceptionHandling.Handlers
         JsonSerializerOptions jsonSerializerOptions,
         ILogger<MinimalApiExceptionHandler> logger) : IExceptionHandler
     {
-        private readonly ILogger<MinimalApiExceptionHandler> _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         private readonly AspNetConventionOptions _options = options ?? throw new ArgumentNullException(nameof(options));
+        private readonly ILogger<MinimalApiExceptionHandler> _logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
         public async ValueTask<bool> TryHandleAsync(
             HttpContext httpContext,
@@ -43,7 +44,7 @@ namespace AspNetConventions.ExceptionHandling.Handlers
                 .ConfigureAwait(false);
 
             // Set response details
-            httpContext.Response.StatusCode  = (int)statusCode;
+            httpContext.Response.StatusCode = (int)statusCode;
             httpContext.Response.ContentType = ContentTypes.JsonUtf8;
 
             // Serialize and write the response

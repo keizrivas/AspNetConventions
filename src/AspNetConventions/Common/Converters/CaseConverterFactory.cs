@@ -1,8 +1,8 @@
 using System;
+using AspNetConventions.Common.Abstractions;
 using AspNetConventions.Common.Enums;
-using AspNetConventions.Routing.Abstractions;
 
-namespace AspNetConventions.Routing.Converters
+namespace AspNetConventions.Common.Converters
 {
     /// <summary>
     /// Provides factory methods for creating case converter instances for various casing styles.
@@ -52,9 +52,9 @@ namespace AspNetConventions.Routing.Converters
         {
             return style switch
             {
-                CasingStyle.KebabCase  => CreateKebabCase(),
-                CasingStyle.SnakeCase  => CreateSnakeCase(),
-                CasingStyle.CamelCase  => CreateCamelCase(),
+                CasingStyle.KebabCase => CreateKebabCase(),
+                CasingStyle.SnakeCase => CreateSnakeCase(),
+                CasingStyle.CamelCase => CreateCamelCase(),
                 CasingStyle.PascalCase => CreatePascalCase(),
                 _ => CreateKebabCase()
             };

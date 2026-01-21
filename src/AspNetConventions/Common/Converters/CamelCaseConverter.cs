@@ -1,8 +1,8 @@
 using System;
 using System.Linq;
-using AspNetConventions.Routing.Abstractions;
+using AspNetConventions.Common.Abstractions;
 
-namespace AspNetConventions.Routing.Converters
+namespace AspNetConventions.Common.Converters
 {
     /// <summary>
     /// Provides functionality to convert strings to "camelCase" format, where words are concatenated without spaces and

@@ -1,10 +1,7 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
 using AspNetConventions.Common.Abstractions;
 using AspNetConventions.Configuration;
-using AspNetConventions.Routing.Abstractions;
 using AspNetConventions.Routing.ModelBinding;
 using AspNetConventions.Routing.Models;
 using AspNetConventions.Routing.Parsers;
@@ -185,7 +182,7 @@ namespace AspNetConventions.Routing.Conventions
 
         private string TransformParameterName(RouteModelContext modelContext, string name, bool isExplicitName)
         {
-            if(string.IsNullOrWhiteSpace(name))
+            if (string.IsNullOrWhiteSpace(name))
             {
                 throw new ArgumentNullException(nameof(name), "The \"name\" param can't be null or white space");
             }

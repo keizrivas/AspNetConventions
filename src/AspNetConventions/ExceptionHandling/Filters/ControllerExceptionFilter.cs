@@ -24,9 +24,8 @@ namespace AspNetConventions.ExceptionHandling.Filters
 
         public async Task OnExceptionAsync(ExceptionContext context)
         {
-            var options   = _options.Value;
             var exception = context.Exception;
-            var helper    = new ExceptionHandlingHelpers(options, context.HttpContext, _logger);
+            var helper = new ExceptionHandlingHelpers(_options.Value, context.HttpContext, _logger);
 
             // Check if exception handling is enabled and if response is already wrapped
             if (!context.HttpContext.AcceptsJson() || !helper.ShouldHandleResponse(context.Result?.GetContent()))

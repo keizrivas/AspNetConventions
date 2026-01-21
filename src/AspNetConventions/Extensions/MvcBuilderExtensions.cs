@@ -8,7 +8,6 @@ using AspNetConventions.Routing.Providers;
 using AspNetConventions.Routing.Transformation;
 using AspNetConventions.Serialization;
 using AspNetConventions.Serialization.Formatters;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Metadata;
@@ -150,21 +149,9 @@ namespace AspNetConventions.Extensions
                 });
             });
 
-            //// Add Mvc configurations to razor pages
-            //builder.Services.AddSingleton<IConfigureOptions<Microsoft.AspNetCore.Mvc.MvcOptions>>(serviceProvider =>
-            //{
-            //    var metadataProvider = serviceProvider.GetRequiredService<RazorPagesBindingMetadataProvider>();
-
-            //    return new ConfigureOptions<Microsoft.AspNetCore.Mvc.MvcOptions>(mvcOptions =>
-            //    {
-            //        //mvcOptions.ModelMetadataDetailsProviders.Add(metadataProvider);
-            //    });
-            //});
-
             return builder;
         }
-
-
+        
         /// <summary>
         /// Configures MVC to use custom JSON serialization options based on application conventions.
         /// </summary>
