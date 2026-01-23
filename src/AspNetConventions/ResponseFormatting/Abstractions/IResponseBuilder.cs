@@ -12,6 +12,6 @@ namespace AspNetConventions.ResponseFormatting.Abstractions
         /// <summary>
         /// Builds a response object from data and HTTP context.
         /// </summary>
-        object BuildResponse(ResponseEnvelope responseEnvelope, RequestDescriptor requestDescriptor);
+        object BuildResponse(RequestResult requestResult, RequestDescriptor requestDescriptor);
     }
 }

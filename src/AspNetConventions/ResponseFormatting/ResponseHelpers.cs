@@ -51,7 +51,7 @@ namespace AspNetConventions.ResponseFormatting
                 baseEnvelope = envelope;
 
                 // If data is an exception envelope set status code
-                if (baseEnvelope is ExceptionEnvelope exceptionEnvelope)
+                if (baseEnvelope is ExceptionDescriptor exceptionEnvelope)
                 {
                     // Check exception envelope status code
                     if (exceptionEnvelope.StatusCode == default)
@@ -88,7 +88,7 @@ namespace AspNetConventions.ResponseFormatting
             if (!shouldWrap)
             {
                 // If not wrapping and it's ExceptionEnvelope type, return message or data
-                data = baseEnvelope is ExceptionEnvelope exceptionEnvelope
+                data = baseEnvelope is ExceptionDescriptor exceptionEnvelope
                     ? exceptionEnvelope.Message ?? exceptionEnvelope.Data
                     : data;
 

@@ -1,3 +1,4 @@
+using System;
 using AspNetConventions.Common.Abstractions;
 using AspNetConventions.ExceptionHandling.Models;
 using AspNetConventions.Http;
@@ -5,16 +6,16 @@ using AspNetConventions.Http;
 namespace AspNetConventions.ExceptionHandling.Abstractions
 {
     /// <summary>
-    /// Defines a contract for building exception responses.
+    /// Defines a contract for building error responses.
     /// </summary>
-    public interface IExceptionResponseBuilder : IResponseAdapter
+    public interface IErrorResponseBuilder : IResponseAdapter
     {
         /// <summary>
-        /// Builds a response object from exception mapping result.
+        /// Builds a response object from error mapping result.
         /// </summary>
         object BuildResponse(
-            ExceptionEnvelope result,
-            ExceptionDescriptor? exceptionDescriptor,
+            RequestResult result,
+            Exception? exception,
             RequestDescriptor requestDescriptor);
     }
 }

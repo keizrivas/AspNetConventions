@@ -37,7 +37,7 @@ namespace AspNetConventions.Http
         /// <summary>
         /// Gets or sets the stack trace.
         /// </summary>
-        public HashSet<StackTraceInfo>? StackTrace { get; set; }
+        public HashSet<StackFrameInfo>? StackTrace { get; internal set; }
 
         /// <summary>
         /// Converts the specified <see cref="RequestDescriptor"/> to an <see cref="Metadata"/> instance.

@@ -96,15 +96,13 @@ namespace AspNetConventions.Http
 
         private static bool IsStaticFileExtension(string path)
         {
-#pragma warning disable CA1308 // Normalize strings to uppercase
-            var extension = Path.GetExtension(path).ToLowerInvariant();
-#pragma warning restore CA1308 // Normalize strings to uppercase
+            var extension = Path.GetExtension(path).ToUpperInvariant();
 
             return extension switch
             {
-                ".css" or ".js" or ".jpg" or ".jpeg" or ".png" or ".gif" or
-                ".svg" or ".ico" or ".woff" or ".woff2" or ".ttf" or ".eot" or
-                ".map" or ".json" or ".xml" => true,
+                ".CSS" or ".JS" or ".JPG" or ".JPEG" or ".PNG" or ".GIF" or
+                ".SVG" or ".ICO" or ".WOFF" or ".WOFF2" or ".TTF" or ".EOT" or
+                ".MAP" or ".JSON" or ".XML" => true,
                 _ => false
             };
         }

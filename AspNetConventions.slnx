@@ -1,5 +1,7 @@
 <Solution>
   <Folder Name="/samples/">
+    <Project Path="samples/AspNetConventions.WebApi.Sample/AspNetConventions.WebApi.Sample.csproj" />
+    <Project Path="samples/WebApp.Sample/WebApp.Sample.csproj" />
   </Folder>
   <Folder Name="/src/">
     <Project Path="src/AspNetConventions/AspNetConventions.csproj"

@@ -2,16 +2,18 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Net;
+using System.Threading;
 using AspNetConventions.ExceptionHandling.Abstractions;
 using AspNetConventions.ExceptionHandling.Models;
 using AspNetConventions.Http;
+using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace AspNetConventions.ExceptionHandling.Mappers
 {
     /// <summary>
     /// Standard exception mapper for common .NET exceptions.
     /// </summary>
-    internal sealed class StandardExceptionMapper : IExceptionMapper
+    internal sealed class DefaultExceptionMapper : IExceptionMapper
     {
         private static readonly Dictionary<Type, (HttpStatusCode StatusCode, string ErrorCode)> _mappings = new()
         {
@@ -25,30 +27,28 @@ namespace AspNetConventions.ExceptionHandling.Mappers
             [typeof(ValidationException)] = (HttpStatusCode.BadRequest, "VALIDATION_ERROR"),
         };
 
-        public bool CanMapException(
-            ExceptionDescriptor exceptionContext,
-            RequestDescriptor httpContext)
+        public bool CanMapException(Exception exception, RequestDescriptor requestDescriptor)
         {
-            return _mappings.ContainsKey(exceptionContext.Exception.GetType());
+            return _mappings.ContainsKey(exception.GetType());
         }
 
-        public ExceptionEnvelope MapException(
-            ExceptionDescriptor exceptionContext,
-            RequestDescriptor httpContext)
+        public ExceptionDescriptor2 MapException(Exception exception, RequestDescriptor requestDescriptor)
         {
-            var result = (ExceptionEnvelope)exceptionContext;
-            var (statusCode, errorCode) = GetMapping(exceptionContext.Exception);
+            var (statusCode, errorCode) = GetMapping(exception);
+ 
+            var code = statusCode ?? HttpStatusCode.OK;
 
-            result.ErrorCode ??= errorCode;
-            if (statusCode.HasValue)
+            var result = new ExceptionDescriptor2
             {
-                result.StatusCode = statusCode.Value;
-            }
+                StatusCode = code,
+                Type = errorCode,
+                ShouldLog = (int)code > 499,
+            };
 
             // Handle validation exceptions specially
-            if (TryGetValidationErrors(exceptionContext.Exception, out var validationErrors))
+            if (TryGetValidationErrors(exception, out var validationErrors))
             {
-                result.SetData(validationErrors);
+                result.Data = validationErrors;
             }
 
             return result;

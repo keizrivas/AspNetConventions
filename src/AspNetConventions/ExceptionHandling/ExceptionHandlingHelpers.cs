@@ -12,6 +12,7 @@ using AspNetConventions.Http;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace AspNetConventions.ExceptionHandling
 {
@@ -20,13 +21,13 @@ namespace AspNetConventions.ExceptionHandling
     /// </summary>
     internal class ExceptionHandlingHelpers(AspNetConventionOptions options, RequestDescriptor requestDescriptor, ILogger? logger = null) : ResponseAdapter(options)
     {
-        private readonly IExceptionResponseBuilder _builder
+        private readonly IErrorResponseBuilder _builder
             = options.ExceptionHandling.GetResponseBuilder(options);
 
         public ExceptionHandlingHelpers(AspNetConventionOptions options, HttpContext httpContext, ILogger? logger = null)
             : this(options, httpContext.ToRequestDescriptor(), logger)
         {
-            logger ??= httpContext.GetLogger<ExceptionDescriptor>();
+            logger ??= httpContext.GetLogger<ExceptionDescriptor2>();
         }
 
         public override bool IsWrappedResponse(object? data)
@@ -69,11 +70,11 @@ namespace AspNetConventions.ExceptionHandling
 
             // Create exception context
             var statusCode = Options.ExceptionHandling.DefaultStatusCode;
-            var exceptionDescriptor = new ExceptionDescriptor(exception, statusCode);
+            var requestResult = new RequestResult(statusCode);
 
             // Get mapper
             var mapper = Options.ExceptionHandling.GetExceptionMapper(
-                exceptionDescriptor,
+                exception,
                 requestDescriptor);
 
             // Allow override exception mapper
@@ -81,99 +82,116 @@ namespace AspNetConventions.ExceptionHandling
             {
                 mapper = await hooks.BeforeMappingAsync(
                     mapper,
-                    exceptionDescriptor,
+                    requestResult,
                     requestDescriptor
                 ).ConfigureAwait(false);
             }
 
             // Map exception
-            var exceptionEnvelope = mapper.MapException(
-                exceptionDescriptor,
+            var exceptionDescriptor = mapper.MapException(
+                exception,
                 requestDescriptor);
 
             // Allow override exception envelope
             if (hooks.AfterMappingAsync != null)
             {
-                exceptionEnvelope = await hooks.AfterMappingAsync(
-                    exceptionEnvelope,
-                    mapper,
+                exceptionDescriptor = await hooks.AfterMappingAsync(
                     exceptionDescriptor,
+                    mapper,
+                    requestResult,
                     requestDescriptor
                 ).ConfigureAwait(false);
             }
 
             // Use defaults message and error code if not set
-            if ((exceptionEnvelope.ErrorCode == null || exceptionEnvelope.Message == null) &&
-                exceptionEnvelope.StatusCode == statusCode)
+            if ((exceptionDescriptor.Type == null || exceptionDescriptor.Message == null) &&
+                exceptionDescriptor.StatusCode == statusCode)
             {
-                exceptionEnvelope.ErrorCode ??= Options.ExceptionHandling.DefaultErrorCode;
-                exceptionEnvelope.Message ??= Options.ExceptionHandling.DefaultErrorMessage;
+                exceptionDescriptor.Type ??= Options.ExceptionHandling.DefaultErrorCode;
+                exceptionDescriptor.Message ??= Options.ExceptionHandling.DefaultErrorMessage;
             }
 
-            return await WrapResponseAsync(exceptionEnvelope, exceptionDescriptor).ConfigureAwait(false);
+            return await WrapResponseAsync(exceptionDescriptor, requestResult).ConfigureAwait(false);
         }
 
-        public Task<(object? Response, HttpStatusCode StatusCode)> WrapResponseAsync(
-            ExceptionEnvelope exceptionEnvelope,
-            Exception? exception = null)
-        {
-            return WrapResponseAsync(exceptionEnvelope, exception != null
-                ? new ExceptionDescriptor(exception, exceptionEnvelope.StatusCode)
-                : null);
-        }
+        //public Task<(object? Response, HttpStatusCode StatusCode)> WrapResponseAsync(
+        //    ExceptionDescriptor2 exceptionDescriptor,
+        //    Exception? exception = null)
+        //{
+        //    return WrapResponseAsync(exceptionDescriptor, exception);
+        //}
 
         public async Task<(object? Response, HttpStatusCode StatusCode)> WrapResponseAsync(
-            ExceptionEnvelope exceptionEnvelope,
-            ExceptionDescriptor? exceptionDescriptor = null)
+            ExceptionDescriptor2 exceptionDescriptor,
+            RequestResult? requestResult = null,
+            Exception? exception = null)
         {
 
             var hooks = Options.Response.Hooks;
 
             // Log exception if needed
-            exceptionEnvelope.LogException(logger, exceptionDescriptor?.Exception);
-
-            // Set metadata if needed
-            if (Options.Response.IncludeMetadata)
+            if (exceptionDescriptor.ShouldLog)
             {
-                exceptionEnvelope.SetMetadata((Metadata)requestDescriptor);
+                var logMessage = $"Exception occurred: StatusCode={exceptionDescriptor.StatusCode}, ErrorCode={exceptionDescriptor.Type}, Message={exceptionDescriptor.Message}";
 
-                // Include stack trace
-                if (exceptionDescriptor != null && ValidateCondition(Options.ExceptionHandling.IncludeStackTrace, requestDescriptor))
+                if (exception != null)
                 {
-                    exceptionEnvelope.Metadata!.StackTrace = exceptionDescriptor.StackTrace;
+                    logger.LogError(exception, logMessage);
                 }
-
-                // Include exception details
-                if (exceptionDescriptor != null && ValidateCondition(Options.ExceptionHandling.IncludeExceptionDetails, requestDescriptor))
+                else
                 {
-                    exceptionEnvelope.Metadata!.ExceptionType = exceptionDescriptor.ExceptionType;
+                    logger.LogError(logMessage);
                 }
             }
 
+            requestResult ??= new RequestResult(
+                data: exceptionDescriptor.Data,
+                message: exceptionDescriptor.Message,
+                statusCode: exceptionDescriptor.StatusCode,
+                type: exceptionDescriptor.Type);
+
+            //// Set metadata if needed
+            //if (Options.Response.IncludeMetadata)
+            //{
+            //    exceptionDescriptor.SetMetadata((Metadata)requestDescriptor);
+
+            //    // Include stack trace
+            //    if (exceptionDescriptor != null && ValidateCondition(Options.ExceptionHandling.IncludeStackTrace, requestDescriptor))
+            //    {
+            //        exceptionDescriptor.Metadata!.StackTrace = exceptionDescriptor.StackTrace;
+            //    }
+
+            //    // Include exception details
+            //    if (exceptionDescriptor != null && ValidateCondition(Options.ExceptionHandling.IncludeExceptionDetails, requestDescriptor))
+            //    {
+            //        exceptionDescriptor.Metadata!.ExceptionType = exceptionDescriptor.ExceptionType;
+            //    }
+            //}
+
             // Determine if we should wrap the response
-            var shouldWrap = await hooks.ShouldWrapResponseAsync.InvokeAsync<bool?>(exceptionEnvelope, requestDescriptor)
+            var shouldWrap = await hooks.ShouldWrapResponseAsync.InvokeAsync<bool?>(exceptionDescriptor, requestDescriptor)
                 .ConfigureAwait(false) ?? true;
 
             if (!shouldWrap)
             {
-                return (null, exceptionEnvelope.StatusCode);
+                return (null, exceptionDescriptor.StatusCode);
             }
 
             // Invoke hooks before wrapping
-            await hooks.BeforeResponseWrapAsync.InvokeAsync(exceptionEnvelope, requestDescriptor)
+            await hooks.BeforeResponseWrapAsync.InvokeAsync(exceptionDescriptor, requestDescriptor)
                 .ConfigureAwait(false);
 
             // Wrap response
             var wrappedResponse = _builder.BuildResponse(
-                exceptionEnvelope,
-                exceptionDescriptor,
+                requestResult,
+                exception,
                 requestDescriptor);
 
             // Invoke hooks after wrapping
-            await hooks.AfterResponseWrapAsync.InvokeAsync(wrappedResponse, exceptionEnvelope, requestDescriptor)
+            await hooks.AfterResponseWrapAsync.InvokeAsync(wrappedResponse, exceptionDescriptor, requestDescriptor)
                 .ConfigureAwait(false);
 
-            return (wrappedResponse, exceptionEnvelope.StatusCode);
+            return (wrappedResponse, exceptionDescriptor.StatusCode);
         }
 
         private static bool ValidateCondition(bool? condition, RequestDescriptor requestDescriptor)

@@ -70,7 +70,7 @@ namespace AspNetConventions.Configuration
         /// <summary>
         /// Gets or sets a custom exception response builder.
         /// </summary>
-        public IExceptionResponseBuilder? CustomResponseBuilder { get; set; }
+        public IErrorResponseBuilder? CustomResponseBuilder { get; set; }
 
         /// <summary>
         /// Gets or sets the collection of hooks for customizing exception handling behavior.
@@ -80,10 +80,10 @@ namespace AspNetConventions.Configuration
         /// <summary>
         /// Creates a deep clone of <see cref="ResponseFormattingOptions"/> instance.
         /// </summary>
-        internal IExceptionResponseBuilder GetResponseBuilder(AspNetConventionOptions options)
+        internal IErrorResponseBuilder GetResponseBuilder(AspNetConventionOptions options)
         {
             return CustomResponseBuilder
-                ?? new StandardExceptionResponseBuilder(options);
+                ?? new DefaultApiErrorResponseBuilder(options);
         }
 
         /// <summary>
@@ -111,12 +111,12 @@ namespace AspNetConventions.Configuration
         /// Gets the appropriate exception mapper for the given context.
         /// </summary>
         internal IExceptionMapper GetExceptionMapper(
-            ExceptionDescriptor exceptionDescriptor,
+            Exception exception,
             RequestDescriptor requestDescriptor)
         {
             // Try custom mappers first
             var customMapper = Mappers
-                .FirstOrDefault(m => m.CanMapException(exceptionDescriptor, requestDescriptor));
+                .FirstOrDefault(m => m.CanMapException(exception, requestDescriptor));
 
             if (customMapper != null)
             {
@@ -124,7 +124,7 @@ namespace AspNetConventions.Configuration
             }
 
             // Fall back to standard mapper
-            return new StandardExceptionMapper();
+            return new DefaultExceptionMapper();
         }
     }
 }

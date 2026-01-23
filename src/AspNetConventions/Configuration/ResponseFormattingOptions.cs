@@ -88,7 +88,7 @@ namespace AspNetConventions.Configuration
         /// </summary>
         internal IResponseBuilder GetResponseBuilder(AspNetConventionOptions options)
         {
-            return ResponseBuilder ?? new StandardResponseBuilder(options);
+            return ResponseBuilder ?? new DefaultApiResponseBuilder(options);
         }
     }
 }

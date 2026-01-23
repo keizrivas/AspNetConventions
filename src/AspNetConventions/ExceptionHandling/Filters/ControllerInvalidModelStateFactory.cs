@@ -25,7 +25,7 @@ namespace AspNetConventions.ExceptionHandling.Filters
                     ).ToArray()
                 );
 
-            return new BadRequestObjectResult(new ExceptionEnvelope(
+            return new BadRequestObjectResult(new ExceptionDescriptor(
                 errors,
                 options.Value.ExceptionHandling.DefaultValidationMessage));
         }

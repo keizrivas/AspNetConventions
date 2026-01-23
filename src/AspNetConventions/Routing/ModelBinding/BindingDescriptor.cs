@@ -100,10 +100,7 @@ namespace AspNetConventions.Routing.ModelBinding
             var bindAttr = attrList.OfType<BindAttribute>().FirstOrDefault();
             if (bindAttr?.Include != null)
             {
-                foreach (var include in bindAttr.Include)
-                {
-                    context.BindInclude.Add(include);
-                }
+                context.BindInclude.UnionWith(bindAttr.Include);
             }
 
             return context;

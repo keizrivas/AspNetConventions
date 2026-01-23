@@ -11,22 +11,22 @@ namespace AspNetConventions.ResponseFormatting.Builders
     /// Provides a standard implementation of the IResponseBuilder interface for constructing responses with
     /// consistent formatting.
     /// </summary>
-    internal sealed class StandardResponseBuilder(AspNetConventionOptions options) : ResponseAdapter(options), IResponseBuilder
+    internal sealed class DefaultApiResponseBuilder(AspNetConventionOptions options) : ResponseAdapter(options), IResponseBuilder
     {
         public override bool IsWrappedResponse(object? data)
         {
-            return data is StandardResponse;
+            return data is DefaultApiResponse;
         }
 
-        public object BuildResponse(ResponseEnvelope responseEnvelope, RequestDescriptor requestDescriptor)
+        public object BuildResponse(RequestResult requestResult, RequestDescriptor requestDescriptor)
         {
             // Create standard response
-            var response = new StandardResponse(responseEnvelope.StatusCode)
+            var response = new DefaultApiResponse(requestResult.StatusCode)
             {
-                Data = responseEnvelope.Data,
-                Message = responseEnvelope.Message,
-                Metadata = responseEnvelope.Metadata,
-                Pagination = responseEnvelope.Pagination,
+                Data = requestResult.Data,
+                Message = requestResult.Message,
+                Metadata = requestResult.Metadata,
+                Pagination = requestResult.Pagination,
             };
 
             return response;

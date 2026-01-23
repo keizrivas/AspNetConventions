@@ -13,7 +13,7 @@ namespace AspNetConventions.ExceptionHandling.Filters
             var content = context.Result.GetContent();
 
             // Check if the result contains an ExceptionEnvelope and set the status code
-            if (content is ExceptionEnvelope envelope && envelope.StatusCode != default)
+            if (content is ExceptionDescriptor envelope && envelope.StatusCode != default)
             {
                 var statusCode = (int)envelope.StatusCode;
                 switch (context.Result)

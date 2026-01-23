@@ -6,9 +6,9 @@ namespace AspNetConventions.Common.Hooks
 {
     public class ResponseFormattingHooks
     {
-        public delegate Task<bool> ShouldWrapResponseCallback(IResponseEnvelope? response, RequestDescriptor requestDescriptor);
-        public delegate Task BeforeResponseWrapCallback(IResponseEnvelope responseEnvelope, RequestDescriptor requestDescriptor);
-        public delegate Task AfterResponseWrapCallback(object? wrappedResponse, IResponseEnvelope responseEnvelope, RequestDescriptor requestDescriptor);
+        public delegate Task<bool> ShouldWrapResponseCallback(RequestResult? requestResult, RequestDescriptor requestDescriptor);
+        public delegate Task BeforeResponseWrapCallback(RequestResult requestResult, RequestDescriptor requestDescriptor);
+        public delegate Task AfterResponseWrapCallback(object? wrappedResponse, RequestResult requestResult, RequestDescriptor requestDescriptor);
 
         /// <summary>
         /// Return false to skip wrapping for this response.

@@ -1,3 +1,4 @@
+using System;
 using AspNetConventions.ExceptionHandling.Models;
 using AspNetConventions.Http;
 
@@ -11,11 +12,11 @@ namespace AspNetConventions.ExceptionHandling.Abstractions
         /// <summary>
         /// Determines whether this mapper can handle the specified exception.
         /// </summary>
-        bool CanMapException(ExceptionDescriptor exceptionContext, RequestDescriptor httpContext);
+        bool CanMapException(Exception exception, RequestDescriptor requestDescriptor);
 
         /// <summary>
         /// Maps an exception to a standardized error response.
         /// </summary>
-        ExceptionEnvelope MapException(ExceptionDescriptor exceptionContext, RequestDescriptor httpContext);
+        ExceptionDescriptor2 MapException(Exception exception, RequestDescriptor requestDescriptor);
     }
 }
