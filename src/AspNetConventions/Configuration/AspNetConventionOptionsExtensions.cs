@@ -1,8 +1,7 @@
 using System;
-using AspNetConventions.Common.Enums;
-using AspNetConventions.ResponseFormatting.Abstractions;
-using AspNetConventions.ResponseFormatting.Enums;
-using static AspNetConventions.Common.Hooks.ExceptionHandlingHooks;
+using AspNetConventions.Core.Abstractions.Contracts;
+using AspNetConventions.Core.Enums;
+using AspNetConventions.Core.Hooks;
 
 namespace AspNetConventions.Configuration
 {
@@ -132,7 +131,7 @@ namespace AspNetConventions.Configuration
         /// </summary>
         public static AspNetConventionOptions OnError(
             this AspNetConventionOptions options,
-            TryHandleCallbackAsync handler)
+            ExceptionHandlingHooks.TryHandleCallbackAsync handler)
         {
             ArgumentNullException.ThrowIfNull(options);
             ArgumentNullException.ThrowIfNull(handler);

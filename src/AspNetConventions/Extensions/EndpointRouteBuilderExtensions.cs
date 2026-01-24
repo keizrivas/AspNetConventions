@@ -4,7 +4,6 @@ using System.Linq;
 using AspNetConventions.Configuration;
 using AspNetConventions.ExceptionHandling.Handlers;
 using AspNetConventions.Routing.Transformation;
-using AspNetConventions.Serialization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;

@@ -1,5 +1,6 @@
 using System;
-using AspNetConventions.Http;
+using AspNetConventions.Http.Models;
+using AspNetConventions.Http.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 

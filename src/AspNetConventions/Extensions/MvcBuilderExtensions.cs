@@ -1,12 +1,11 @@
 using AspNetConventions.Configuration;
+using AspNetConventions.Core.Abstractions.Contracts;
 using AspNetConventions.ExceptionHandling.Abstractions;
 using AspNetConventions.ExceptionHandling.Filters;
-using AspNetConventions.ResponseFormatting.Abstractions;
-using AspNetConventions.ResponseFormatting.Resolvers;
+using AspNetConventions.Responses.Resolvers;
 using AspNetConventions.Routing.Conventions;
 using AspNetConventions.Routing.Providers;
 using AspNetConventions.Routing.Transformation;
-using AspNetConventions.Serialization;
 using AspNetConventions.Serialization.Formatters;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.AspNetCore.Mvc.ModelBinding;

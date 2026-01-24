@@ -1,8 +1,8 @@
 using System;
-using AspNetConventions.Common.Abstractions;
-using AspNetConventions.Common.Converters;
-using AspNetConventions.Common.Enums;
-using AspNetConventions.Common.Hooks;
+using AspNetConventions.Core.Abstractions.Contracts;
+using AspNetConventions.Core.Converters;
+using AspNetConventions.Core.Enums;
+using AspNetConventions.Core.Hooks;
 
 namespace AspNetConventions.Configuration
 {

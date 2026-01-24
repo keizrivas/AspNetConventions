@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-	  <TargetFrameworks>net8.0;net9.0</TargetFrameworks>
+    <TargetFrameworks>net8.0;net9.0</TargetFrameworks>
     <RollForward>LatestMajor</RollForward>
     <LangVersion>latest</LangVersion>
     <Nullable>enable</Nullable>
@@ -22,49 +22,51 @@
     <AnalysisLevel>latest</AnalysisLevel>
     <AnalysisMode>AllEnabledByDefault</AnalysisMode>
   </PropertyGroup>
-	
+
   <PropertyGroup>
     <!-- Package Information -->
-	  <PackageId>AspNetConventios</PackageId>
-	  <Version>1.0.0</Version>
+    <PackageId>AspNetConventios</PackageId>
+    <Version>1.0.0</Version>
     <Authors>keizrivas</Authors>
-	  <Title>Convention-driven standardization for ASP.NET Core.</Title>
-	  <Description>
-      Automatically standardizes routes, parameters, responses, JSON settings, and exception handling with zero boilerplate.
+    <Title>Convention-driven standardization for ASP.NET Core.</Title>
+    <Description>
+      Automatically standardizes routes, parameters, responses, JSON settings, and exception
+      handling with zero boilerplate.
       Drop-in support for MVC, Minimal APIs, and Razor Pages.
     </Description>
-	  <PackageTags>mvc;csharp;dotnet;aspnetcore;rest-api;conventions;json-serialization;routing;web-api;razor-pages;minimal-api;api-conventions</PackageTags>
+    <PackageTags>
+      mvc;csharp;dotnet;aspnetcore;rest-api;conventions;json-serialization;routing;web-api;razor-pages;minimal-api;api-conventions</PackageTags>
     <RepositoryUrl>https://github.com/keizrivas/AspNetConventions</RepositoryUrl>
-	  <PackageProjectUrl>https://github.com/keizrivas/AspNetConventions</PackageProjectUrl>
+    <PackageProjectUrl>https://github.com/keizrivas/AspNetConventions</PackageProjectUrl>
     <RepositoryType>git</RepositoryType>
-	  <PackageIcon>logo_128.png</PackageIcon>
+    <PackageIcon>logo_128.png</PackageIcon>
     <PackageReadmeFile>README.md</PackageReadmeFile>
-	  <PackageLicenseExpression>MIT</PackageLicenseExpression>
-  
-	  <!-- Deterministic Build -->
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+
+    <!-- Deterministic Build -->
     <Deterministic>true</Deterministic>
     <ContinuousIntegrationBuild Condition="'$(CI)' == 'true'">true</ContinuousIntegrationBuild>
-    
+
     <!-- Source Link -->
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
   </PropertyGroup>
-	
+
   <!-- Includes -->
   <ItemGroup>
-	  <None Include="..\..\assets\logo_128.png" Pack="true" PackagePath="\" />
-	  <None Include="..\..\README.md" Pack="true" PackagePath="\" />
+    <None Include="..\..\assets\logo_128.png" Pack="true" PackagePath="\" />
+    <None Include="..\..\README.md" Pack="true" PackagePath="\" />
   </ItemGroup>
 
   <ItemGroup>
     <!-- ASP.NET Core -->
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
-	
-	  <!-- Source Link -->
+
+    <!-- Source Link -->
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All" />
-    
+
     <!-- Code Analysis -->
     <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="10.0.101">
       <PrivateAssets>all</PrivateAssets>

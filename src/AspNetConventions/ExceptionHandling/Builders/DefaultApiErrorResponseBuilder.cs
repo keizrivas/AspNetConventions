@@ -1,11 +1,12 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using AspNetConventions.Common.Abstractions;
 using AspNetConventions.Configuration;
-using AspNetConventions.ExceptionHandling.Abstractions;
-using AspNetConventions.ExceptionHandling.Models;
-using AspNetConventions.Http;
+using AspNetConventions.Core.Abstractions.Contracts;
+using AspNetConventions.Core.Abstractions.Models;
+using AspNetConventions.Http.Models;
+using AspNetConventions.Http.Services;
+using AspNetConventions.Responses.Models;
 
 namespace AspNetConventions.ExceptionHandling.Builders
 {

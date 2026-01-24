@@ -2,13 +2,14 @@ using System;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using AspNetConventions.Common.Abstractions;
-using AspNetConventions.Common.Enums;
 using AspNetConventions.Configuration;
-using AspNetConventions.ExceptionHandling.Abstractions;
+using AspNetConventions.Core.Abstractions.Contracts;
+using AspNetConventions.Core.Abstractions.Models;
+using AspNetConventions.Core.Enums;
 using AspNetConventions.ExceptionHandling.Models;
 using AspNetConventions.Extensions;
-using AspNetConventions.Http;
+using AspNetConventions.Http.Models;
+using AspNetConventions.Http.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 

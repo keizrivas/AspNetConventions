@@ -1,6 +1,6 @@
 using System;
 using AspNetConventions.ExceptionHandling.Models;
-using AspNetConventions.Http;
+using AspNetConventions.Http.Services;
 
 namespace AspNetConventions.ExceptionHandling.Abstractions
 {

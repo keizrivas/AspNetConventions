@@ -1,7 +1,7 @@
 using System;
 using System.Linq;
-using AspNetConventions.Common.Abstractions;
-using AspNetConventions.Common.Hooks;
+using AspNetConventions.Core.Abstractions.Contracts;
+using AspNetConventions.Core.Hooks;
 using AspNetConventions.Routing.Models;
 using AspNetConventions.Routing.Parsers;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;

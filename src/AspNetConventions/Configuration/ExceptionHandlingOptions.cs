@@ -2,11 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
-using AspNetConventions.Common.Hooks;
+using AspNetConventions.Core.Abstractions.Contracts;
+using AspNetConventions.Core.Hooks;
 using AspNetConventions.ExceptionHandling.Abstractions;
 using AspNetConventions.ExceptionHandling.Builders;
 using AspNetConventions.ExceptionHandling.Mappers;
-using AspNetConventions.Http;
+using AspNetConventions.Http.Services;
 
 namespace AspNetConventions.Configuration
 {

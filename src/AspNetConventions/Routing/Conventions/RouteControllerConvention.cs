@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
-using AspNetConventions.Common.Abstractions;
 using AspNetConventions.Configuration;
+using AspNetConventions.Core.Abstractions.Models;
 using AspNetConventions.Routing.ModelBinding;
 using AspNetConventions.Routing.Models;
 using AspNetConventions.Routing.Parsers;

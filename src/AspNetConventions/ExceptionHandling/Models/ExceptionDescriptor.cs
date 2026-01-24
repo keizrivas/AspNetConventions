@@ -1,5 +1,4 @@
 using System.Net;
-using AspNetConventions.Common.Abstractions;
 using AspNetConventions.Http;
 using Microsoft.Extensions.Logging;
 

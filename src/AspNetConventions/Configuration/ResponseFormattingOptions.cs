@@ -1,9 +1,8 @@
 using System;
 using System.Collections.Generic;
-using AspNetConventions.Common.Hooks;
-using AspNetConventions.ResponseFormatting.Abstractions;
-using AspNetConventions.ResponseFormatting.Builders;
-using AspNetConventions.ResponseFormatting.Enums;
+using AspNetConventions.Core.Abstractions.Contracts;
+using AspNetConventions.Core.Hooks;
+using AspNetConventions.Responses.Builders;
 using Microsoft.Extensions.Options;
 
 namespace AspNetConventions.Configuration

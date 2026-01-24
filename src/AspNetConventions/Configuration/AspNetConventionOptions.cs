@@ -1,6 +1,4 @@
 using System;
-using AspNetConventions.Common.Enums;
-using AspNetConventions.ResponseFormatting.Enums;
 using Microsoft.Extensions.Logging;
 
 namespace AspNetConventions.Configuration

@@ -1,5 +1,5 @@
 using System;
-using AspNetConventions.Common.Abstractions;
+using AspNetConventions.Core.Abstractions.Contracts;
 
 namespace AspNetConventions.Serialization.Policies
 {

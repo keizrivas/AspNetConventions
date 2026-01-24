@@ -1,4 +1,5 @@
-using AspNetConventions.Common.Converters;
+
+using AspNetConventions.Core.Converters;
 
 namespace AspNetConventions.Extensions
 {
