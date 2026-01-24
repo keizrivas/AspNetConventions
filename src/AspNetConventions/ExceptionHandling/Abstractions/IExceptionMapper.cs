@@ -17,6 +17,6 @@ namespace AspNetConventions.ExceptionHandling.Abstractions
         /// <summary>
         /// Maps an exception to a standardized error response.
         /// </summary>
-        ExceptionDescriptor2 MapException(Exception exception, RequestDescriptor requestDescriptor);
+        ExceptionDescriptor MapException(Exception exception, RequestDescriptor requestDescriptor);
     }
 }

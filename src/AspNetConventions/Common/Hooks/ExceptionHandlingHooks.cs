@@ -17,7 +17,7 @@ namespace AspNetConventions.Common.Hooks
         public delegate Task TryHandleCallbackAsync(Exception exception);
         public delegate Task<bool> ShouldHandleCallbackAsync(Exception exception, RequestDescriptor requestDescriptor);
         public delegate Task<IExceptionMapper> BeforeMappingCallbackAsync(IExceptionMapper mapper, RequestResult requestResult, RequestDescriptor requestDescriptor);
-        public delegate Task<ExceptionDescriptor2> AfterMappingCallbackAsync(ExceptionDescriptor2 envelope, IExceptionMapper mapper, RequestResult requestResult, RequestDescriptor requestDescriptor);
+        public delegate Task<ExceptionDescriptor> AfterMappingCallbackAsync(ExceptionDescriptor envelope, IExceptionMapper mapper, RequestResult requestResult, RequestDescriptor requestDescriptor);
 
         /// <summary>
         /// This method handles the entire pipeline.

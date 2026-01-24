@@ -37,9 +37,8 @@ namespace AspNetConventions.Extensions
         {
             ArgumentNullException.ThrowIfNull(httpContext);
 
-            var accept = httpContext.Request.Headers.Accept.ToString();
-            return accept.Contains(ContentTypes.Json, StringComparison.OrdinalIgnoreCase) ||
-                   accept.Contains(ContentTypes.Any, StringComparison.OrdinalIgnoreCase);
+            return httpContext.Request.Headers.Accept.ToString()
+                .Contains(ContentTypes.Json, StringComparison.OrdinalIgnoreCase);
         }
 
         /// <summary>
@@ -49,8 +48,8 @@ namespace AspNetConventions.Extensions
         {
             ArgumentNullException.ThrowIfNull(httpContext);
 
-            var accept = httpContext.Request.Headers.Accept.ToString();
-            return accept.Contains(ContentTypes.Html, StringComparison.OrdinalIgnoreCase);
+            return httpContext.Request.Headers.Accept.ToString()
+                .Contains(ContentTypes.Html, StringComparison.OrdinalIgnoreCase);
         }
 
         /// <summary>

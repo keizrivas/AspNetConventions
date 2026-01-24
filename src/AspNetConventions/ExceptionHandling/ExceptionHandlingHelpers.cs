@@ -11,8 +11,6 @@ using AspNetConventions.Extensions;
 using AspNetConventions.Http;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace AspNetConventions.ExceptionHandling
 {
@@ -27,7 +25,7 @@ namespace AspNetConventions.ExceptionHandling
         public ExceptionHandlingHelpers(AspNetConventionOptions options, HttpContext httpContext, ILogger? logger = null)
             : this(options, httpContext.ToRequestDescriptor(), logger)
         {
-            logger ??= httpContext.GetLogger<ExceptionDescriptor2>();
+            logger ??= httpContext.GetLogger<ExceptionDescriptor>();
         }
 
         public override bool IsWrappedResponse(object? data)
@@ -122,7 +120,7 @@ namespace AspNetConventions.ExceptionHandling
         //}
 
         public async Task<(object? Response, HttpStatusCode StatusCode)> WrapResponseAsync(
-            ExceptionDescriptor2 exceptionDescriptor,
+            ExceptionDescriptor exceptionDescriptor,
             RequestResult? requestResult = null,
             Exception? exception = null)
         {
@@ -147,7 +145,7 @@ namespace AspNetConventions.ExceptionHandling
             requestResult ??= new RequestResult(
                 data: exceptionDescriptor.Data,
                 message: exceptionDescriptor.Message,
-                statusCode: exceptionDescriptor.StatusCode,
+                statusCode: (HttpStatusCode)exceptionDescriptor.StatusCode!,
                 type: exceptionDescriptor.Type);
 
             //// Set metadata if needed
@@ -174,7 +172,7 @@ namespace AspNetConventions.ExceptionHandling
 
             if (!shouldWrap)
             {
-                return (null, exceptionDescriptor.StatusCode);
+                return (null, (HttpStatusCode)exceptionDescriptor.StatusCode);
             }
 
             // Invoke hooks before wrapping
@@ -191,7 +189,7 @@ namespace AspNetConventions.ExceptionHandling
             await hooks.AfterResponseWrapAsync.InvokeAsync(wrappedResponse, exceptionDescriptor, requestDescriptor)
                 .ConfigureAwait(false);
 
-            return (wrappedResponse, exceptionDescriptor.StatusCode);
+            return (wrappedResponse, (HttpStatusCode)exceptionDescriptor.StatusCode);
         }
 
         private static bool ValidateCondition(bool? condition, RequestDescriptor requestDescriptor)

@@ -32,13 +32,13 @@ namespace AspNetConventions.ExceptionHandling.Mappers
             return _mappings.ContainsKey(exception.GetType());
         }
 
-        public ExceptionDescriptor2 MapException(Exception exception, RequestDescriptor requestDescriptor)
+        public ExceptionDescriptor MapException(Exception exception, RequestDescriptor requestDescriptor)
         {
             var (statusCode, errorCode) = GetMapping(exception);
  
             var code = statusCode ?? HttpStatusCode.OK;
 
-            var result = new ExceptionDescriptor2
+            var result = new ExceptionDescriptor
             {
                 StatusCode = code,
                 Type = errorCode,

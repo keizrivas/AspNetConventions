@@ -20,7 +20,7 @@ namespace AspNetConventions.ExceptionHandling.Mappers
             return exception is TException;
         }
 
-        ExceptionDescriptor2 IExceptionMapper.MapException(Exception exception, RequestDescriptor requestDescriptor)
+        ExceptionDescriptor IExceptionMapper.MapException(Exception exception, RequestDescriptor requestDescriptor)
         {
             ArgumentNullException.ThrowIfNull(exception);
 
@@ -37,6 +37,6 @@ namespace AspNetConventions.ExceptionHandling.Mappers
         /// <summary>
         /// Maps a strongly-typed exception to a standardized error response.
         /// </summary>
-        public abstract ExceptionDescriptor2 MapException(TException exception, RequestDescriptor httpContext);
+        public abstract ExceptionDescriptor MapException(TException exception, RequestDescriptor httpContext);
     }
 }

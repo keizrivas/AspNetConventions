@@ -42,82 +42,107 @@ namespace AspNetConventions.ResponseFormatting
         {
             var hooks = Options.Response.Hooks;
 
-            IResponseEnvelope? baseEnvelope = null;
-            ResponseEnvelope? responseEnvelope = null;
+            //IResponseEnvelope? baseEnvelope = null;
+            RequestResult? requestResult = null;
 
-            // Check if data is already an envelope
-            if (data is IResponseEnvelope envelope)
+            if (data is ExceptionDescriptor exceptionDescriptor)
             {
-                baseEnvelope = envelope;
-
-                // If data is an exception envelope set status code
-                if (baseEnvelope is ExceptionDescriptor exceptionEnvelope)
+                // Check exception envelope status code
+                if (!exceptionDescriptor.StatusCode.HasValue)
                 {
-                    // Check exception envelope status code
-                    if (exceptionEnvelope.StatusCode == default)
-                    {
-                        exceptionEnvelope.StatusCode = requestDescriptor.StatusCode;
-                    }
-                    else
-                    {
-                        requestDescriptor.SetStatusCode(exceptionEnvelope.StatusCode);
-                    }
-
-                    // Convert to response envelope
-                    responseEnvelope = (ResponseEnvelope)exceptionEnvelope;
+                    exceptionDescriptor.StatusCode = requestDescriptor.StatusCode;
                 }
                 else
                 {
-                    responseEnvelope = baseEnvelope as ResponseEnvelope;
+                    requestDescriptor.SetStatusCode((HttpStatusCode)exceptionDescriptor.StatusCode);
                 }
+
+                // Parse to response envelope
+                requestResult = new RequestResult(
+                    data: exceptionDescriptor.Data,
+                    message: exceptionDescriptor.Message,
+                    statusCode: (HttpStatusCode)exceptionDescriptor.StatusCode!,
+                    type: exceptionDescriptor.Type);
             }
 
+            if(data is RequestResult result)
+            {
+                requestResult = result;
+            }
+
+            //// Check if data is already an envelope
+            //if (data is IResponseEnvelope envelope)
+            //{
+            //    baseEnvelope = envelope;
+
+            //    // If data is an exception envelope set status code
+            //    if (baseEnvelope is ExceptionDescriptor exceptionEnvelope)
+            //    {
+            //        // Check exception envelope status code
+            //        if (exceptionEnvelope.StatusCode == default)
+            //        {
+            //            exceptionEnvelope.StatusCode = requestDescriptor.StatusCode;
+            //        }
+            //        else
+            //        {
+            //            requestDescriptor.SetStatusCode(exceptionEnvelope.StatusCode);
+            //        }
+
+            //        // Convert to response envelope
+            //        responseEnvelope = (ResponseEnvelope)exceptionEnvelope;
+            //    }
+            //    else
+            //    {
+            //        responseEnvelope = baseEnvelope as ResponseEnvelope;
+            //    }
+            //}
+
             // Prepare response envelope if available
-            responseEnvelope ??= new ResponseEnvelope(
+            requestResult ??= new RequestResult(
                 data: data,
                 statusCode: requestDescriptor.StatusCode
             );
 
             // Assign base envelope if available
-            baseEnvelope ??= responseEnvelope;
+            //baseEnvelope ??= responseEnvelope;
 
             // Determine if we should wrap the response
-            var shouldWrap = await hooks.ShouldWrapResponseAsync.InvokeAsync<bool?>(baseEnvelope, requestDescriptor)
+            var shouldWrap = await hooks.ShouldWrapResponseAsync.InvokeAsync<bool?>(requestResult, requestDescriptor)
                 .ConfigureAwait(false) ?? true;
 
             if (!shouldWrap)
             {
-                // If not wrapping and it's ExceptionEnvelope type, return message or data
-                data = baseEnvelope is ExceptionDescriptor exceptionEnvelope
-                    ? exceptionEnvelope.Message ?? exceptionEnvelope.Data
-                    : data;
+                //// If not wrapping and it's ExceptionEnvelope type, return message or data
+                //data = baseEnvelope is ExceptionDescriptor exceptionEnvelope
+                //    ? exceptionEnvelope.Message ?? exceptionEnvelope.Data
+                //    : data;
 
-                return (data, requestDescriptor.StatusCode);
+                return (null, requestDescriptor.StatusCode);
             }
 
             // Set metadata
             if (Options.Response.IncludeMetadata)
             {
-                responseEnvelope.SetMetadata((Metadata)requestDescriptor);
+                requestResult.SetMetadata((Metadata)requestDescriptor);
             }
 
             // Extract data
-            var dataObject = responseEnvelope.Data;
+            var dataObject = requestResult.Data;
 
             // Handle pagination metadata and resolve collections
             var paginationMetadata = GetPaginationMetadata(ref dataObject);
-            responseEnvelope.SetPagination(paginationMetadata);
-            responseEnvelope.SetData(dataObject);
+            requestResult.SetPagination(paginationMetadata);
+            requestResult.SetData(dataObject);
 
             // Invoke hooks before wrapping
-            await hooks.BeforeResponseWrapAsync.InvokeAsync(baseEnvelope, requestDescriptor)
+            await hooks.BeforeResponseWrapAsync.InvokeAsync(requestResult, requestDescriptor)
                 .ConfigureAwait(false);
 
             // Build the wrapped response
-            var wrappedResponse = _builder.BuildResponse(responseEnvelope, requestDescriptor);
+            var wrappedResponse = _builder.BuildResponse(requestResult, requestDescriptor);
 
             // Invoke hooks after wrapping
-            await hooks.AfterResponseWrapAsync.InvokeAsync(wrappedResponse, baseEnvelope, requestDescriptor)
+            await hooks.AfterResponseWrapAsync.InvokeAsync(wrappedResponse, requestResult, requestDescriptor)
                 .ConfigureAwait(false);
 
             return (wrappedResponse, requestDescriptor.StatusCode);

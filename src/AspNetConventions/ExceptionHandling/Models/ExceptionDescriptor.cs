@@ -9,12 +9,12 @@ namespace AspNetConventions.ExceptionHandling.Models
     /// Encapsulates a standard exception structure for responses.
     /// </summary>
     /// <remarks>Use this class to provide a consistent envelope for exception.</remarks>
-    public sealed class ExceptionDescriptor2
+    public sealed class ExceptionDescriptor
     {
         /// <summary>
         /// Gets or sets the default HTTP status code.
         /// </summary>
-        public HttpStatusCode StatusCode { get; set; }
+        public HttpStatusCode? StatusCode { get; set; }
 
         /// <summary>
         /// Gets or sets the exception type.
