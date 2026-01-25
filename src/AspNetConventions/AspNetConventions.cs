@@ -1,6 +1,5 @@
 using System;
 using AspNetConventions.Configuration.Options;
-using AspNetConventions.Configuration.Validation;
 using AspNetConventions.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
@@ -38,11 +37,6 @@ namespace AspNetConventions
             {
                 builder.Services.Configure(configure);
             }
-
-            // Add options validator
-            builder.Services.AddSingleton<
-                IValidateOptions<AspNetConventionOptions>,
-                AspNetConventionOptionsValidator>();
 
             // Add JSON serialization settings
             builder.AddMvcJsonOptions();
