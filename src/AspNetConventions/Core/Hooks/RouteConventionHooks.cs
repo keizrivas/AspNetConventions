@@ -1,8 +1,9 @@
+using System;
 using AspNetConventions.Routing.Models;
 
 namespace AspNetConventions.Core.Hooks
 {
-    public class RouteConventionHooks
+    public class RouteConventionHooks: ICloneable
     {
         public delegate bool ShouldTransformRouteCallback(string template, RouteModelContext model);
         public delegate bool ShouldTransformParameterCallback(RouteParameterContext model);
@@ -40,5 +41,16 @@ namespace AspNetConventions.Core.Hooks
         /// </summary>
         public AfterRouteTransformCallback? AfterRouteTransform { get; set; }
 
+        public object Clone()
+        {
+            return new RouteConventionHooks
+            {
+                ShouldTransformRoute = ShouldTransformRoute,
+                ShouldTransformParameter = ShouldTransformParameter,
+                ShouldTransformToken = ShouldTransformToken,
+                BeforeRouteTransform = BeforeRouteTransform,
+                AfterRouteTransform = AfterRouteTransform,
+            };
+        }
     }
 }

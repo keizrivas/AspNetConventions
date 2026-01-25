@@ -1,7 +1,7 @@
 using System;
 using System.Net;
 using System.Threading.Tasks;
-using AspNetConventions.Configuration;
+using AspNetConventions.Configuration.Options;
 using AspNetConventions.Core.Abstractions.Contracts;
 using AspNetConventions.Core.Abstractions.Models;
 using AspNetConventions.ExceptionHandling.Models;
@@ -9,7 +9,6 @@ using AspNetConventions.Extensions;
 using AspNetConventions.Http.Models;
 using AspNetConventions.Http.Services;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Options;
 
 namespace AspNetConventions.Responses
 {
@@ -177,19 +176,19 @@ namespace AspNetConventions.Responses
             ArgumentNullException.ThrowIfNull(requestDescriptor);
             ArgumentNullException.ThrowIfNull(responseCollection);
 
-            if (!Options.Response.IncludePaginationMetadata)
+            if (!Options.Response.Pagination.IncludeMetadata)
             {
                 return null;
             }
 
             // Get pagination parameters names
-            var pageSizeName = Options.Response.PageSizeQueryParameterName;
-            var pageNumberName = Options.Response.PageNumberQueryParameterName;
+            var pageSizeName = Options.Response.Pagination.PageSizeParameterName;
+            var pageNumberName = Options.Response.Pagination.PageNumberParameterName;
 
             // Determine page size
             var pageSize = responseCollection.PageSize
                 ?? requestDescriptor.HttpContext.GetNumericParameter(pageSizeName)
-                ?? Options.Response.DefaultPageSize;
+                ?? Options.Response.Pagination.DefaultPageSize;
 
             // Determine page number
             var pageNumber = responseCollection.PageNumber
@@ -203,7 +202,7 @@ namespace AspNetConventions.Responses
             );
 
             // Build pagination links
-            if (Options.Response.IncludePaginationLinks)
+            if (Options.Response.Pagination.IncludeLinks)
             {
                 var caseConverter = Options.Route.GetCaseConverter();
                 paginationMetadata.BuildLinks(

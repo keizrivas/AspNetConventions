@@ -1,4 +1,4 @@
-using AspNetConventions.Configuration;
+using AspNetConventions.Configuration.Options;
 using AspNetConventions.Core.Abstractions.Contracts;
 using AspNetConventions.ExceptionHandling.Abstractions;
 using AspNetConventions.ExceptionHandling.Filters;

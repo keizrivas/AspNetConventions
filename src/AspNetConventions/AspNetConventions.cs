@@ -1,5 +1,6 @@
 using System;
-using AspNetConventions.Configuration;
+using AspNetConventions.Configuration.Options;
+using AspNetConventions.Configuration.Validation;
 using AspNetConventions.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;

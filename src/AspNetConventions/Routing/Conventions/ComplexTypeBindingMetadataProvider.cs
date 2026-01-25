@@ -2,7 +2,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Linq;
 using System.Reflection;
-using AspNetConventions.Configuration;
+using AspNetConventions.Configuration.Options;
 using AspNetConventions.Core.Abstractions.Models;
 using AspNetConventions.Routing.ModelBinding;
 using AspNetConventions.Routing.Models;
@@ -162,7 +162,7 @@ namespace AspNetConventions.Routing.Conventions
 
             // Check for explicit binding name preservation
             if (context.BindingMetadata.BinderModelName != null &&
-                Options.Route.PreserveExplicitBindingNames)
+                (Options.Route.Mvc.PreserveExplicitBindingNames || Options.Route.RazorPages.PreserveExplicitBindingNames))
             {
                 return;
             }

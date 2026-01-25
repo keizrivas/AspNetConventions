@@ -1,5 +1,5 @@
 using System;
-using AspNetConventions.Configuration;
+using AspNetConventions.Configuration.Options;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Options;
 
@@ -19,7 +19,8 @@ namespace AspNetConventions.Routing.Transformation
         {
             // Check if route token transformation is enabled
             if (!_options.Value.Route.IsEnabled ||
-                !_options.Value.Route.Controllers.TransformRouteTokens ||
+                !_options.Value.Route.Mvc.IsEnabled ||
+                !_options.Value.Route.Mvc.TransformRouteTokens ||
                 value is not string token || string.IsNullOrEmpty(token))
             {
                 return value?.ToString();

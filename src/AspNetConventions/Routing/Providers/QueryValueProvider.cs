@@ -1,5 +1,5 @@
 using System;
-using AspNetConventions.Configuration;
+using AspNetConventions.Configuration.Options;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Options;

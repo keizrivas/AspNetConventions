@@ -1,10 +1,11 @@
 using System;
+using AspNetConventions.Configuration.Options.Route;
 using AspNetConventions.Core.Abstractions.Contracts;
 using AspNetConventions.Core.Converters;
 using AspNetConventions.Core.Enums;
 using AspNetConventions.Core.Hooks;
 
-namespace AspNetConventions.Configuration
+namespace AspNetConventions.Configuration.Options
 {
     /// <summary>
     /// Provides configuration options for route naming conventions.
@@ -16,11 +17,11 @@ namespace AspNetConventions.Configuration
         /// </summary>
         public bool IsEnabled { get; set; } = true;
 
-        public RazorPageOptions RazorPages { get; set; } = new();
+        public RazorPagesRouteOptions RazorPages { get; set; } = new();
 
-        public ControllerOptions Controllers { get; set; } = new();
+        public MvcRouteOptions Mvc { get; set; } = new();
 
-        public MinimalApiOptions MinimalApi { get; set; } = new();
+        public MinimalApiRouteOptions MinimalApi { get; set; } = new();
 
         /// <summary>
         /// Gets or sets the casing style for routes.
@@ -31,34 +32,6 @@ namespace AspNetConventions.Configuration
         /// Gets or sets a custom case converter.
         /// </summary>
         public ICaseConverter? CaseConverter { get; set; }
-
-        /// <summary>
-        /// Gets or sets whether to transform controller names.
-        /// </summary>
-        public bool TransformRouteTokens { get; set; } = true;
-
-        /// <summary>
-        /// Gets or sets whether to transform Razor Page routes.
-        /// </summary>
-        public bool TransformPages { get; set; } = true;
-
-        /// <summary>
-        /// Gets or sets whether to transform route parameter names.
-        /// </summary>
-        public bool TransformParameterNames { get; set; } = true;
-
-        /// <summary>
-        /// Gets or sets whether to transform Minimal API parameter names.
-        /// </summary>
-        public bool TransformMinimalApiParameterNames { get; set; }
-
-        /// <summary>
-        /// Gets or sets whether to preserve explicitly named parameters.
-        /// When true, parameters with explicit [FromRoute(Name = "...")] are not transformed.
-        /// </summary>
-        public bool PreserveExplicitBindingNames { get; set; }
-
-        //public bool PreserveExplicitParameterNames { get; set; }
 
         /// <summary>
         /// Gets or sets the maximum allowed route template length for security purposes.
@@ -76,18 +49,13 @@ namespace AspNetConventions.Configuration
         /// </summary>
         public object Clone()
         {
-            return new RouteConventionOptions
-            {
-                IsEnabled = IsEnabled,
-                CaseStyle = CaseStyle,
-                TransformPages = TransformPages,
-                TransformRouteTokens = TransformRouteTokens,
-                TransformParameterNames = TransformParameterNames,
-                TransformMinimalApiParameterNames = TransformMinimalApiParameterNames,
-                PreserveExplicitBindingNames = PreserveExplicitBindingNames,
-                CaseConverter = CaseConverter,
-                Hooks = Hooks,
-            };
+            var cloned = (RouteConventionOptions)MemberwiseClone();
+            cloned.RazorPages = (RazorPagesRouteOptions)RazorPages.Clone();
+            cloned.Mvc = (MvcRouteOptions)Mvc.Clone();
+            cloned.MinimalApi = (MinimalApiRouteOptions)MinimalApi.Clone();
+            cloned.Hooks = (RouteConventionHooks)Hooks.Clone();
+
+            return cloned;
         }
 
         /// <summary>

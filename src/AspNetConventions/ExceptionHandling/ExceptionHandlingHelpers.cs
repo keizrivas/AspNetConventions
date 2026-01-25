@@ -1,8 +1,7 @@
 using System;
-using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using AspNetConventions.Configuration;
+using AspNetConventions.Configuration.Options;
 using AspNetConventions.Core.Abstractions.Contracts;
 using AspNetConventions.Core.Abstractions.Models;
 using AspNetConventions.Core.Enums;
@@ -21,7 +20,7 @@ namespace AspNetConventions.ExceptionHandling
     internal class ExceptionHandlingHelpers(AspNetConventionOptions options, RequestDescriptor requestDescriptor, ILogger? logger = null) : ResponseAdapter(options)
     {
         private readonly IErrorResponseBuilder _builder
-            = options.ExceptionHandling.GetResponseBuilder(options);
+            = options.Response.GetErrorResponseBuilder(options);
 
         public ExceptionHandlingHelpers(AspNetConventionOptions options, HttpContext httpContext, ILogger? logger = null)
             : this(options, httpContext.ToRequestDescriptor(), logger)
@@ -68,7 +67,7 @@ namespace AspNetConventions.ExceptionHandling
             }
 
             // Create exception context
-            var statusCode = Options.ExceptionHandling.DefaultStatusCode;
+            var statusCode = Options.Response.ErrorResponse.DefaultStatusCode;
             var requestResult = new RequestResult(statusCode);
 
             // Get mapper
@@ -106,8 +105,8 @@ namespace AspNetConventions.ExceptionHandling
             if ((exceptionDescriptor.Type == null || exceptionDescriptor.Message == null) &&
                 exceptionDescriptor.StatusCode == statusCode)
             {
-                exceptionDescriptor.Type ??= Options.ExceptionHandling.DefaultErrorCode;
-                exceptionDescriptor.Message ??= Options.ExceptionHandling.DefaultErrorMessage;
+                exceptionDescriptor.Type ??= Options.Response.ErrorResponse.DefaultErrorType;
+                exceptionDescriptor.Message ??= Options.Response.ErrorResponse.DefaultErrorMessage;
             }
 
             return await WrapResponseAsync(exceptionDescriptor, requestResult).ConfigureAwait(false);

@@ -1,4 +1,4 @@
-using AspNetConventions.Configuration;
+using AspNetConventions.Configuration.Options;
 using AspNetConventions.Core.Abstractions.Contracts;
 
 namespace AspNetConventions.Core.Abstractions.Models

@@ -1,9 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.Metrics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using AspNetConventions.ExceptionHandling.Models;
 
 namespace AspNetConventions.Extensions
@@ -53,6 +49,5 @@ namespace AspNetConventions.Extensions
 
             return result;
         }
-
     }
 }

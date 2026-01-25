@@ -1,10 +1,11 @@
+using System;
 using System.Threading.Tasks;
 using AspNetConventions.Http.Models;
 using AspNetConventions.Http.Services;
 
 namespace AspNetConventions.Core.Hooks
 {
-    public class ResponseFormattingHooks
+    public class ResponseFormattingHooks: ICloneable
     {
         public delegate Task<bool> ShouldWrapResponseCallback(RequestResult? requestResult, RequestDescriptor requestDescriptor);
         public delegate Task BeforeResponseWrapCallback(RequestResult requestResult, RequestDescriptor requestDescriptor);
@@ -24,5 +25,15 @@ namespace AspNetConventions.Core.Hooks
         /// Called before your response wrapper executes.
         /// </summary>
         public AfterResponseWrapCallback? AfterResponseWrapAsync { get; set; }
+
+        public object Clone()
+        {
+            return new ResponseFormattingHooks
+            {
+                ShouldWrapResponseAsync = ShouldWrapResponseAsync,
+                BeforeResponseWrapAsync = BeforeResponseWrapAsync,
+                AfterResponseWrapAsync = AfterResponseWrapAsync,
+            };
+        }
     }
 }

@@ -1,6 +1,6 @@
 using System;
 using System.Linq;
-using AspNetConventions.Configuration;
+using AspNetConventions.Configuration.Options;
 using AspNetConventions.ExceptionHandling.Abstractions;
 using AspNetConventions.ExceptionHandling.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -28,7 +28,7 @@ namespace AspNetConventions.ExceptionHandling.Filters
             return new BadRequestObjectResult(new ExceptionDescriptor
             {
                 Data = errors,
-                Message = options.Value.ExceptionHandling.DefaultValidationMessage
+                Message = options.Value.Response.ErrorResponse.DefaultValidationMessage,
             });
         }
     }

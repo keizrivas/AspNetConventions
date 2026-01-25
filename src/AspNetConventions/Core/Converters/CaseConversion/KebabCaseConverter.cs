@@ -1,7 +1,6 @@
 using System;
 using System.Linq;
 using AspNetConventions.Core.Abstractions.Contracts;
-using AspNetConventions.Core.Converters;
 
 namespace AspNetConventions.Core.Converters.CaseConversion
 {

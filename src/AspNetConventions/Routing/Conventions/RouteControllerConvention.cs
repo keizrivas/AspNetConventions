@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using AspNetConventions.Configuration;
+using AspNetConventions.Configuration.Options;
 using AspNetConventions.Core.Abstractions.Models;
 using AspNetConventions.Routing.ModelBinding;
 using AspNetConventions.Routing.Models;
@@ -107,7 +107,7 @@ namespace AspNetConventions.Routing.Conventions
                 template = RouteTemplateManager.TransformRouteTemplate(template, Options.Route.GetCaseConverter());
 
                 var model = new RouteModelContext(selector, action);
-                if (Options.Route.TransformParameterNames)
+                if (Options.Route.Mvc.TransformRouteParameters)
                 {
                     // Apply parameter name binding
                     ApplyParameterBinding(model);
@@ -188,7 +188,7 @@ namespace AspNetConventions.Routing.Conventions
             }
 
             // Skip if preserving explicit names
-            if (isExplicitName && Options.Route.PreserveExplicitBindingNames)
+            if (isExplicitName && Options.Route.Mvc.PreserveExplicitBindingNames)
             {
                 return name;
             }

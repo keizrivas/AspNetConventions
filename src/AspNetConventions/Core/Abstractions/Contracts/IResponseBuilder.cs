@@ -11,6 +11,8 @@ namespace AspNetConventions.Core.Abstractions.Contracts
         /// <summary>
         /// Builds a response object from data and HTTP context.
         /// </summary>
-        object BuildResponse(RequestResult requestResult, RequestDescriptor requestDescriptor);
+        object BuildResponse(
+            RequestResult requestResult,
+            RequestDescriptor requestDescriptor);
     }
 }

@@ -1,6 +1,4 @@
 using System.Net;
-using AspNetConventions.Http;
-using Microsoft.Extensions.Logging;
 
 namespace AspNetConventions.ExceptionHandling.Models
 {

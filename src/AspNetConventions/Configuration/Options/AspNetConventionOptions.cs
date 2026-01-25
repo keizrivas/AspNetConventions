@@ -1,16 +1,11 @@
 using System;
-using Microsoft.Extensions.Logging;
 
-namespace AspNetConventions.Configuration
+namespace AspNetConventions.Configuration.Options
 {
     /// <summary>
     /// Provides configuration options for applying ASP.NET conventions, including route naming, response formatting,
     /// JSON serialization, exception handling and lifecycle hooks.
     /// </summary>
-    /// <remarks>Use this class to customize the behavior of convention-based automation in ASP.NET applications.
-    /// Each property exposes a set of options for a specific aspect of convention handling, allowing fine-grained
-    /// control over routing, response formatting, serialization, and error handling. All option properties are
-    /// initialized with default values, but can be modified as needed before use.</remarks>
     public sealed class AspNetConventionOptions : ICloneable
     {
         /// <summary>

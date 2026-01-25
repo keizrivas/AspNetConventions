@@ -1,9 +1,10 @@
 using System;
+using AspNetConventions.Configuration.Options;
 using AspNetConventions.Core.Abstractions.Contracts;
 using AspNetConventions.Core.Enums;
 using AspNetConventions.Core.Hooks;
 
-namespace AspNetConventions.Configuration
+namespace AspNetConventions.Configuration.Extensions
 {
     /// <summary>
     /// Provides fluent extension methods for configuring <see cref="AspNetConventionOptions"/>.

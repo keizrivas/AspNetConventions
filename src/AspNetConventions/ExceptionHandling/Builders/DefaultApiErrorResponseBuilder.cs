@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
-using AspNetConventions.Configuration;
+using AspNetConventions.Configuration.Options;
 using AspNetConventions.Core.Abstractions.Contracts;
 using AspNetConventions.Core.Abstractions.Models;
 using AspNetConventions.Http.Models;
@@ -25,7 +24,7 @@ namespace AspNetConventions.ExceptionHandling.Builders
             // Create standard response
             var response = new DefaultApiErrorResponse(result.StatusCode)
             {
-                Type = result.Type ?? Options.ExceptionHandling.DefaultErrorCode,
+                Type = result.Type ?? Options.Response.ErrorResponse.DefaultErrorType,
                 Message = result.Message,
                 Metadata = result.Metadata,
             };

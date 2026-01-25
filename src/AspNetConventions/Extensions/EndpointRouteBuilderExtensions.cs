@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using AspNetConventions.Configuration;
+using AspNetConventions.Configuration.Options;
 using AspNetConventions.ExceptionHandling.Handlers;
 using AspNetConventions.Routing.Transformation;
 using Microsoft.AspNetCore.Builder;
@@ -125,7 +125,7 @@ namespace AspNetConventions.Extensions
                     if (exceptionFeature == null)
                     {
                         // No exception found, set default status code
-                        context.Response.StatusCode = (int)options.ExceptionHandling.DefaultStatusCode;
+                        context.Response.StatusCode = (int)options.Response.ErrorResponse.DefaultStatusCode;
                         return;
                     }
 

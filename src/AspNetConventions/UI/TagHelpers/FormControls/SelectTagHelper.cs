@@ -1,4 +1,4 @@
-using AspNetConventions.Configuration;
+using AspNetConventions.Configuration.Options;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using Microsoft.Extensions.Options;
 

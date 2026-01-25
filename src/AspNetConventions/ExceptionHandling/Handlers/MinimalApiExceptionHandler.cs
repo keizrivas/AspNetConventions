@@ -2,14 +2,13 @@ using System;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using AspNetConventions.Configuration;
+using AspNetConventions.Configuration.Options;
 using AspNetConventions.Core.Enums;
 using AspNetConventions.Extensions;
 using AspNetConventions.Http.Models;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 
 namespace AspNetConventions.ExceptionHandling.Handlers
 {

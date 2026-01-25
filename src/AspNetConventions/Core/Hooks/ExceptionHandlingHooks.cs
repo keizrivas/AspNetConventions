@@ -13,7 +13,7 @@ namespace AspNetConventions.Core.Hooks
     /// </summary>
     /// <remarks>Use this class to register delegates that are invoked before, during, and after exception handling.
     /// </remarks>
-    public class ExceptionHandlingHooks
+    public class ExceptionHandlingHooks: ICloneable
     {
         public delegate Task TryHandleCallbackAsync(Exception exception);
         public delegate Task<bool> ShouldHandleCallbackAsync(Exception exception, RequestDescriptor requestDescriptor);
@@ -40,5 +40,16 @@ namespace AspNetConventions.Core.Hooks
         /// Allows you to override the behavior after the mapper produced a result.
         /// </summary>
         public AfterMappingCallbackAsync? AfterMappingAsync { get; set; }
+
+        public object Clone()
+        {
+            return new ExceptionHandlingHooks
+            {
+                TryHandleAsync = TryHandleAsync,
+                ShouldHandleAsync = ShouldHandleAsync,
+                BeforeMappingAsync = BeforeMappingAsync,
+                AfterMappingAsync = AfterMappingAsync,
+            };
+        }
     }
 }

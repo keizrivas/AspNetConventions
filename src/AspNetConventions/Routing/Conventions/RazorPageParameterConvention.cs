@@ -1,4 +1,4 @@
-using AspNetConventions.Configuration;
+using AspNetConventions.Configuration.Options;
 using AspNetConventions.Core.Abstractions.Models;
 using AspNetConventions.Routing.ModelBinding;
 using AspNetConventions.Routing.Models;

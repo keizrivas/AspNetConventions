@@ -12,7 +12,7 @@ using AspNetConventions.Responses.Models;
 using AspNetConventions.Serialization.Policies;
 using AspNetConventions.Serialization.Resolvers;
 
-namespace AspNetConventions.Configuration
+namespace AspNetConventions.Configuration.Options
 {
     /// <summary>
     /// Provides configuration options for JSON serialization.
@@ -78,7 +78,7 @@ namespace AspNetConventions.Configuration
         /// Gets or sets custom serializer options.
         /// When set, all other properties are ignored.
         /// </summary>
-        public JsonSerializerOptions? CustomSerializerOptions { get; set; }
+        public JsonSerializerOptions? SerializerOptions { get; set; }
 
         /// <summary>
         /// Gets or sets the collection of hooks used to customize json serialization behavior.
@@ -88,33 +88,16 @@ namespace AspNetConventions.Configuration
         /// <summary>
         /// Creates a deep clone of <see cref="JsonSerializationOptions"/> instance.
         /// </summary>
-        public object Clone()
-        {
-            return new JsonSerializationOptions
-            {
-                CaseStyle = CaseStyle,
-                CaseConverter = CaseConverter,
-                ConfigureIgnoreRules = ConfigureIgnoreRules,
-                DefaultIgnoreCondition = DefaultIgnoreCondition,
-                PropertyNameCaseInsensitive = PropertyNameCaseInsensitive,
-                WriteIndented = WriteIndented,
-                AllowTrailingCommas = AllowTrailingCommas,
-                NumberHandling = NumberHandling,
-                MaxDepth = MaxDepth,
-                Converters = Converters,
-                CustomSerializerOptions = CustomSerializerOptions,
-                Hooks = Hooks,
-            };
-        }
+        public object Clone() => MemberwiseClone();
 
         /// <summary>
         /// Builds JsonSerializerOptions from this configuration.
         /// </summary>
         internal JsonSerializerOptions BuildSerializerOptions()
         {
-            if (CustomSerializerOptions != null)
+            if (SerializerOptions != null)
             {
-                return CustomSerializerOptions;
+                return SerializerOptions;
             }
 
             var ignoreRules = new JsonIgnoreRules();

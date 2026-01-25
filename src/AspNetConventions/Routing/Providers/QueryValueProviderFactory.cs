@@ -1,6 +1,6 @@
 using System;
 using System.Threading.Tasks;
-using AspNetConventions.Configuration;
+using AspNetConventions.Configuration.Options;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Options;
 

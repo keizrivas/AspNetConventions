@@ -1,6 +1,7 @@
+using AspNetConventions.Configuration.Options;
 using Microsoft.Extensions.Options;
 
-namespace AspNetConventions.Configuration
+namespace AspNetConventions.Configuration.Validation
 {
     internal sealed class AspNetConventionOptionsValidator
         : IValidateOptions<AspNetConventionOptions>

@@ -2,11 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Net;
-using System.Threading;
 using AspNetConventions.ExceptionHandling.Abstractions;
 using AspNetConventions.ExceptionHandling.Models;
 using AspNetConventions.Http.Services;
-using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace AspNetConventions.ExceptionHandling.Mappers
 {

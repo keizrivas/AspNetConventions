@@ -1,5 +1,4 @@
 using System;
-using AspNetConventions.ExceptionHandling.Models;
 using AspNetConventions.Http.Models;
 using AspNetConventions.Http.Services;
 

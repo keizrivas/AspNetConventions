@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
 using System.Threading.Tasks;
-using AspNetConventions.Configuration;
+using AspNetConventions.Configuration.Options;
 using AspNetConventions.Core.Abstractions.Contracts;
 using AspNetConventions.Extensions;
 using AspNetConventions.Responses;
@@ -100,7 +100,7 @@ namespace AspNetConventions.Serialization.Formatters
 
             var option = _options.Value;
             return helper.IsWrappedResponse(data) ||
-                option.ExceptionHandling.GetResponseBuilder(option).IsWrappedResponse(data);
+                option.Response.GetErrorResponseBuilder(option).IsWrappedResponse(data);
         }
     }
 }

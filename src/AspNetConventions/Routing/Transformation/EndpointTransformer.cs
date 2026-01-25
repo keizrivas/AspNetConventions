@@ -1,6 +1,6 @@
 using System;
 using System.Linq;
-using AspNetConventions.Configuration;
+using AspNetConventions.Configuration.Options;
 using AspNetConventions.Core.Abstractions.Contracts;
 using AspNetConventions.Routing.Parsers;
 using Microsoft.AspNetCore.Http;
@@ -71,7 +71,7 @@ namespace AspNetConventions.Routing.Transformation
                 if (segment.StartsWith('{'))
                 {
                     // Parameter segment
-                    if (_options.TransformMinimalApiParameterNames)
+                    if (_options.MinimalApi.TransformRouteParameters)
                     {
                         segments[i] = TransformParameter(segment);
                     }

@@ -1,10 +1,9 @@
-using AspNetConventions.Configuration;
+using AspNetConventions.Configuration.Options;
 using AspNetConventions.Core.Abstractions.Contracts;
 using AspNetConventions.Core.Abstractions.Models;
 using AspNetConventions.Http.Models;
 using AspNetConventions.Http.Services;
 using AspNetConventions.Responses.Models;
-using Microsoft.Extensions.Options;
 
 namespace AspNetConventions.Responses.Builders
 {

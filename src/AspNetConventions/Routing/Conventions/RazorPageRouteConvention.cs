@@ -1,4 +1,4 @@
-using AspNetConventions.Configuration;
+using AspNetConventions.Configuration.Options;
 using AspNetConventions.Core.Abstractions.Models;
 using AspNetConventions.Routing.Models;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
@@ -49,7 +49,7 @@ namespace AspNetConventions.Routing.Conventions
                 var newTemplate = RouteTemplateManager.TransformRouteTemplate(template, caseConverter);
 
                 // Transform parameters in route
-                if (Options.Route.TransformParameterNames)
+                if (Options.Route.RazorPages.TransformRouteParameters)
                 {
                     newTemplate = RouteTemplateManager.TransformRouteParameters(
                         newTemplate,

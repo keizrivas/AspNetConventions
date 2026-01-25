@@ -1,5 +1,5 @@
 using System;
-using AspNetConventions.Configuration;
+using AspNetConventions.Configuration.Options;
 using Microsoft.Extensions.Options;
 
 namespace AspNetConventions.Core.Abstractions.Models
