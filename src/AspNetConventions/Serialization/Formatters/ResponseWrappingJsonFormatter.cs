@@ -4,7 +4,6 @@ using System.IO;
 using System.Text.Json;
 using System.Threading.Tasks;
 using AspNetConventions.Configuration.Options;
-using AspNetConventions.Core.Abstractions.Contracts;
 using AspNetConventions.Extensions;
 using AspNetConventions.Responses;
 using Microsoft.AspNetCore.Mvc;

@@ -2,7 +2,6 @@ using AspNetConventions.Configuration.Options;
 using AspNetConventions.Core.Abstractions.Contracts;
 using AspNetConventions.ExceptionHandling.Abstractions;
 using AspNetConventions.ExceptionHandling.Filters;
-using AspNetConventions.Responses.Resolvers;
 using AspNetConventions.Routing.Conventions;
 using AspNetConventions.Routing.Providers;
 using AspNetConventions.Routing.Transformation;

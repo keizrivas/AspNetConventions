@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using AspNetConventions.Core.Hooks;
 using AspNetConventions.ExceptionHandling.Abstractions;

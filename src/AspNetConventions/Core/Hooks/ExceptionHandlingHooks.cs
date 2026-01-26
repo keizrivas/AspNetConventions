@@ -2,7 +2,6 @@ using System;
 using System.Threading.Tasks;
 using AspNetConventions.ExceptionHandling.Abstractions;
 using AspNetConventions.ExceptionHandling.Models;
-using AspNetConventions.Http.Models;
 using AspNetConventions.Http.Services;
 
 namespace AspNetConventions.Core.Hooks

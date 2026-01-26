@@ -1,47 +1,75 @@
 using System;
-using System.Collections;
+using System.Collections.Concurrent;
+using System.Net;
 using AspNetConventions.Configuration.Options;
 using AspNetConventions.Core.Abstractions.Contracts;
 using AspNetConventions.Core.Abstractions.Models;
 using AspNetConventions.Http.Models;
 using AspNetConventions.Http.Services;
 using AspNetConventions.Responses.Models;
+using Microsoft.Extensions.Logging;
 
 namespace AspNetConventions.Responses.Builders
 {
     /// <summary>
     /// Standard builder for exception responses.
     /// </summary>
-    internal sealed class DefaultApiErrorResponseBuilder(AspNetConventionOptions options) : ResponseAdapter(options), IErrorResponseBuilder
+    internal sealed class DefaultApiErrorResponseBuilder(AspNetConventionOptions options, ILogger logger) : ResponseAdapter(options, logger), IErrorResponseBuilder
     {
+        private static int _lastLoggedCount;
+        private static readonly ConcurrentDictionary<Type, Func<RequestResult, ApiResponse>> _factoryCache
+            = new(concurrencyLevel: Environment.ProcessorCount, capacity: 50);
+
         public override bool IsWrappedResponse(object? data)
         {
-            return data is DefaultApiErrorResponse;
+            if (data is null)
+            {
+                return false;
+            }
+
+            var type = data.GetType();
+            return type.IsGenericType &&
+                   type.GetGenericTypeDefinition() == typeof(DefaultApiErrorResponse<>);
         }
 
-        public object BuildResponse(RequestResult result, Exception? exception, RequestDescriptor requestDescriptor)
+        public object BuildResponse(RequestResult requestResult, Exception? exception, RequestDescriptor requestDescriptor)
         {
-            // Create standard response
-            var response = new DefaultApiErrorResponse(result.StatusCode)
-            {
-                Type = result.Type ?? Options.Response.ErrorResponse.DefaultErrorType,
-                Message = result.Message ?? Options.Response.ErrorResponse.DefaultErrorMessage,
-                Metadata = result.Metadata,
-            };
+            // Get the data type from the request result
+            var dataType = requestResult.Data?.GetType() ?? typeof(object);
 
-            if (result.Data is IEnumerable enumerable && result.Data is not string)
+            // Get or create the factory function for the specific data type
+            var factory = _factoryCache.GetOrAdd(dataType, type =>
             {
-                foreach (var item in enumerable)
+                var responseType = typeof(DefaultApiErrorResponse<>).MakeGenericType(type);
+
+                var ctor = responseType.GetConstructor([typeof(HttpStatusCode), typeof(object)])
+                    ?? throw new InvalidOperationException("Required constructor not found.");
+
+                var typeProp = responseType.GetProperty(nameof(DefaultApiErrorResponse<object>.Type))!;
+                var messageProp = responseType.GetProperty(nameof(DefaultApiErrorResponse<object>.Message))!;
+                var metadataProp = responseType.GetProperty(nameof(DefaultApiErrorResponse<object>.Metadata))!;
+
+                var result = MonitorCacheSize(_factoryCache.Count, _lastLoggedCount);
+                if (result.HasValue)
                 {
-                    response.Errors.Add(item);
+                    _lastLoggedCount = result.Value;
                 }
-            }
-            else if (result.Data is not null)
-            {
-                response.Errors.Add(result.Data);
-            }
 
-            return response;
+                return requestResult =>
+                {
+                    // Create instance using required constructor
+                    var instance = (ApiResponse)ctor.Invoke([requestResult.StatusCode, requestResult.Data]);
+
+                    // Set properties
+                    typeProp.SetValue(instance, requestResult.Type);
+                    messageProp.SetValue(instance, requestResult.Message);
+                    metadataProp.SetValue(instance, requestResult.Metadata);
+
+                    return instance;
+                };
+            });
+
+            return factory(requestResult);
         }
     }
 }

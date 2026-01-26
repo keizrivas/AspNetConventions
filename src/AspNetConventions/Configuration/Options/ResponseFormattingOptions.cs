@@ -4,6 +4,7 @@ using AspNetConventions.Configuration.Options.Response;
 using AspNetConventions.Core.Abstractions.Contracts;
 using AspNetConventions.Core.Hooks;
 using AspNetConventions.Responses.Builders;
+using Microsoft.Extensions.Logging;
 
 namespace AspNetConventions.Configuration.Options
 {
@@ -63,19 +64,19 @@ namespace AspNetConventions.Configuration.Options
         /// <summary>
         /// Gets the response builder.
         /// </summary>
-        internal IResponseBuilder GetResponseBuilder(AspNetConventionOptions options)
+        internal IResponseBuilder GetResponseBuilder(AspNetConventionOptions options, ILogger _logger)
         {
             return ResponseBuilder
-                ?? new DefaultApiResponseBuilder(options);
+                ?? new DefaultApiResponseBuilder(options, _logger);
         }
 
         /// <summary>
         /// Gets the error response builder.
         /// </summary>
-        internal IErrorResponseBuilder GetErrorResponseBuilder(AspNetConventionOptions options)
+        internal IErrorResponseBuilder GetErrorResponseBuilder(AspNetConventionOptions options, ILogger _logger)
         {
             return ErrorResponseBuilder
-                ?? new DefaultApiErrorResponseBuilder(options);
+                ?? new DefaultApiErrorResponseBuilder(options, _logger);
         }
     }
 }

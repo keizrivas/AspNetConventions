@@ -1,11 +1,7 @@
 using System;
-using System.Net;
 using System.Threading.Tasks;
 using AspNetConventions.Configuration.Options;
-using AspNetConventions.ExceptionHandling.Models;
 using AspNetConventions.Extensions;
-using AspNetConventions.Responses;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Logging;

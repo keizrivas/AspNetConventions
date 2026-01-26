@@ -1,12 +1,9 @@
 using System;
 using System.Net;
-using System.Security.Cryptography.Xml;
 using System.Threading.Tasks;
 using AspNetConventions.Configuration.Options;
 using AspNetConventions.Core.Abstractions.Contracts;
 using AspNetConventions.Core.Abstractions.Models;
-using AspNetConventions.Core.Enums;
-using AspNetConventions.ExceptionHandling;
 using AspNetConventions.ExceptionHandling.Models;
 using AspNetConventions.Extensions;
 using AspNetConventions.Http.Models;
@@ -16,26 +13,31 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
-using Microsoft.VisualBasic;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace AspNetConventions.Responses
 {
-    internal class ResponseManager(
-        AspNetConventionOptions options,
-        RequestDescriptor requestDescriptor,
-        ILogger? logger = null) : ResponseAdapter(options)
+    internal class ResponseManager : ResponseAdapter
     {
+        public ResponseManager(AspNetConventionOptions options, RequestDescriptor requestDescriptor, ILogger? logger = null)
+            : base(options, logger ?? NullLogger<ResponseManager>.Instance)
+        {
+            ArgumentNullException.ThrowIfNull(requestDescriptor, nameof(requestDescriptor));
+
+            _requestDescriptor = requestDescriptor;
+            _responseCollectionResolver = new(options);
+            _responseBuilder = options.Response.GetResponseBuilder(options, Logger);
+            _errorResponseBuilder = options.Response.GetErrorResponseBuilder(options, Logger);
+        }
 
         public ResponseManager(AspNetConventionOptions options, HttpContext httpContext, ILogger? logger = null)
             : this(options, httpContext.GetRequestDescriptor(), logger)
         {
         }
 
-        private readonly ILogger _logger = logger ?? NullLogger<ResponseManager>.Instance;
-        private readonly ResponseCollectionResolver _responseCollectionResolver = new(options);
-        private readonly IResponseBuilder _responseBuilder = options.Response.GetResponseBuilder(options);
-        private readonly IErrorResponseBuilder _errorResponseBuilder = options.Response.GetErrorResponseBuilder(options);
+        private readonly IResponseBuilder _responseBuilder;
+        private readonly IErrorResponseBuilder _errorResponseBuilder;
+        private readonly RequestDescriptor _requestDescriptor;
+        private readonly ResponseCollectionResolver _responseCollectionResolver;
 
         public override bool IsWrappedResponse(object? data)
         {
@@ -50,7 +52,7 @@ namespace AspNetConventions.Responses
         {
             if (content == null)
             {
-                return (null, requestDescriptor.StatusCode);
+                return (null, _requestDescriptor.StatusCode);
             }
 
             var hooks = Options.Response.Hooks;
@@ -58,12 +60,12 @@ namespace AspNetConventions.Responses
             var exceptionDescriptor = content as ExceptionDescriptor;
 
             // Set metadata
-            var metadata = GetMetadata(requestDescriptor, exceptionDescriptor);
+            var metadata = GetMetadata(_requestDescriptor, exceptionDescriptor);
             requestResult.SetMetadata(metadata);
 
             // Determine if we should wrap the response
             var shouldWrap = await hooks.ShouldWrapResponseAsync
-                .InvokeAsync<bool?>(requestResult, requestDescriptor)
+                .InvokeAsync<bool?>(requestResult, _requestDescriptor)
                 .ConfigureAwait(false) ?? true;
 
             if (!shouldWrap)
@@ -81,19 +83,19 @@ namespace AspNetConventions.Responses
             }
 
             // Invoke hooks before wrapping
-            await hooks.BeforeResponseWrapAsync.InvokeAsync(requestResult, requestDescriptor)
+            await hooks.BeforeResponseWrapAsync.InvokeAsync(requestResult, _requestDescriptor)
                 .ConfigureAwait(false);
 
             // Build the wrapped response
             var wrappedResponse = requestResult.IsSuccess
-                ? _responseBuilder.BuildResponse(requestResult, requestDescriptor)
-                : _errorResponseBuilder.BuildResponse(requestResult, exceptionDescriptor?.Exception, requestDescriptor);
+                ? _responseBuilder.BuildResponse(requestResult, _requestDescriptor)
+                : _errorResponseBuilder.BuildResponse(requestResult, exceptionDescriptor?.Exception, _requestDescriptor);
 
             // Invoke hooks after wrapping
-            await hooks.AfterResponseWrapAsync.InvokeAsync(wrappedResponse, requestResult, requestDescriptor)
+            await hooks.AfterResponseWrapAsync.InvokeAsync(wrappedResponse, requestResult, _requestDescriptor)
                 .ConfigureAwait(false);
 
-            return (wrappedResponse, requestDescriptor.StatusCode);
+            return (wrappedResponse, _requestDescriptor.StatusCode);
         }
 
         private RequestResult GetRequestResultFromContent(object? content)
@@ -109,11 +111,11 @@ namespace AspNetConventions.Responses
                 // Check exception envelope status code
                 var statusCode = exceptionDescriptor.StatusCode.HasValue
                     ? (HttpStatusCode)exceptionDescriptor.StatusCode.Value
-                    : requestDescriptor.StatusCode;
+                    : _requestDescriptor.StatusCode;
 
-                if (statusCode != requestDescriptor.StatusCode)
+                if (statusCode != _requestDescriptor.StatusCode)
                 {
-                    requestDescriptor.SetStatusCode(statusCode);
+                    _requestDescriptor.SetStatusCode(statusCode);
                 }
 
                 // Parse to response result
@@ -129,11 +131,11 @@ namespace AspNetConventions.Responses
             {
                 var statusCode = problemDetails.Status.HasValue
                     ? (HttpStatusCode)problemDetails.Status.Value
-                    : requestDescriptor.StatusCode;
+                    : _requestDescriptor.StatusCode;
 
-                if(statusCode != requestDescriptor.StatusCode)
+                if(statusCode != _requestDescriptor.StatusCode)
                 {
-                    requestDescriptor.SetStatusCode(statusCode);
+                    _requestDescriptor.SetStatusCode(statusCode);
                 }
 
                 return new RequestResult(
@@ -144,30 +146,30 @@ namespace AspNetConventions.Responses
 
             return new RequestResult(
                 data: content,
-                statusCode: requestDescriptor.StatusCode);
+                statusCode: _requestDescriptor.StatusCode);
         }
 
-        private Metadata? GetMetadata(RequestDescriptor requestDescriptor, ExceptionDescriptor? exceptionDescriptor)
+        private Metadata? GetMetadata(RequestDescriptor _requestDescriptor, ExceptionDescriptor? exceptionDescriptor)
         {
             if (!Options.Response.IncludeMetadata)
             {
                 return null;
             }
 
-            var metadata = (Metadata)requestDescriptor;
+            var metadata = (Metadata)_requestDescriptor;
             if(exceptionDescriptor == null)
             {
                 return metadata;
             }
 
             // Include stack trace
-            if (Options.Response.ErrorResponse.IncludeStackTrace ?? requestDescriptor.IsDevelopment)
+            if (Options.Response.ErrorResponse.IncludeStackTrace ?? _requestDescriptor.IsDevelopment)
             {
                 metadata.StackTrace = exceptionDescriptor.Exception?.GetStackTrace();
             }
 
             // Include exception details
-            if (Options.Response.ErrorResponse.IncludeExceptionType ?? requestDescriptor.IsDevelopment)
+            if (Options.Response.ErrorResponse.IncludeExceptionType ?? _requestDescriptor.IsDevelopment)
             {
                 metadata.ExceptionType = exceptionDescriptor.Exception?.GetType()?.Name;
             }
@@ -190,12 +192,12 @@ namespace AspNetConventions.Responses
 
             // Determine page size
             var pageSize = responseCollection.PageSize
-                ?? requestDescriptor.HttpContext.GetNumericParameter(pageSizeName)
+                ?? _requestDescriptor.HttpContext.GetNumericParameter(pageSizeName)
                 ?? Options.Response.Pagination.DefaultPageSize;
 
             // Determine page number
             var pageNumber = responseCollection.PageNumber
-                ?? requestDescriptor.HttpContext.GetNumericParameter(pageNumberName, 1);
+                ?? _requestDescriptor.HttpContext.GetNumericParameter(pageNumberName, 1);
 
             // Create pagination metadata
             var paginationMetadata = new PaginationMetadata(
@@ -209,7 +211,7 @@ namespace AspNetConventions.Responses
             {
                 var caseConverter = Options.Route.GetCaseConverter();
                 paginationMetadata.BuildLinks(
-                    requestDescriptor.HttpContext,
+                    _requestDescriptor.HttpContext,
                     caseConverter.Convert(pageSizeName),
                     caseConverter.Convert(pageNumberName)
                 );

@@ -8,13 +8,13 @@ namespace AspNetConventions.Responses.Models
     /// <summary>
     /// Represents a standardized response structure.
     /// </summary>
-    public sealed class DefaultApiResponse(HttpStatusCode statusCode) : ApiResponse(statusCode)
+    public sealed class DefaultApiResponse<TData>(HttpStatusCode statusCode) : ApiResponse(statusCode)
     {
         /// <summary>
         /// Gets or sets the response data.
         /// </summary>
         [JsonPropertyOrder(5)]
-        public object? Data { get; set; }
+        public TData? Data { get; set; }
 
         /// <summary>
         /// Gets or sets pagination metadata.

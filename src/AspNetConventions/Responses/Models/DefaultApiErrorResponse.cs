@@ -8,8 +8,23 @@ namespace AspNetConventions.Responses.Models
     /// <summary>
     /// Represents a standardized error response structure.
     /// </summary>
-    public sealed class DefaultApiErrorResponse(HttpStatusCode statusCode) : ApiResponse(statusCode)
+    public sealed class DefaultApiErrorResponse<TError> : ApiResponse
     {
+        public DefaultApiErrorResponse(HttpStatusCode statusCode, object? errors = null) : base(statusCode)
+        {
+            if (errors is null)
+                Errors = [];
+
+            else if (errors is IReadOnlyCollection<TError> collection)
+                Errors = collection;
+
+            else if (errors is IEnumerable<TError> enumerable)
+                Errors = [.. enumerable];
+
+            else if (errors is TError single)
+                Errors = [single];
+        }
+
         /// <summary>
         /// Gets or sets an type.
         /// </summary>
@@ -20,6 +35,6 @@ namespace AspNetConventions.Responses.Models
         /// Gets or sets the errors list.
         /// </summary>
         [JsonPropertyOrder(5)]
-        public HashSet<object> Errors { get; } = [];
+        public IReadOnlyCollection<TError> Errors { get; init; } = [];
     }
 }

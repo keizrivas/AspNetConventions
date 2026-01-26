@@ -104,9 +104,13 @@ namespace AspNetConventions.Configuration.Options
 
             // Default ignore rules
             ignoreRules.IgnoreProperty<ApiResponse>(e => e.Metadata, JsonIgnoreCondition.WhenWritingNull);
-            ignoreRules.IgnoreProperty<DefaultApiResponse>(e => e.Pagination, JsonIgnoreCondition.WhenWritingNull);
             ignoreRules.IgnoreProperty<Metadata>(e => e.ExceptionType, JsonIgnoreCondition.WhenWritingNull);
             ignoreRules.IgnoreProperty<Metadata>(e => e.StackTrace, JsonIgnoreCondition.WhenWritingNull);
+            ignoreRules.IgnoreProperty(
+                typeof(DefaultApiResponse<>),
+                nameof(DefaultApiResponse<object>.Pagination),
+                JsonIgnoreCondition.WhenWritingNull
+            );
 
             ConfigureIgnoreRules?.Invoke(ignoreRules);
 

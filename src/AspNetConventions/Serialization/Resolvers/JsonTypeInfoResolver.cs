@@ -26,11 +26,13 @@ namespace AspNetConventions.Serialization.Resolvers
                 return info;
             }
 
+            var resultType = type.IsGenericType ? type.GetGenericTypeDefinition() : type;
+
             // Build reverse map: JSON name -> C# property name
-            var cacheKey = $"{type.FullName}|{options.PropertyNamingPolicy?.GetType().Name ?? "none"}";
+            var cacheKey = $"{resultType.FullName}|{options.PropertyNamingPolicy?.GetType().Name ?? "none"}";
             var jsonToDeclaredName = _jsonToDeclaredName.GetOrAdd(
                 cacheKey,
-                _ => BuildJsonToDeclaredName(type, options));
+                _ => BuildJsonToDeclaredName(resultType, options));
 
             // Apply ignore rules
             foreach (var property in info.Properties)
@@ -39,7 +41,7 @@ namespace AspNetConventions.Serialization.Resolvers
                     ? csharpName
                     : property.Name;
 
-                var condition = ResolveCondition(type, originalPropertyName, property.Name);
+                var condition = ResolveCondition(resultType, originalPropertyName, property.Name);
                 if (condition.HasValue)
                 {
                     var propertyType = property.PropertyType;
@@ -152,7 +154,9 @@ namespace AspNetConventions.Serialization.Resolvers
             }
 
             if (!propertyType.IsValueType)
+            {
                 return false;
+            }
 
             return value.Equals(Activator.CreateInstance(propertyType));
         }

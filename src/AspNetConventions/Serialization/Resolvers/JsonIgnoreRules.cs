@@ -82,6 +82,26 @@ namespace AspNetConventions.Serialization.Resolvers
             );
         }
 
+        public void IgnoreProperty(
+            Type type,
+            string propertyName,
+            JsonIgnoreCondition condition)
+        {
+            // Store the rule keyed by the open generic type
+            _propertyTypeRules.AddOrUpdate(
+                type,
+                _ => new ConcurrentDictionary<string, JsonIgnoreCondition>(StringComparer.Ordinal)
+                {
+                    [propertyName] = condition
+                },
+                (_, existing) =>
+                {
+                    existing[propertyName] = condition;
+                    return existing;
+                }
+            );
+        }
+
         /// <summary>
         /// Configures all types in an assembly to be ignored.
         /// </summary>
