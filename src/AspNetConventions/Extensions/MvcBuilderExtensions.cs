@@ -44,9 +44,6 @@ namespace AspNetConventions.Extensions
 
             //builder.Services.AddSingleton<IModelBinderProvider, ComplexTypeModelBinderProvider>();
 
-            // Register resolver
-            builder.Services.AddSingleton<IResponseCollectionResolver, ResponseCollectionResolver>();
-
             // Add Mvc conventions
             builder.Services.AddSingleton<IConfigureOptions<Microsoft.AspNetCore.Mvc.MvcOptions>>(serviceProvider =>
             {
@@ -54,7 +51,6 @@ namespace AspNetConventions.Extensions
                 var options = serviceProvider.GetOptions<AspNetConventionOptions>();
                 var controllerConvention = serviceProvider.GetRequiredService<RouteControllerConvention>();
                 var routeTokenTransformer = serviceProvider.GetRequiredService<IOutboundParameterTransformer>();
-                var collectionResolver = serviceProvider.GetRequiredService<IResponseCollectionResolver>();
                 var jsonOptions = serviceProvider.GetOptions<Microsoft.AspNetCore.Mvc.JsonOptions>();
                 var metadataProvider = serviceProvider.GetRequiredService<IBindingMetadataProvider>();
                 var valueProviderFactory = serviceProvider.GetRequiredService<IValueProviderFactory>();
@@ -76,7 +72,6 @@ namespace AspNetConventions.Extensions
                     mvcOptions.OutputFormatters.Insert(0,
                         new ResponseWrappingJsonFormatter(
                             options,
-                            collectionResolver,
                             jsonOptions.Value.JsonSerializerOptions
                         )
                     );

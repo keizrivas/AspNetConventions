@@ -28,18 +28,18 @@ namespace AspNetConventions.ExceptionHandling.Handlers
             Exception exception,
             CancellationToken cancellationToken)
         {
-            var requestDescriptor = httpContext.ToRequestDescriptor();
+            var requestDescriptor = httpContext.GetRequestDescriptor();
 
             // Only handle JSON responses for Minimal APIs
-            if (!_options.ExceptionHandling.IsEnabled ||
-                !httpContext.AcceptsJson() ||
-                requestDescriptor.EndpointType != EndpointType.MinimalApi)
+            if (!httpContext.AcceptsJson() || requestDescriptor.EndpointType != EndpointType.MinimalApi)
             {
                 return false;
             }
 
-            var helper = new ExceptionHandlingHelpers(_options, httpContext, _logger);
-            var (response, statusCode) = await helper.BuildExceptionResponseAsync(exception)
+            var exceptionHandling = new ExceptionHandlingManager(httpContext, _options, _logger);
+
+            var (response, statusCode) = await exceptionHandling
+                .BuildResponseFromExceptionAsync(exception, null)
                 .ConfigureAwait(false);
 
             // Set response details

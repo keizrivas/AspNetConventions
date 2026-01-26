@@ -18,7 +18,6 @@ namespace AspNetConventions.Serialization.Formatters
     /// </summary>
     public sealed class ResponseWrappingJsonFormatter(
         IOptions<AspNetConventionOptions> options,
-        IResponseCollectionResolver collectionResolver,
         JsonSerializerOptions jsonSerializerOptions) : SystemTextJsonOutputFormatter(jsonSerializerOptions)
     {
 
@@ -58,21 +57,23 @@ namespace AspNetConventions.Serialization.Formatters
         {
             ArgumentNullException.ThrowIfNull(context);
 
-            var data = context.Object;
-            var helper = new ResponseHelpers(collectionResolver, _options.Value, context.HttpContext);
+            var payload = context.Object;
+
+            // Create http request context and attach to HttpContext items
+            var requestDescriptor = context.HttpContext.GetRequestDescriptor();
+
+            // TODO: Logger should be injected via DI
+            var responseManager = new ResponseManager(_options.Value, requestDescriptor, null);
 
             // Check if the response is already wrapped
-            if (IsAlreadyWrapped(data, helper))
+            if (responseManager.IsWrappedResponse(payload))
             {
                 await base.WriteAsync(context).ConfigureAwait(false);
                 return;
             }
 
-            // Create http request context and attach to HttpContext items
-            var requestDescriptor = context.HttpContext.ToRequestDescriptor();
-
             // Build the wrapped response
-            var (response, statusCode) = await helper.BuildResponseAsync(data)
+            var (response, statusCode) = await responseManager.BuildResponseAsync(payload)
                 .ConfigureAwait(false);
 
             // Create a new output formatter with the wrapped response
@@ -83,24 +84,6 @@ namespace AspNetConventions.Serialization.Formatters
                 response);
 
             await base.WriteAsync(wrappedContext).ConfigureAwait(false);
-        }
-
-        /// <summary>
-        /// Determines whether the specified type is already wrapped.
-        /// </summary>
-        /// <param name="data">The object to check.</param>
-        /// <param name="helper">Response helper instance.</param>
-        /// <returns>true if the specified context object is already wrapped; otherwise, false.</returns>
-        private bool IsAlreadyWrapped(object? data, ResponseHelpers helper)
-        {
-            if (data == null)
-            {
-                return false;
-            }
-
-            var option = _options.Value;
-            return helper.IsWrappedResponse(data) ||
-                option.Response.GetErrorResponseBuilder(option).IsWrappedResponse(data);
         }
     }
 }

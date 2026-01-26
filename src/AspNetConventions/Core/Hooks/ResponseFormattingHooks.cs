@@ -7,7 +7,7 @@ namespace AspNetConventions.Core.Hooks
 {
     public class ResponseFormattingHooks: ICloneable
     {
-        public delegate Task<bool> ShouldWrapResponseCallback(RequestResult? requestResult, RequestDescriptor requestDescriptor);
+        public delegate Task<bool> ShouldWrapResponseCallback(RequestResult requestResult, RequestDescriptor requestDescriptor);
         public delegate Task BeforeResponseWrapCallback(RequestResult requestResult, RequestDescriptor requestDescriptor);
         public delegate Task AfterResponseWrapCallback(object? wrappedResponse, RequestResult requestResult, RequestDescriptor requestDescriptor);
 

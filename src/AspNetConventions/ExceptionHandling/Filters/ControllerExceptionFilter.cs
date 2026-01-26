@@ -1,10 +1,15 @@
 using System;
+using System.Net;
 using System.Threading.Tasks;
 using AspNetConventions.Configuration.Options;
+using AspNetConventions.ExceptionHandling.Models;
 using AspNetConventions.Extensions;
+using AspNetConventions.Responses;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 
 namespace AspNetConventions.ExceptionHandling.Filters
@@ -19,25 +24,15 @@ namespace AspNetConventions.ExceptionHandling.Filters
         ILogger<ControllerExceptionFilter> logger,
         IOptions<AspNetConventionOptions> options) : IAsyncExceptionFilter
     {
-        private readonly ILogger<ControllerExceptionFilter> _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        private readonly ILogger<ControllerExceptionFilter> _logger = logger ?? NullLogger<ControllerExceptionFilter>.Instance;
         private readonly IOptions<AspNetConventionOptions> _options = options ?? throw new ArgumentNullException(nameof(options));
 
         public async Task OnExceptionAsync(ExceptionContext context)
         {
-            var exception = context.Exception;
-            var helper = new ExceptionHandlingHelpers(_options.Value, context.HttpContext, _logger);
+            var exceptionHandling = new ExceptionHandlingManager(context.HttpContext, _options.Value, _logger);
 
-            // Check if exception handling is enabled and if response is already wrapped
-            if (!context.HttpContext.AcceptsJson() || !helper.ShouldHandleResponse(context.Result?.GetContent()))
-            {
-                return;
-            }
-
-            // Invoke global handle hook
-            await helper.TryHandleAsync(exception).ConfigureAwait(false);
-
-            // Build the exception response
-            var (response, statusCode) = await helper.BuildExceptionResponseAsync(exception)
+            var (response, statusCode) = await exceptionHandling
+                .BuildResponseFromExceptionAsync(context.Exception, context.Result?.GetContent())
                 .ConfigureAwait(false);
 
             // If response is null, don't handle the exception
@@ -46,7 +41,7 @@ namespace AspNetConventions.ExceptionHandling.Filters
                 return;
             }
 
-            // Set the result to return the standardized error response
+            // Return the standardized error response
             context.Result = new ObjectResult(response)
             {
                 StatusCode = (int)statusCode

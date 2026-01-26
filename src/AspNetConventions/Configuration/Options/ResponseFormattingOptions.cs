@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using AspNetConventions.Configuration.Options.Response;
 using AspNetConventions.Core.Abstractions.Contracts;
 using AspNetConventions.Core.Hooks;
-using AspNetConventions.ExceptionHandling.Builders;
 using AspNetConventions.Responses.Builders;
 
 namespace AspNetConventions.Configuration.Options

@@ -2,6 +2,7 @@ using System;
 using System.Diagnostics;
 using System.Net;
 using AspNetConventions.Core.Enums;
+using AspNetConventions.Extensions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Hosting;
 
@@ -46,22 +47,7 @@ namespace AspNetConventions.Http.Services
         /// <summary>
         /// Gets the status code type (informational, success, etc.).
         /// </summary>
-        public HttpStatusCodeType StatusCodeType
-        {
-            get
-            {
-                var code = (int)StatusCode;
-                return code switch
-                {
-                    >= 100 and <= 199 => HttpStatusCodeType.Informational,
-                    >= 200 and <= 299 => HttpStatusCodeType.Success,
-                    >= 300 and <= 399 => HttpStatusCodeType.Redirection,
-                    >= 400 and <= 499 => HttpStatusCodeType.ClientError,
-                    >= 500 and <= 599 => HttpStatusCodeType.ServerError,
-                    _ => throw new InvalidOperationException("Invalid HTTP status code.")
-                };
-            }
-        }
+        public HttpStatusCodeType StatusCodeType => StatusCode.GetHttpStatusCodeType();
 
         /// <summary>
         /// Gets the trace identifier.

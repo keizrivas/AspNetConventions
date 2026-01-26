@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using AspNetConventions.Core.Hooks;
 using AspNetConventions.ExceptionHandling.Abstractions;
 using AspNetConventions.ExceptionHandling.Mappers;
@@ -26,12 +27,12 @@ namespace AspNetConventions.Configuration.Options
         /// <summary>
         /// Gets or sets the HTTP status codes that shouldn't be handled.
         /// </summary>
-        public HashSet<int> ExcludeStatusCodes { get; private set; } = [];
+        public HashSet<HttpStatusCode> ExcludeStatusCodes { get; private set; } = [];
 
         /// <summary>
         /// Gets or sets the Exception that shouldn't be handled.
         /// </summary>
-        public HashSet<Exception> ExcludeException { get; private set; } = [];
+        public HashSet<Type> ExcludeException { get; private set; } = [];
 
         /// <summary>
         /// Gets or sets the collection of hooks for customizing exception handling behavior.
@@ -47,7 +48,6 @@ namespace AspNetConventions.Configuration.Options
             cloned.Mappers = [.. Mappers];
             cloned.ExcludeException = [.. ExcludeException];
             cloned.ExcludeStatusCodes = [.. ExcludeStatusCodes];
-
             cloned.Hooks = (ExceptionHandlingHooks)Hooks.Clone();
 
             return cloned;
@@ -60,13 +60,14 @@ namespace AspNetConventions.Configuration.Options
             Exception exception,
             RequestDescriptor requestDescriptor)
         {
-            // Try custom mappers first
-            var customMapper = Mappers
-                .FirstOrDefault(m => m.CanMapException(exception, requestDescriptor));
 
-            if (customMapper != null)
+            // Try custom mappers first
+            foreach (var mapper in Mappers)
             {
-                return customMapper;
+                if (mapper.CanMapException(exception, requestDescriptor))
+                {
+                    return mapper;
+                }
             }
 
             // Fall back to standard mapper

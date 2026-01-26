@@ -11,6 +11,11 @@ namespace AspNetConventions.Http.Models
     public sealed class Metadata
     {
         /// <summary>
+        /// Gets or sets the HTTP method used.
+        /// </summary>
+        public string? RequestType { get; set; }
+
+        /// <summary>
         /// Gets or sets the timestamp when the response was generated.
         /// </summary>
         public DateTime Timestamp { get; set; }
@@ -19,11 +24,6 @@ namespace AspNetConventions.Http.Models
         /// Gets or sets the trace identifier.
         /// </summary>
         public string? TraceId { get; set; }
-
-        /// <summary>
-        /// Gets or sets the HTTP method used.
-        /// </summary>
-        public string? RequestType { get; set; }
 
         /// <summary>
         /// Gets or sets the request path.

@@ -41,14 +41,14 @@ namespace AspNetConventions.ExceptionHandling.Filters
                 // If accepting JSON, return JSON error response
                 if (context.HttpContext.AcceptsJson())
                 {
-                    var helper = new ExceptionHandlingHelpers(_options.Value, context.HttpContext, _logger);
-                    var (response, statusCode) = await helper.BuildExceptionResponseAsync(exception)
-                        .ConfigureAwait(false);
+                    //var helper = new ExceptionHandlingManager(_options.Value, context.HttpContext, _logger);
+                    //var (response, statusCode) = await helper.BuildExceptionResponseAsync(exception)
+                    //    .ConfigureAwait(false);
 
-                    context.Result = new JsonResult(response)
-                    {
-                        StatusCode = (int)statusCode
-                    };
+                    //context.Result = new JsonResult(response)
+                    //{
+                    //    StatusCode = (int)statusCode
+                    //};
                 }
                 else
                 {

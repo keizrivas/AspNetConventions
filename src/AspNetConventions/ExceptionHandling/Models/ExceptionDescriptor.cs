@@ -1,4 +1,6 @@
+using System;
 using System.Net;
+using Microsoft.Extensions.Logging;
 
 namespace AspNetConventions.ExceptionHandling.Models
 {
@@ -32,5 +34,9 @@ namespace AspNetConventions.ExceptionHandling.Models
         /// Gets or sets whether this exception should be logged.
         /// </summary>
         public bool ShouldLog { get; set; } = true;
+
+        public LogLevel LogLevel { get; set; } = LogLevel.Error;
+
+        internal Exception? Exception { get; set; }
     }
 }

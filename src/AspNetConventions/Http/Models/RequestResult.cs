@@ -1,4 +1,6 @@
 using System.Net;
+using AspNetConventions.Core.Enums;
+using AspNetConventions.Extensions;
 
 namespace AspNetConventions.Http.Models
 {
@@ -7,7 +9,8 @@ namespace AspNetConventions.Http.Models
     /// </summary>
     public sealed class RequestResult
     {
-        public RequestResult() { }
+        public RequestResult()
+        { }
 
         public RequestResult(object? data)
         {
@@ -24,6 +27,7 @@ namespace AspNetConventions.Http.Models
             : this(data, message)
         {
             StatusCode = statusCode;
+            Type = GetResponseType();
         }
 
         public RequestResult(object? data, HttpStatusCode statusCode)
@@ -34,23 +38,26 @@ namespace AspNetConventions.Http.Models
         public RequestResult(object? data, string? message, HttpStatusCode statusCode, string? type)
             : this(data, message, statusCode)
         {
-            Type = type;
+            if(type != null)
+            {
+                Type = type;
+            }
         }
 
         /// <summary>
         /// Gets or sets the HTTP status code.
         /// </summary>
-        public HttpStatusCode StatusCode { get; private set; } = HttpStatusCode.OK;
+        public HttpStatusCode StatusCode { get; init; } = HttpStatusCode.OK;
 
         /// <summary>
         /// Gets or sets the response type.
         /// </summary>
-        public string? Type { get; private set; }
+        public string Type { get; init; } = "SUCCESS";
 
         /// <summary>
         /// Gets or sets the response message.
         /// </summary>
-        public string? Message { get; private set; }
+        public string? Message { get; init; }
 
         /// <summary>
         /// Gets or sets the response data.
@@ -67,7 +74,7 @@ namespace AspNetConventions.Http.Models
         /// </summary>
         public PaginationMetadata? Pagination { get; private set; }
 
-        public bool IsSuccess => (int)StatusCode <= 299;
+        public bool IsSuccess => (int)StatusCode <= 399;
 
         /// <summary>
         /// Sets the data property.
@@ -87,5 +94,18 @@ namespace AspNetConventions.Http.Models
         /// <param name="pagination">The pagination object to associate with this instance.</param>
         public void SetPagination(PaginationMetadata? pagination) => Pagination = pagination;
 
+        private string GetResponseType()
+        {
+            var statusCodeType = StatusCode.GetHttpStatusCodeType();
+            return statusCodeType switch
+            {
+                HttpStatusCodeType.Informational => "INFORMATIONAL",
+                HttpStatusCodeType.Success => "SUCCESS",
+                HttpStatusCodeType.Redirection => "REDIRECTION",
+                HttpStatusCodeType.ClientError => "CLIENT_ERROR",
+                HttpStatusCodeType.ServerError => "SERVER_ERROR",
+                _ => "UNKNOWN"
+            };
+        }
     }
 }

@@ -10,7 +10,7 @@ namespace AspNetConventions.Core.Abstractions.Models
         protected ApiResponse(HttpStatusCode statusCode)
         {
             StatusCode = (int)statusCode;
-            Status = StatusCode <= 299 ? ResponseStatus.Success : ResponseStatus.Failure;
+            Status = StatusCode <= 399 ? ResponseStatus.Success : ResponseStatus.Failure;
         }
 
         /// <summary>

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using AspNetConventions.Configuration.Options;
 using AspNetConventions.Core.Abstractions.Contracts;
 
 namespace AspNetConventions.Responses.Resolvers
@@ -10,14 +11,16 @@ namespace AspNetConventions.Responses.Resolvers
     /// <remarks>This resolver delegates conversion to the first adapter that can handle the provided data. If
     /// the data is already an IResponseCollection, it is returned as-is. If no adapter can handle the data, the
     /// resolver returns null.</remarks>
-    /// <param name="adapters">The collection of adapters used to convert data to IResponseCollection instances.</param>
-    public sealed class ResponseCollectionResolver(IEnumerable<IResponseCollectionAdapter> adapters) : IResponseCollectionResolver
+    internal sealed class ResponseCollectionResolver(AspNetConventionOptions options)
     {
-        private readonly IEnumerable<IResponseCollectionAdapter> _adapters = adapters ?? throw new ArgumentNullException(nameof(adapters));
+        private readonly AspNetConventionOptions _options = options ?? throw new ArgumentNullException(nameof(options));
 
-        public IResponseCollection? TryResolve(object data)
+        public IResponseCollection? TryResolve(object? data)
         {
-            ArgumentNullException.ThrowIfNull(data);
+            if (data == null)
+            {
+                return null;
+            }
 
             // Already our standard type
             if (data is IResponseCollection collection)
@@ -26,7 +29,7 @@ namespace AspNetConventions.Responses.Resolvers
             }
 
             // Try adapters
-            foreach (var adapter in _adapters)
+            foreach (var adapter in _options.Response.ResponseCollectionAdapters)
             {
                 if (adapter.CanHandle(data))
                 {

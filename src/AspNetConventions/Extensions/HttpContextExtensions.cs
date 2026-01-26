@@ -16,7 +16,7 @@ namespace AspNetConventions.Extensions
         /// <summary>
         /// Gets or creates an RequestDescriptor from HttpContext.
         /// </summary>
-        internal static RequestDescriptor ToRequestDescriptor(this HttpContext httpContext)
+        internal static RequestDescriptor GetRequestDescriptor(this HttpContext httpContext)
         {
             ArgumentNullException.ThrowIfNull(httpContext);
 

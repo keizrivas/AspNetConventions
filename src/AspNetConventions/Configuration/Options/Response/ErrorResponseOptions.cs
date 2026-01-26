@@ -25,10 +25,7 @@ namespace AspNetConventions.Configuration.Options.Response
         /// </summary>
         public string DefaultValidationMessage { get; set; } = "One or more validation errors occurred.";
 
-        /// <summary>
-        /// Include detailed error information (exception details visibility)
-        /// </summary>
-        public bool? IncludeErrorDetails { get; set; }
+        public bool? IncludeExceptionType { get; set; }
 
         /// <summary>
         /// Include stack trace in error responses (typically only in Development)

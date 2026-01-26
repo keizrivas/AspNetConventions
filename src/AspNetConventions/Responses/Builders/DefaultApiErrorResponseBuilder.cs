@@ -7,7 +7,7 @@ using AspNetConventions.Http.Models;
 using AspNetConventions.Http.Services;
 using AspNetConventions.Responses.Models;
 
-namespace AspNetConventions.ExceptionHandling.Builders
+namespace AspNetConventions.Responses.Builders
 {
     /// <summary>
     /// Standard builder for exception responses.
@@ -25,7 +25,7 @@ namespace AspNetConventions.ExceptionHandling.Builders
             var response = new DefaultApiErrorResponse(result.StatusCode)
             {
                 Type = result.Type ?? Options.Response.ErrorResponse.DefaultErrorType,
-                Message = result.Message,
+                Message = result.Message ?? Options.Response.ErrorResponse.DefaultErrorMessage,
                 Metadata = result.Metadata,
             };
 
