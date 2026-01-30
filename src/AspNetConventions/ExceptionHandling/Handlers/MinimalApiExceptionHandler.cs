@@ -31,10 +31,10 @@ namespace AspNetConventions.ExceptionHandling.Handlers
             var requestDescriptor = httpContext.GetRequestDescriptor();
 
             // Only handle JSON responses for Minimal APIs
-            if (!httpContext.AcceptsJson() || requestDescriptor.EndpointType != EndpointType.MinimalApi)
-            {
-                return false;
-            }
+            //if (!httpContext.AcceptsJson() || requestDescriptor.EndpointType != EndpointType.MinimalApi)
+            //{
+            //    return false;
+            //}
 
             var exceptionHandling = new ExceptionHandlingManager(httpContext, _options, _logger);
 

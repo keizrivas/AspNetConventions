@@ -2,99 +2,74 @@ using System;
 using System.Linq;
 using AspNetConventions.Configuration.Options;
 using AspNetConventions.Core.Abstractions.Contracts;
+using AspNetConventions.Routing.Models;
 using AspNetConventions.Routing.Parsers;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.Routing.Patterns;
+using Microsoft.Extensions.Options;
 
 namespace AspNetConventions.Routing.Transformation
 {
     /// <summary>
     /// Transforms Minimal API endpoints to apply naming conventions.
     /// </summary>
-    internal sealed class EndpointTransformer
+    internal sealed class EndpointTransformer(AspNetConventionOptions options)
     {
-        private readonly RouteConventionOptions _options;
-        private readonly ICaseConverter _caseConverter;
-
-        public EndpointTransformer(RouteConventionOptions options)
-        {
-            _options = options ?? throw new ArgumentNullException(nameof(options));
-            _caseConverter = options.GetCaseConverter();
-        }
+        private readonly AspNetConventionOptions _options = options ?? throw new ArgumentNullException(nameof(options));
+        private readonly ICaseConverter _caseConverter = options.Route.GetCaseConverter();
 
         /// <summary>
         /// Transforms a route endpoint's pattern.
         /// </summary>
-        public Endpoint TransformEndpoint(RouteEndpoint original)
+        public bool TransformEndpoint(RouteEndpointBuilder routeEndpointBuilder)
         {
-            var rawText = original.RoutePattern?.RawText
-                ?? original.DisplayName
-                ?? string.Empty;
-
-            var transformedText = TransformRoutePattern(rawText);
-
-            // If pattern unchanged, return original
-            if (string.Equals(rawText, transformedText, StringComparison.Ordinal))
-                return original;
-
-            // Create new route pattern
-            var newPattern = RoutePatternFactory.Parse(transformedText);
-
-            // Copy metadata
-            var metadata = original.Metadata.ToArray();
-
-            // Copy request delegate
-            var requestDelegate = original.RequestDelegate
-                ?? (context => context.Response.CompleteAsync());
-
-            // Build new endpoint
-            return new RouteEndpoint(
-                requestDelegate,
-                newPattern,
-                original.Order,
-                new EndpointMetadataCollection(metadata),
-                original.DisplayName);
-        }
-
-        private string TransformRoutePattern(string rawTemplate)
-        {
-            if (string.IsNullOrWhiteSpace(rawTemplate))
-                return rawTemplate;
-
-            var segments = rawTemplate.Split('/', StringSplitOptions.RemoveEmptyEntries);
-
-            for (int i = 0; i < segments.Length; i++)
+            var template = RouteTemplateManager.GetRouteTemplate(routeEndpointBuilder);
+            if(template is null)
             {
-                var segment = segments[i];
-
-                if (segment.StartsWith('{'))
-                {
-                    // Parameter segment
-                    if (_options.MinimalApi.TransformRouteParameters)
-                    {
-                        segments[i] = TransformParameter(segment);
-                    }
-                }
-                else
-                {
-                    // Regular segment
-                    segments[i] = _caseConverter.Convert(segment);
-                }
+                return true;
             }
 
-            return "/" + string.Join("/", segments);
-        }
+            var modelContext = new RouteModelContext(routeEndpointBuilder);
+            var newTemplate = RouteTemplateManager.TransformRouteTemplate(template, _caseConverter);
 
-        private string TransformParameter(string segment)
-        {
-            return RouteParameterPatterns.ExtractParameterNameWithMarkersAndConstraints().Replace(segment, m =>
+            // Transform parameters in route
+            if (_options.Route.MinimalApi.TransformRouteParameters)
             {
-                var name = m.Groups["name"].Value;
-                var constraint = m.Groups["constraint"].Value;
-                var transformed = _caseConverter.Convert(name);
-                return "{" + transformed + constraint + "}";
-            });
+                newTemplate = RouteTemplateManager.TransformRouteParameters(
+                    newTemplate,
+                    modelContext,
+                    _caseConverter,
+                    _options.Route.Hooks.ShouldTransformParameter);
+            }
+
+            // If pattern unchanged, return original
+            if (string.Equals(template, newTemplate, StringComparison.Ordinal))
+            {
+                return false;
+            }
+
+            // Create ans set the new route pattern
+            var newPattern = RoutePatternFactory.Parse(newTemplate);
+            routeEndpointBuilder.RoutePattern = newPattern;
+
+            //// Copy metadata
+            //var metadata = routeEndpointBuilder.Metadata.ToArray();
+
+            //// Copy request delegate
+            //var requestDelegate = routeEndpointBuilder.RequestDelegate
+            //    ?? (context => context.Response.CompleteAsync());
+
+            //// Build new endpoint
+            //return new RouteEndpoint(
+            //    requestDelegate,
+            //    newPattern,
+            //    routeEndpointBuilder.Order,
+            //    new EndpointMetadataCollection(metadata),
+            //    routeEndpointBuilder.DisplayName);
+
+            return true;
         }
     }
 }

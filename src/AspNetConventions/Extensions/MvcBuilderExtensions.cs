@@ -69,7 +69,7 @@ namespace AspNetConventions.Extensions
 
                     // Add response formatter
                     mvcOptions.OutputFormatters.Insert(0,
-                        new ResponseWrappingJsonFormatter(
+                        new ResponseJsonFormatter(
                             options,
                             jsonOptions.Value.JsonSerializerOptions
                         )

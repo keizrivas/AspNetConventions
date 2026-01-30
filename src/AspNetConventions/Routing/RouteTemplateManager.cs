@@ -5,6 +5,7 @@ using AspNetConventions.Core.Hooks;
 using AspNetConventions.Routing.Models;
 using AspNetConventions.Routing.Parsers;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
+using Microsoft.AspNetCore.Routing;
 
 namespace AspNetConventions.Routing
 {
@@ -15,7 +16,7 @@ namespace AspNetConventions.Routing
         /// </summary>
         /// <param name="model">The route template to transform.</param>
         /// <returns>A transformed route template with each static segment converted.</returns>
-        internal static string? GetFullRouteTemplate(RouteModelContext model)
+        internal static string? GetRouteTemplate(RouteModelContext model)
         {
             var baseRoute = (model.IsAction
                     ? model.Controller!.Selectors
@@ -35,6 +36,12 @@ namespace AspNetConventions.Routing
                 actionRoute);
 
             return combined?.Template;
+        }
+
+        internal static string? GetRouteTemplate(RouteEndpointBuilder routeEndpointBuilder)
+        {
+            return routeEndpointBuilder.RoutePattern?.RawText
+                ?? routeEndpointBuilder.DisplayName;
         }
 
         /// <summary>

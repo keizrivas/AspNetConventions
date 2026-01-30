@@ -15,7 +15,7 @@ namespace AspNetConventions.Http.Models
         /// <summary>
         /// Gets or sets the current page number.
         /// </summary>
-        public int PageNumber { get; set; } = pageNumber;
+        public int PageNumber { get; set; } = Math.Max(pageNumber, 1);
 
         /// <summary>
         /// Gets or sets the page size.

@@ -11,29 +11,19 @@ namespace AspNetConventions.Serialization.Middleware
     /// <summary>
     /// Middleware that applies JSON serialization conventions to responses.
     /// </summary>
-    /// <remarks>
-    /// <para>
-    /// This middleware ensures all JSON responses follow configured naming conventions
-    /// (e.g., snake_case, camelCase) regardless of how they were created.
-    /// </para>
-    /// <para>
-    /// <strong>Usage:</strong> Place this middleware after response formatting but before
-    /// any middleware that writes to the response body.
-    /// </para>
-    /// </remarks>
-    public sealed class JsonSerializationMiddleware
+    public sealed class ResponseJsonFormatterMiddleware
     {
         private readonly RequestDelegate _next;
         private readonly JsonSerializerOptions _jsonOptions;
-        private readonly ILogger<JsonSerializationMiddleware> _logger;
+        private readonly ILogger<ResponseJsonFormatterMiddleware> _logger;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="JsonSerializationMiddleware"/> class.
+        /// Initializes a new instance of the <see cref="ResponseJsonFormatterMiddleware"/> class.
         /// </summary>
-        public JsonSerializationMiddleware(
+        public ResponseJsonFormatterMiddleware(
             RequestDelegate next,
             JsonSerializerOptions jsonOptions,
-            ILogger<JsonSerializationMiddleware> logger)
+            ILogger<ResponseJsonFormatterMiddleware> logger)
         {
             _next = next ?? throw new ArgumentNullException(nameof(next));
             _jsonOptions = jsonOptions ?? throw new ArgumentNullException(nameof(jsonOptions));

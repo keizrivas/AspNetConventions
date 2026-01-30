@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.AspNetCore.Routing.Patterns;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -18,16 +19,16 @@ namespace AspNetConventions.Extensions
     /// <summary>
     /// Extension methods for IEndpointRouteBuilder.
     /// </summary>
-    internal static partial class EndpointRouteBuilderExtensions
+    internal static partial class RouteGroupBuilderExtensions
     {
         /// <summary>
         /// Applies conventions to endpoints.
         /// </summary>
         internal static void UseEndpointConventions(
-            this IEndpointRouteBuilder builder,
+            this RouteGroupBuilder group,
             AspNetConventionOptions options)
         {
-            ArgumentNullException.ThrowIfNull(builder);
+            ArgumentNullException.ThrowIfNull(group);
             ArgumentNullException.ThrowIfNull(options);
 
             if (!options.Route.IsEnabled)
@@ -35,69 +36,37 @@ namespace AspNetConventions.Extensions
                 return;
             }
 
-            var transformer = new EndpointTransformer(options.Route);
+            var transformer = new EndpointTransformer(options);
             var newDataSources = new List<EndpointDataSourceWrapper>();
 
-            try
+            ((IEndpointConventionBuilder)group).Finally(builder =>
             {
-                foreach (var dataSource in builder.DataSources.ToList())
+                if (builder is RouteEndpointBuilder routeBuilder)
                 {
-                    var endpoints = dataSource.Endpoints;
-                    var transformedEndpoints = new List<Endpoint>(endpoints.Count);
+                    transformer.TransformEndpoint(routeBuilder);
 
-                    foreach (var endpoint in endpoints)
-                    {
-                        if (endpoint is RouteEndpoint routeEndpoint)
-                        {
-                            try
-                            {
-                                var transformed = transformer.TransformEndpoint(routeEndpoint);
-                                transformedEndpoints.Add(transformed);
-                            }
-                            catch (Exception)
-                            {
-                                // Log error but don't fail the entire application
-                                //var handled = options.Route.Hooks.OnConventionError?.Invoke(ex) ?? false;
+                    //var originalPattern = routeBuilder.RoutePattern.RawText;
+                    //if (string.IsNullOrEmpty(originalPattern))
+                    //    return;
 
-                                //if (!handled)
-                                //{
-                                // If not handled by hook, keep original endpoint
-                                transformedEndpoints.Add(endpoint);
-                                //}
-                            }
-                        }
-                        else
-                        {
-                            // Non-route endpoints pass through unchanged
-                            transformedEndpoints.Add(endpoint);
-                        }
-                    }
+                    //// Transform the route pattern
+                    //var transformedRoute = transformer.TransformEndpoint(routeBuilder);
 
-                    var wrapper = new EndpointDataSourceWrapper(
-                        transformedEndpoints,
-                        dataSource.GetChangeToken());
+                    //if (transformedRoute != originalPattern)
+                    //{
+                    //    // Create new route pattern with transformed path
+                    //    var newPattern = RoutePatternFactory.Parse(transformedRoute);
+                    //    routeBuilder.RoutePattern = newPattern;
+                    //}
 
-                    newDataSources.Add(wrapper);
+                    //// Transform parameter names for model binding
+                    //if (options.Route.TransformParametersToKebabCase)
+                    //{
+                    //    TransformParameterMetadata(routeBuilder, transformer);
+                    //}
                 }
+            });
 
-                // Replace data sources atomically
-                builder.DataSources.Clear();
-                foreach (var dataSource in newDataSources)
-                {
-                    builder.DataSources.Add(dataSource);
-                }
-            }
-            catch (Exception)
-            {
-                // If anything goes wrong, invoke error hook
-                //var handled = options.Route.Hooks.OnConventionError?.Invoke(ex) ?? false;
-
-                //if (!handled)
-                //{
-                // Re-throw if not handled
-                throw;
-                //}
-            }
         }
 
         internal static void UseExceptionHandlingMiddleware(

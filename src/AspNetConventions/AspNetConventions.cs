@@ -1,7 +1,10 @@
 using System;
 using AspNetConventions.Configuration.Options;
 using AspNetConventions.Extensions;
+using AspNetConventions.Responses;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
@@ -54,28 +57,35 @@ namespace AspNetConventions
         /// <param name="configure">An optional action to configure conventions. If null, default settings are used.</param>
         /// <returns>The <see cref="WebApplication"/> for method chaining.</returns>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="app"/> is null.</exception>
-        public static WebApplication UseAspNetConventions(
+        public static RouteGroupBuilder UseAspNetConventions(
             this WebApplication app,
+            string prefix,
             Action<AspNetConventionOptions>? configure = null)
         {
             ArgumentNullException.ThrowIfNull(app);
+            ArgumentNullException.ThrowIfNull(prefix);
 
             // Build and validate options
             var options = app.Services.BuildAspNetConventionOptions(configure);
 
-            // Apply JSON serialization settings
-            app.UseHttpJsonOptions(options.Json);
+            var group = app.MapGroup(prefix);
+            group.AddEndpointFilter(new ApiEnvelopeEndpointFilter(options));
+            //group.AddEndpointFilter<EndpointConventionFilter>();
 
             // Apply endpoint conventions
-            app.UseEndpointConventions(options);
+            group.UseEndpointConventions(options);
+
+            // Apply JSON serialization settings
+            app.UseHttpJsonOptions(options.Json);
 
             // Apply exception handling middleware
             app.UseExceptionHandlingMiddleware(options);
 
             // Apply response formatting middleware
-            app.UseResponseFormattingMiddleware(options);
+            //app.UseResponseFormattingMiddleware(options);
+            //app.AddEndpointFilter<ApiEnvelopeEndpointFilter>();
 
-            return app;
+            return group;
         }
     }
 }

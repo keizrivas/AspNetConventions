@@ -1,5 +1,7 @@
 using System;
+using System.Linq;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
+using Microsoft.AspNetCore.Routing;
 
 namespace AspNetConventions.Routing.Models
 {
@@ -19,9 +21,17 @@ namespace AspNetConventions.Routing.Models
             DisplayName = Page.ViewEnginePath;
         }
 
+        internal RouteModelContext(RouteEndpointBuilder routeEndpointBuilder)
+        {
+            RouteEndpointBuilder = routeEndpointBuilder;
+            DisplayName = routeEndpointBuilder.DisplayName ?? "UnknowRouteEndpoint";
+        }
+
         public string DisplayName { get; init; }
 
-        public SelectorModel Selector { get; init; }
+        public RouteEndpointBuilder? RouteEndpointBuilder { get; init; }
+
+        public SelectorModel? Selector { get; init; }
 
         public PageRouteModel? Page { get; init; }
 
@@ -32,6 +42,8 @@ namespace AspNetConventions.Routing.Models
         public bool IsPage => Page != null;
 
         public bool IsAction => Action != null;
+
+        public bool IsRouteEndpoint => RouteEndpointBuilder != null;
 
         public override readonly string ToString() => DisplayName;
 

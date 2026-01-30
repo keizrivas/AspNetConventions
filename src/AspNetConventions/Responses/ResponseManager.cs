@@ -45,6 +45,11 @@ namespace AspNetConventions.Responses
                 || _errorResponseBuilder.IsWrappedResponse(data);
         }
 
+        public bool IsWrappedResponse(RequestResult requestResult)
+        {
+            return IsWrappedResponse(requestResult.Data);
+        }
+
         /// <summary>
         /// Builds a response from HTTP context.
         /// </summary>
@@ -55,13 +60,22 @@ namespace AspNetConventions.Responses
                 return (null, _requestDescriptor.StatusCode);
             }
 
-            var hooks = Options.Response.Hooks;
             var requestResult = GetRequestResultFromContent(content);
-            var exceptionDescriptor = content as ExceptionDescriptor;
+            return await BuildResponseAsync(requestResult)
+                .ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Builds a response from HTTP context.
+        /// </summary>
+        public async Task<(object? Response, HttpStatusCode StatusCode)> BuildResponseAsync(RequestResult requestResult)
+        {
+            var hooks = Options.Response.Hooks;
+            var exceptionDescriptor = requestResult.Payload as ExceptionDescriptor;
 
             // Set metadata
             var metadata = GetMetadata(_requestDescriptor, exceptionDescriptor);
-            requestResult.SetMetadata(metadata);
+            requestResult.WithMetadata(metadata);
 
             // Determine if we should wrap the response
             var shouldWrap = await hooks.ShouldWrapResponseAsync
@@ -78,8 +92,8 @@ namespace AspNetConventions.Responses
             if (collection is not null)
             {
                 var paginationMetadata = GetPaginationMetadata(collection);
-                requestResult.SetPagination(paginationMetadata);
-                requestResult.SetData(collection);
+                requestResult.WithPagination(paginationMetadata);
+                requestResult.WithData(collection);
             }
 
             // Invoke hooks before wrapping
@@ -98,18 +112,40 @@ namespace AspNetConventions.Responses
             return (wrappedResponse, _requestDescriptor.StatusCode);
         }
 
-        private RequestResult GetRequestResultFromContent(object? content)
+        public RequestResult GetRequestResultFromContent(object? content)
         {
-            // Is already a request result
-            if (content is RequestResult result)
+            object? payload = content;
+            HttpStatusCode statusCode = _requestDescriptor.StatusCode;
+
+            // Support IValueHttpResult
+            if (content is IResult)
             {
-                return result;
+                statusCode = content is IStatusCodeHttpResult statusResult
+                    && statusResult.StatusCode != null
+                    ? (HttpStatusCode)statusResult.StatusCode
+                    : _requestDescriptor.StatusCode;
+
+                // Unwrap value
+                if (content is IValueHttpResult valueResult)
+                {
+                    content = valueResult.Value;
+                }
+                else
+                {
+                    content = null;
+                }
+            }
+
+            // Is already a request result
+            if (content is RequestResult requestResult)
+            {
+                return requestResult;
             }
 
             if (content is ExceptionDescriptor exceptionDescriptor)
             {
                 // Check exception envelope status code
-                var statusCode = exceptionDescriptor.StatusCode.HasValue
+                statusCode = exceptionDescriptor.StatusCode.HasValue
                     ? (HttpStatusCode)exceptionDescriptor.StatusCode.Value
                     : _requestDescriptor.StatusCode;
 
@@ -123,13 +159,14 @@ namespace AspNetConventions.Responses
                     data: exceptionDescriptor.Data,
                     type: exceptionDescriptor.Type,
                     message: exceptionDescriptor.Message,
-                    statusCode: statusCode);
+                    statusCode: statusCode)
+                    .WithPayload(payload);
             }
 
             // Support ProblemDetails
             if (content is ProblemDetails problemDetails)
             {
-                var statusCode = problemDetails.Status.HasValue
+                statusCode = problemDetails.Status.HasValue
                     ? (HttpStatusCode)problemDetails.Status.Value
                     : _requestDescriptor.StatusCode;
 
@@ -141,12 +178,14 @@ namespace AspNetConventions.Responses
                 return new RequestResult(
                     data: problemDetails.Extensions,
                     message: problemDetails.Detail ?? problemDetails.Title,
-                    statusCode: statusCode);
+                    statusCode: statusCode)
+                    .WithPayload(payload);
             }
 
             return new RequestResult(
                 data: content,
-                statusCode: _requestDescriptor.StatusCode);
+                statusCode: statusCode)
+                .WithPayload(payload);
         }
 
         private Metadata? GetMetadata(RequestDescriptor _requestDescriptor, ExceptionDescriptor? exceptionDescriptor)
@@ -165,7 +204,8 @@ namespace AspNetConventions.Responses
             // Include stack trace
             if (Options.Response.ErrorResponse.IncludeStackTrace ?? _requestDescriptor.IsDevelopment)
             {
-                metadata.StackTrace = exceptionDescriptor.Exception?.GetStackTrace();
+                metadata.StackTrace = exceptionDescriptor.Exception
+                    ?.GetStackTrace(Options.Response.ErrorResponse.MaxStackTraceDepth);
             }
 
             // Include exception details

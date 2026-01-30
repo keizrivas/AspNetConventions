@@ -1,6 +1,7 @@
 using System.Net;
 using AspNetConventions.Core.Enums;
 using AspNetConventions.Extensions;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace AspNetConventions.Http.Models
 {
@@ -65,6 +66,11 @@ namespace AspNetConventions.Http.Models
         public object? Data { get; private set; }
 
         /// <summary>
+        /// Gets or sets the response payload.
+        /// </summary>
+        public object? Payload { get; private set; }
+
+        /// <summary>
         /// Gets or sets response metadata.
         /// </summary>
         public Metadata? Metadata { get; private set; }
@@ -80,19 +86,41 @@ namespace AspNetConventions.Http.Models
         /// Sets the data property.
         /// <param name="data">The data object to associate with this instance.</param>
         /// </summary>
-        public void SetData(object? data) => Data = data;
+        public RequestResult WithData(object? data)
+        {
+            Data = data;
+            return this;
+        }
+
+        /// <summary>
+        /// Sets the payload property.
+        /// <param name="data">The payload object to associate with this instance.</param>
+        /// </summary>
+        public RequestResult WithPayload(object? data)
+        {
+            Payload = data;
+            return this;
+        }
 
         /// <summary>
         /// Sets the metadata associated with this instance.
         /// </summary>
         /// <param name="metadata">The metadata object to associate with this instance.</param>
-        public void SetMetadata(Metadata? metadata) => Metadata = metadata;
+        public RequestResult WithMetadata(Metadata? metadata)
+        {
+            Metadata = metadata;
+            return this;
+        }
 
         /// <summary>
         /// Sets the pagination associated with this instance.
         /// </summary>
         /// <param name="pagination">The pagination object to associate with this instance.</param>
-        public void SetPagination(PaginationMetadata? pagination) => Pagination = pagination;
+        public RequestResult WithPagination(PaginationMetadata? pagination)
+        {
+            Pagination = pagination;
+            return this;
+        }
 
         private string GetResponseType()
         {

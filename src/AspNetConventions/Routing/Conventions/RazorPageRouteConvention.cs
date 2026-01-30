@@ -23,7 +23,6 @@ namespace AspNetConventions.Routing.Conventions
             }
 
             var caseConverter = Options.Route.GetCaseConverter();
-
             foreach (var selector in pageModel.Selectors)
             {
                 // Check if action selector has a route template

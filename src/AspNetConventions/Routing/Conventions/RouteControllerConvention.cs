@@ -46,7 +46,7 @@ namespace AspNetConventions.Routing.Conventions
                     }
 
                     var model = new RouteModelContext(selector, action);
-                    var baseTemplate = RouteTemplateManager.GetFullRouteTemplate(model) ?? string.Empty;
+                    var baseTemplate = RouteTemplateManager.GetRouteTemplate(model) ?? string.Empty;
 
                     // Determine if route should be transformed
                     var shouldTransformRoute = Options.Route.Hooks.ShouldTransformRoute
@@ -63,7 +63,7 @@ namespace AspNetConventions.Routing.Conventions
                     ApplyConventionToController(controller);
                     ApplyConventionToAction(action);
 
-                    var newTemplate = RouteTemplateManager.GetFullRouteTemplate(model) ?? string.Empty;
+                    var newTemplate = RouteTemplateManager.GetRouteTemplate(model) ?? string.Empty;
                     Options.Route.Hooks.AfterRouteTransform?.Invoke(newTemplate, baseTemplate, model);
                 }
             }

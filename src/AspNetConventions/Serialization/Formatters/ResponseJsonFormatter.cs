@@ -15,7 +15,7 @@ namespace AspNetConventions.Serialization.Formatters
     /// <summary>
     /// JSON output formatter that wraps responses
     /// </summary>
-    public sealed class ResponseWrappingJsonFormatter(
+    public sealed class ResponseJsonFormatter(
         IOptions<AspNetConventionOptions> options,
         JsonSerializerOptions jsonSerializerOptions) : SystemTextJsonOutputFormatter(jsonSerializerOptions)
     {
