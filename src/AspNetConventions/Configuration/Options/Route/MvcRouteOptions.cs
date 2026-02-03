@@ -10,12 +10,10 @@ namespace AspNetConventions.Configuration.Options.Route
         /// </summary>
         public bool IsEnabled { get; set; } = true;
 
-        public bool TransformRoutes { get; set; } = true;
-
-        public bool TransformRouteParameters { get; set; } = true;
+        public bool TransformParameterNames { get; set; } = true;
 
         /// <summary>
-        /// Gets or sets whether to transform controller names.
+        /// Gets or sets whether to transform token names.
         /// </summary>
         public bool TransformRouteTokens { get; set; } = true;
 

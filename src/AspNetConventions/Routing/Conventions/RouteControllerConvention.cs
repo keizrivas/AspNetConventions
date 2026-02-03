@@ -106,14 +106,18 @@ namespace AspNetConventions.Routing.Conventions
                 // Transform action route
                 template = RouteTemplateManager.TransformRouteTemplate(template, Options.Route.GetCaseConverter());
 
-                var model = new RouteModelContext(selector, action);
-                if (Options.Route.Mvc.TransformRouteParameters)
+                var modelContext = new RouteModelContext(selector, action);
+                if (Options.Route.Mvc.TransformParameterNames)
                 {
                     // Apply parameter name binding
-                    ApplyParameterBinding(model);
+                    ApplyParameterBinding(modelContext);
 
                     // Transform parameters in route
-                    ApplyConventionToRouteParameters(model, ref template);
+                    template = RouteTemplateManager.TransformRouteParameters(
+                        template,
+                        modelContext,
+                        Options,
+                        _parameterTransformCache);
                 }
 
                 selector.AttributeRouteModel.Template = template;
@@ -155,29 +159,6 @@ namespace AspNetConventions.Routing.Conventions
                 param.BindingInfo ??= new BindingInfo();
                 param.BindingInfo.BinderModelName = name;
             }
-        }
-
-        /// <summary>
-        /// Applies parameter name transformation to the route parameters in the specified route template.
-        /// </summary>
-        /// <param name="modelContext">Route model data</param>
-        /// <param name="template">The route model template</param>
-        private void ApplyConventionToRouteParameters(RouteModelContext modelContext, ref string template)
-        {
-            // Transform parameter names in the route template
-            template = RouteParameterPatterns.ForEachParam(template, (name, constraint) =>
-            {
-                // Create the route key
-                var paramName = RouteParameterPatterns.CleanParameterName(name);
-                var parameterContext = new RouteParameterContext(modelContext, paramName);
-
-                name = TransformParameterName(
-                    modelContext,
-                    name,
-                    _explicitNameCache.Contains(parameterContext));
-
-                return "{" + name + constraint + "}";
-            });
         }
 
         private string TransformParameterName(RouteModelContext modelContext, string name, bool isExplicitName)

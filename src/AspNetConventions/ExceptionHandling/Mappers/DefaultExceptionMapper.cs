@@ -16,8 +16,7 @@ namespace AspNetConventions.ExceptionHandling.Mappers
     /// </summary>
     internal sealed class DefaultExceptionMapper : IExceptionMapper
     {
-        private static readonly IReadOnlyDictionary<Type, (HttpStatusCode StatusCode, string ErrorType)> _exceptionMappings =
-            new Dictionary<Type, (HttpStatusCode, string)>
+        private static readonly Dictionary<Type, (HttpStatusCode StatusCode, string ErrorType)> _exceptionMappings = new()
         {
             // Argument & validation
             [typeof(ArgumentNullException)] = (HttpStatusCode.BadRequest, "ARGUMENT_NULL"),
@@ -44,7 +43,7 @@ namespace AspNetConventions.ExceptionHandling.Mappers
             [typeof(TaskCanceledException)] = (HttpStatusCode.RequestTimeout, "REQUEST_CANCELLED"),
             [typeof(OperationCanceledException)] = (HttpStatusCode.RequestTimeout, "OPERATION_CANCELLED"),
 
-            // Fallback (do NOT expose details)
+            // Fallback
             [typeof(Exception)] = (HttpStatusCode.InternalServerError, "INTERNAL_SERVER_ERROR")
         };
 

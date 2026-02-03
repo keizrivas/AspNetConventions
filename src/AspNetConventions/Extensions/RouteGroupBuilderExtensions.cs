@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using AspNetConventions.Configuration.Options;
 using AspNetConventions.ExceptionHandling.Handlers;
+using AspNetConventions.Routing;
 using AspNetConventions.Routing.Transformation;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics;
@@ -31,42 +32,21 @@ namespace AspNetConventions.Extensions
             ArgumentNullException.ThrowIfNull(group);
             ArgumentNullException.ThrowIfNull(options);
 
-            if (!options.Route.IsEnabled)
+            if (!options.Route.IsEnabled || !options.Route.MinimalApi.IsEnabled)
             {
                 return;
             }
 
             var transformer = new EndpointTransformer(options);
-            var newDataSources = new List<EndpointDataSourceWrapper>();
-
             ((IEndpointConventionBuilder)group).Finally(builder =>
             {
-                if (builder is RouteEndpointBuilder routeBuilder)
+                if (builder is not RouteEndpointBuilder routeEndpointBuilder)
                 {
-                    transformer.TransformEndpoint(routeBuilder);
-
-                    //var originalPattern = routeBuilder.RoutePattern.RawText;
-                    //if (string.IsNullOrEmpty(originalPattern))
-                    //    return;
-
-                    //// Transform the route pattern
-                    //var transformedRoute = transformer.TransformEndpoint(routeBuilder);
-
-                    //if (transformedRoute != originalPattern)
-                    //{
-                    //    // Create new route pattern with transformed path
-                    //    var newPattern = RoutePatternFactory.Parse(transformedRoute);
-                    //    routeBuilder.RoutePattern = newPattern;
-                    //}
-
-                    //// Transform parameter names for model binding
-                    //if (options.Route.TransformParametersToKebabCase)
-                    //{
-                    //    TransformParameterMetadata(routeBuilder, transformer);
-                    //}
+                    return;
                 }
-            });
 
+                transformer.TransformRoutePattern(routeEndpointBuilder);
+            });
         }
 
         internal static void UseExceptionHandlingMiddleware(
@@ -104,26 +84,6 @@ namespace AspNetConventions.Extensions
                         context.RequestAborted).ConfigureAwait(false);
                 });
             });
-        }
-
-        /// <summary>
-        /// Adds response formatting middleware.
-        /// </summary>
-        internal static void UseResponseFormattingMiddleware(
-            this WebApplication app,
-            AspNetConventionOptions options)
-        {
-            if (!options.Response.IsEnabled)
-                return;
-
-            // Response formatting is currently handled by the output formatter
-            // This method is here for future middleware needs or custom response pipelines
-
-            // Future features could include:
-            // - Response compression
-            // - Response caching headers
-            // - CORS headers
-            // - Custom content negotiation
         }
 
         internal static IServiceCollection AddHttpJsonOptions(this IServiceCollection services)

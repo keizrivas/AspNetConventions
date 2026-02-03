@@ -6,13 +6,8 @@ namespace AspNetConventions.Configuration.Options.Route
     public class RazorPagesRouteOptions: ICloneable
     {
         public bool IsEnabled { get; set; } = true;
-
-        /// <summary>
-        /// Transform page routes (e.g., /UserProfile -> /user-profile)
-        /// </summary>
-        public bool TransformRoutes { get; set; } = true;
-
-        public bool TransformRouteParameters { get; set; } = true;
+        
+        public bool TransformParameterNames { get; set; } = true;
 
         /// <summary>
         /// Transform property names used in page model binding

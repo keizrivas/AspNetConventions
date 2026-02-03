@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using AspNetConventions.Configuration.Options;
@@ -10,6 +11,7 @@ using AspNetConventions.Http.Models;
 using AspNetConventions.Http.Services;
 using AspNetConventions.Responses.Resolvers;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -118,22 +120,21 @@ namespace AspNetConventions.Responses
             HttpStatusCode statusCode = _requestDescriptor.StatusCode;
 
             // Support IValueHttpResult
-            if (content is IResult)
+            if (content is IResult result)
             {
-                statusCode = content is IStatusCodeHttpResult statusResult
-                    && statusResult.StatusCode != null
-                    ? (HttpStatusCode)statusResult.StatusCode
-                    : _requestDescriptor.StatusCode;
+                // Unwrap nested result
+                if (result is INestedHttpResult nestedResult)
+                {
+                    result = nestedResult.Result;
+                }
+
+                statusCode =
+                    result is IStatusCodeHttpResult { StatusCode: int status }
+                        ? (HttpStatusCode)status
+                        : _requestDescriptor.StatusCode;
 
                 // Unwrap value
-                if (content is IValueHttpResult valueResult)
-                {
-                    content = valueResult.Value;
-                }
-                else
-                {
-                    content = null;
-                }
+                content = (result as IValueHttpResult)?.Value;
             }
 
             // Is already a request result
@@ -145,9 +146,7 @@ namespace AspNetConventions.Responses
             if (content is ExceptionDescriptor exceptionDescriptor)
             {
                 // Check exception envelope status code
-                statusCode = exceptionDescriptor.StatusCode.HasValue
-                    ? (HttpStatusCode)exceptionDescriptor.StatusCode.Value
-                    : _requestDescriptor.StatusCode;
+                statusCode = exceptionDescriptor.StatusCode ?? _requestDescriptor.StatusCode;
 
                 if (statusCode != _requestDescriptor.StatusCode)
                 {

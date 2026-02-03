@@ -1,11 +1,10 @@
 using System;
-using System.Linq;
+using System.Collections.Generic;
+using System.Xml.Linq;
 using AspNetConventions.Configuration.Options;
 using AspNetConventions.Core.Abstractions.Contracts;
 using AspNetConventions.Routing.Models;
 using AspNetConventions.Routing.Parsers;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.Routing.Patterns;
 using Microsoft.Extensions.Options;
@@ -19,57 +18,105 @@ namespace AspNetConventions.Routing.Transformation
     {
         private readonly AspNetConventionOptions _options = options ?? throw new ArgumentNullException(nameof(options));
         private readonly ICaseConverter _caseConverter = options.Route.GetCaseConverter();
+        private static readonly Dictionary<RouteParameterContext, bool> _parameterTransformCache = [];
 
         /// <summary>
         /// Transforms a route endpoint's pattern.
         /// </summary>
-        public bool TransformEndpoint(RouteEndpointBuilder routeEndpointBuilder)
+        public RoutePattern? TransformRoutePattern(RouteEndpointBuilder routeEndpointBuilder)
         {
-            var template = RouteTemplateManager.GetRouteTemplate(routeEndpointBuilder);
-            if(template is null)
+            var modelContext = new RouteModelContext(routeEndpointBuilder);
+            var template = RouteTemplateManager.GetRouteTemplate(modelContext);
+
+            if (string.IsNullOrEmpty(template))
             {
-                return true;
+                return null;
             }
 
-            var modelContext = new RouteModelContext(routeEndpointBuilder);
+            // Determine if route should be transformed
+            var shouldTransformRoute = _options.Route.Hooks.ShouldTransformRoute
+                ?.Invoke(template, modelContext) ?? true;
+
+            if (!shouldTransformRoute)
+            {
+                return null;
+            }
+
             var newTemplate = RouteTemplateManager.TransformRouteTemplate(template, _caseConverter);
 
             // Transform parameters in route
-            if (_options.Route.MinimalApi.TransformRouteParameters)
+            if (options.Route.MinimalApi.TransformRouteParameters)
             {
                 newTemplate = RouteTemplateManager.TransformRouteParameters(
                     newTemplate,
                     modelContext,
-                    _caseConverter,
-                    _options.Route.Hooks.ShouldTransformParameter);
+                    options,
+                    _parameterTransformCache);
             }
+
+            var segments = new List<RoutePatternPathSegment>();
+            foreach (var segment in routeEndpointBuilder.RoutePattern.PathSegments)
+            {
+                var newParts = new List<RoutePatternPart>();
+                foreach (var part in segment.Parts)
+                {
+                    if (part is RoutePatternLiteralPart literal)
+                    {
+                        newParts.Add(RoutePatternFactory.LiteralPart(_caseConverter.Convert(literal.Content)));
+                    }
+                    else if (part is RoutePatternParameterPart parameterPart && _options.Route.MinimalApi.TransformRouteParameters)
+                    {
+                        // Determine if parameter should be transformed
+                        var parameterContext = new RouteParameterContext(modelContext, parameterPart.Name);
+
+                        if (!_parameterTransformCache.TryGetValue(parameterContext, out var shouldTransformParameter))
+                        {
+                            shouldTransformParameter = _options.Route.Hooks.ShouldTransformParameter
+                                ?.Invoke(parameterContext) ?? true;
+
+                            _parameterTransformCache[parameterContext] = shouldTransformParameter;
+                        }
+
+                        if (shouldTransformParameter)
+                        {
+                            newParts.Add(RoutePatternFactory.ParameterPart(
+                                _caseConverter.Convert(parameterPart.Name),
+                                parameterPart.Default,
+                                parameterPart.ParameterKind,
+                                parameterPart.ParameterPolicies));
+                        }
+                        else
+                        {
+                            newParts.Add(part);
+                        }
+                    }
+                    else
+                    {
+                        newParts.Add(part);
+                    }
+                }
+
+                segments.Add(RoutePatternFactory.Segment(newParts));
+            }
+
+            if(segments.Count == 0)
+            {
+                return null;
+            }
+
+            var newPattern = RoutePatternFactory.Pattern(newTemplate, segments);
 
             // If pattern unchanged, return original
-            if (string.Equals(template, newTemplate, StringComparison.Ordinal))
+            if (newPattern == null || string.Equals(template, newPattern.RawText, StringComparison.Ordinal))
             {
-                return false;
+                return null;
             }
-
-            // Create ans set the new route pattern
-            var newPattern = RoutePatternFactory.Parse(newTemplate);
+            
+            _options.Route.Hooks.BeforeRouteTransform?.Invoke(template, modelContext);
             routeEndpointBuilder.RoutePattern = newPattern;
+            _options.Route.Hooks.AfterRouteTransform?.Invoke(newTemplate, template, modelContext);
 
-            //// Copy metadata
-            //var metadata = routeEndpointBuilder.Metadata.ToArray();
-
-            //// Copy request delegate
-            //var requestDelegate = routeEndpointBuilder.RequestDelegate
-            //    ?? (context => context.Response.CompleteAsync());
-
-            //// Build new endpoint
-            //return new RouteEndpoint(
-            //    requestDelegate,
-            //    newPattern,
-            //    routeEndpointBuilder.Order,
-            //    new EndpointMetadataCollection(metadata),
-            //    routeEndpointBuilder.DisplayName);
-
-            return true;
+            return newPattern;
         }
     }
 }

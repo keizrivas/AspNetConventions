@@ -48,13 +48,12 @@ namespace AspNetConventions.Routing.Conventions
                 var newTemplate = RouteTemplateManager.TransformRouteTemplate(template, caseConverter);
 
                 // Transform parameters in route
-                if (Options.Route.RazorPages.TransformRouteParameters)
+                if (Options.Route.RazorPages.TransformParameterNames)
                 {
                     newTemplate = RouteTemplateManager.TransformRouteParameters(
                         newTemplate,
                         modelContext,
-                        caseConverter,
-                        Options.Route.Hooks.ShouldTransformParameter);
+                        Options);
                 }
 
                 selector.AttributeRouteModel.Template = newTemplate;

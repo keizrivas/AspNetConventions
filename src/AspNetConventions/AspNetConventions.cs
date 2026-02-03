@@ -2,6 +2,8 @@ using System;
 using AspNetConventions.Configuration.Options;
 using AspNetConventions.Extensions;
 using AspNetConventions.Responses;
+using AspNetConventions.Responses.Filters;
+using AspNetConventions.Routing;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
@@ -69,8 +71,7 @@ namespace AspNetConventions
             var options = app.Services.BuildAspNetConventionOptions(configure);
 
             var group = app.MapGroup(prefix);
-            group.AddEndpointFilter(new ApiEnvelopeEndpointFilter(options));
-            //group.AddEndpointFilter<EndpointConventionFilter>();
+            group.AddEndpointFilter(new ResponseConventionEndpointFilter(options));
 
             // Apply endpoint conventions
             group.UseEndpointConventions(options);
@@ -80,10 +81,6 @@ namespace AspNetConventions
 
             // Apply exception handling middleware
             app.UseExceptionHandlingMiddleware(options);
-
-            // Apply response formatting middleware
-            //app.UseResponseFormattingMiddleware(options);
-            //app.AddEndpointFilter<ApiEnvelopeEndpointFilter>();
 
             return group;
         }
