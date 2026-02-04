@@ -107,7 +107,7 @@ namespace AspNetConventions.Routing.Conventions
                 template = RouteTemplateManager.TransformRouteTemplate(template, Options.Route.GetCaseConverter());
 
                 var modelContext = new RouteModelContext(selector, action);
-                if (Options.Route.Mvc.TransformParameterNames)
+                if (Options.Route.Controllers.TransformParameterNames)
                 {
                     // Apply parameter name binding
                     ApplyParameterBinding(modelContext);
@@ -169,7 +169,7 @@ namespace AspNetConventions.Routing.Conventions
             }
 
             // Skip if preserving explicit names
-            if (isExplicitName && Options.Route.Mvc.PreserveExplicitBindingNames)
+            if (isExplicitName && Options.Route.Controllers.PreserveExplicitBindingNames)
             {
                 return name;
             }

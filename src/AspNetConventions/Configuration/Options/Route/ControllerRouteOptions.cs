@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace AspNetConventions.Configuration.Options.Route
 {
-    public class MvcRouteOptions: ICloneable
+    public class ControllerRouteOptions: ICloneable
     {
         /// <summary>
         /// Enable route transformations for MVC controllers

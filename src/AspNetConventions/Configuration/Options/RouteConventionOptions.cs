@@ -19,7 +19,7 @@ namespace AspNetConventions.Configuration.Options
 
         public RazorPagesRouteOptions RazorPages { get; set; } = new();
 
-        public MvcRouteOptions Mvc { get; set; } = new();
+        public ControllerRouteOptions Controllers { get; set; } = new();
 
         public MinimalApiRouteOptions MinimalApi { get; set; } = new();
 
@@ -51,7 +51,7 @@ namespace AspNetConventions.Configuration.Options
         {
             var cloned = (RouteConventionOptions)MemberwiseClone();
             cloned.RazorPages = (RazorPagesRouteOptions)RazorPages.Clone();
-            cloned.Mvc = (MvcRouteOptions)Mvc.Clone();
+            cloned.Controllers = (ControllerRouteOptions)Controllers.Clone();
             cloned.MinimalApi = (MinimalApiRouteOptions)MinimalApi.Clone();
             cloned.Hooks = (RouteConventionHooks)Hooks.Clone();
 

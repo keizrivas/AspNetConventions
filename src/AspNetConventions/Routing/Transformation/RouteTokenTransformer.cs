@@ -19,8 +19,8 @@ namespace AspNetConventions.Routing.Transformation
         {
             // Check if route token transformation is enabled
             if (!_options.Value.Route.IsEnabled ||
-                !_options.Value.Route.Mvc.IsEnabled ||
-                !_options.Value.Route.Mvc.TransformRouteTokens ||
+                !_options.Value.Route.Controllers.IsEnabled ||
+                !_options.Value.Route.Controllers.TransformRouteTokens ||
                 value is not string token || string.IsNullOrEmpty(token))
             {
                 return value?.ToString();

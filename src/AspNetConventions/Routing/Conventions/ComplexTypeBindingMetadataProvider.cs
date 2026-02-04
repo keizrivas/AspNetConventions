@@ -162,7 +162,7 @@ namespace AspNetConventions.Routing.Conventions
 
             // Check for explicit binding name preservation
             if (context.BindingMetadata.BinderModelName != null &&
-                (Options.Route.Mvc.PreserveExplicitBindingNames || Options.Route.RazorPages.PreserveExplicitBindingNames))
+                (Options.Route.Controllers.PreserveExplicitBindingNames || Options.Route.RazorPages.PreserveExplicitBindingNames))
             {
                 return;
             }
