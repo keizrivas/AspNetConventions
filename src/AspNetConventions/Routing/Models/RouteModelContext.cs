@@ -74,7 +74,7 @@ namespace AspNetConventions.Routing.Models
         /// <param name="selector">The selector model containing route information.</param>
         /// <param name="action">The action model containing controller and action details.</param>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="selector"/> or <paramref name="action"/> is null.</exception>
-        public static RouteModelContext FromMvc(
+        public static RouteModelContext FromMvcAction(
             SelectorModel selector,
             ActionModel action)
         {
@@ -98,7 +98,7 @@ namespace AspNetConventions.Routing.Models
         /// <param name="selector">The selector model containing route information.</param>
         /// <param name="page">The page route model containing page details.</param>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="selector"/> or <paramref name="page"/> is null.</exception>
-        public static RouteModelContext FromPage(
+        public static RouteModelContext FromRazorPage(
             SelectorModel selector,
             PageRouteModel page)
         {
