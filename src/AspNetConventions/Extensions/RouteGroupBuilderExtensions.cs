@@ -23,8 +23,16 @@ namespace AspNetConventions.Extensions
     internal static partial class RouteGroupBuilderExtensions
     {
         /// <summary>
-        /// Applies conventions to endpoints.
+        /// Applies route conventions to endpoints in the route group.
         /// </summary>
+        /// <param name="group">The route group builder to apply conventions to.</param>
+        /// <param name="options">The AspNetConventions configuration options.</param>
+        /// <exception cref="ArgumentNullException">Thrown when <paramref name="group"/> or <paramref name="options"/> is null.</exception>
+        /// <remarks>
+        /// This method applies route transformations to all endpoints in the group when route conventions are enabled
+        /// for Minimal APIs. It uses an <see cref="EndpointTransformer"/> to modify route patterns according
+        /// to the configured naming conventions.
+        /// </remarks>
         internal static void UseEndpointConventions(
             this RouteGroupBuilder group,
             AspNetConventionOptions options)
@@ -49,6 +57,17 @@ namespace AspNetConventions.Extensions
             });
         }
 
+        /// <summary>
+        /// Configures exception handling middleware for the web application.
+        /// </summary>
+        /// <param name="app">The web application to configure exception handling for.</param>
+        /// <param name="options">The AspNetConventions configuration options.</param>
+        /// <exception cref="ArgumentNullException">Thrown when <paramref name="app"/> or <paramref name="options"/> is null.</exception>
+        /// <remarks>
+        /// This method configures the ASP.NET Core exception handling middleware to use AspNetConventions'
+        /// standardized exception handling. It creates a <see cref="MinimalApiExceptionHandler"/> to process
+        /// exceptions and return formatted error responses according to the configured options.
+        /// </remarks>
         internal static void UseExceptionHandlingMiddleware(
             this WebApplication app,
             AspNetConventionOptions options)
@@ -86,6 +105,17 @@ namespace AspNetConventions.Extensions
             });
         }
 
+        /// <summary>
+        /// Adds HTTP JSON options configuration to the service collection.
+        /// </summary>
+        /// <param name="services">The service collection to configure.</param>
+        /// <returns>The same <see cref="IServiceCollection"/> instance for method chaining.</returns>
+        /// <exception cref="InvalidOperationException">Thrown when AspNetConventions options cannot be built or are invalid.</exception>
+        /// <remarks>
+        /// This method configures the ASP.NET Core JSON options by applying the AspNetConventions
+        /// JSON serialization settings. It registers a singleton configuration service that builds the
+        /// AspNetConventions options and applies the JSON serializer options to the framework's JSON options.
+        /// </remarks>
         internal static IServiceCollection AddHttpJsonOptions(this IServiceCollection services)
         {
             // Configure MVC JSON options
@@ -104,6 +134,17 @@ namespace AspNetConventions.Extensions
             return services;
         }
 
+        /// <summary>
+        /// Applies HTTP JSON options to the web application's existing JSON configuration.
+        /// </summary>
+        /// <param name="app">The web application to configure JSON options for.</param>
+        /// <param name="options">The JSON serialization options to apply.</param>
+        /// <returns>The same <see cref="WebApplication"/> instance for method chaining.</returns>
+        /// <remarks>
+        /// This method applies AspNetConventions JSON serialization options to the existing HTTP JSON options
+        /// service. If the JSON options service is not available or options are disabled, the application is
+        /// returned unchanged.
+        /// </remarks>
         internal static WebApplication UseHttpJsonOptions(this WebApplication app, JsonSerializationOptions options)
         {
             // Try to get the configured json options service

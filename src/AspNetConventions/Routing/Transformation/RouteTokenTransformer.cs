@@ -10,11 +10,20 @@ namespace AspNetConventions.Routing.Transformation
     /// on configuration options.
     /// </summary>
     /// <param name="options">The options used to configure route token transformation behavior.</param>
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="options"/> is null.</exception>
     internal sealed class RouteTokenTransformer(IOptions<AspNetConventionOptions> options)
         : IOutboundParameterTransformer
     {
         private readonly IOptions<AspNetConventionOptions> _options = options ?? throw new ArgumentNullException(nameof(options));
 
+        /// <summary>
+        /// Transforms the specified route token according to the configured naming conventions.
+        /// </summary>
+        /// <param name="value">The route token to transform.</param>
+        /// <returns>The transformed route token, or the original token if transformation is disabled or not applicable.</returns>
+        /// <remarks>
+        /// Returns the original token if any transformation condition is not met.
+        /// </remarks>
         public string? TransformOutbound(object? value)
         {
             // Check if route token transformation is enabled

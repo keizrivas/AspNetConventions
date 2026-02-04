@@ -13,8 +13,15 @@ using Microsoft.Extensions.Options;
 namespace AspNetConventions.Serialization.Formatters
 {
     /// <summary>
-    /// JSON output formatter that wraps responses
+    /// JSON output formatter that wraps responses according to AspNetConventions standards.
     /// </summary>
+    /// <param name="options">The AspNetConventions configuration options.</param>
+    /// <param name="jsonSerializerOptions">The JSON serializer options for output formatting.</param>
+    /// <remarks>
+    /// This formatter automatically wraps API responses with standardized structure including metadata,
+    /// pagination information, and error details when applicable. It handles various response types
+    /// and excludes certain types from wrapping to maintain compatibility with existing MVC behavior.
+    /// </remarks>
     public sealed class ResponseJsonFormatter(
         IOptions<AspNetConventionOptions> options,
         JsonSerializerOptions jsonSerializerOptions) : SystemTextJsonOutputFormatter(jsonSerializerOptions)
@@ -22,6 +29,11 @@ namespace AspNetConventions.Serialization.Formatters
 
         private readonly IOptions<AspNetConventionOptions> _options = options ?? throw new ArgumentNullException(nameof(options));
 
+        /// <summary>
+        /// Determines whether the formatter can write the specified type.
+        /// </summary>
+        /// <param name="type">The type to check.</param>
+        /// <returns>true if the formatter can write the type; otherwise, false.</returns>
         protected override bool CanWriteType(Type? type)
         {
             if (!_options.Value.Response.IsEnabled)
@@ -52,6 +64,13 @@ namespace AspNetConventions.Serialization.Formatters
             return base.CanWriteType(type);
         }
 
+        /// <summary>
+        /// Writes the response object to the output stream with automatic response wrapping.
+        /// </summary>
+        /// <param name="context">The output formatter write context.</param>
+        /// <returns>A task that represents the asynchronous write operation.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when <paramref name="context"/> is null.</exception>
+        /// <exception cref="InvalidOperationException">Thrown when response wrapping fails due to configuration issues.</exception>
         public override async Task WriteAsync(OutputFormatterWriteContext context)
         {
             ArgumentNullException.ThrowIfNull(context);
