@@ -5,11 +5,16 @@ using AspNetConventions.Core.Abstractions.Contracts;
 namespace AspNetConventions.Core.Converters.CaseConversion
 {
     /// <summary>
-    /// Provides functionality to convert strings to "snake-case" format, where words are lowercase and
+    /// Provides functionality to convert strings to "snake_case" format, where words are lowercase and
     /// separated by underscores.
     /// </summary>
     public class SnakeCaseConverter : ICaseConverter
     {
+        /// <summary>
+        /// Converts the input string to snake_case format.
+        /// </summary>
+        /// <param name="value">The string to convert. Can be null, empty, or contain various separators like spaces, hyphens, or underscores.</param>
+        /// <returns>The snake_case version of the input string. Returns an empty string if the input is null or whitespace.</returns>
         public string Convert(string value)
         {
             if (string.IsNullOrWhiteSpace(value))

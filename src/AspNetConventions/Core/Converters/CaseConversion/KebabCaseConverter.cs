@@ -10,6 +10,11 @@ namespace AspNetConventions.Core.Converters.CaseConversion
     /// </summary>
     public class KebabCaseConverter : ICaseConverter
     {
+        /// <summary>
+        /// Converts the input string to kebab-case format.
+        /// </summary>
+        /// <param name="value">The string to convert. Can be null, empty, or contain various separators like spaces, hyphens, or underscores.</param>
+        /// <returns>The kebab-case version of the input string. Returns an empty string if the input is null or whitespace.</returns>
         public string Convert(string value)
         {
             if (string.IsNullOrWhiteSpace(value))

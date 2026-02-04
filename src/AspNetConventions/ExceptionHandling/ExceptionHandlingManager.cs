@@ -13,10 +13,22 @@ using Microsoft.Extensions.Logging.Abstractions;
 namespace AspNetConventions.ExceptionHandling
 {
     /// <summary>
-    /// Provides helper methods for exception handling.
+    /// Provides helper methods for exception handling in AspNetConventions.
     /// </summary>
+    /// <remarks>
+    /// This class handles the complete exception processing pipeline, including exception mapping,
+    /// logging, and response building. It integrates with configurable hooks and mappers to provide
+    /// flexible exception handling strategies.
+    /// </remarks>
     internal class ExceptionHandlingManager(RequestDescriptor requestDescriptor, AspNetConventionOptions options, ILogger? logger = null)
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ExceptionHandlingManager"/> class using an HttpContext.
+        /// </summary>
+        /// <param name="httpContext">The current HTTP context.</param>
+        /// <param name="options">The AspNetConventions configuration options.</param>
+        /// <param name="logger">Optional logger for diagnostic information.</param>
+        /// <exception cref="ArgumentNullException">Thrown when <paramref name="httpContext"/> or <paramref name="options"/> is null.</exception>
         public ExceptionHandlingManager(HttpContext httpContext, AspNetConventionOptions options, ILogger? logger = null)
             : this(httpContext.GetRequestDescriptor(), options, logger)
         {
@@ -28,6 +40,9 @@ namespace AspNetConventions.ExceptionHandling
         /// <summary>
         /// Builds an exception descriptor from request context and exception.
         /// </summary>
+        /// <param name="exception">The exception to process.</param>
+        /// <returns>An <see cref="ExceptionDescriptor"/> if the exception should be handled; otherwise, null.</returns>
+        /// <exception cref="InvalidOperationException">Thrown when critical services are missing or configuration is invalid.</exception>
         internal async Task<ExceptionDescriptor?> BuildExceptionDescriptorAsync(Exception exception)
         {
             var hooks = _options.ExceptionHandling.Hooks;
@@ -98,6 +113,11 @@ namespace AspNetConventions.ExceptionHandling
             return exceptionDescriptor;
         }
 
+        /// <summary>
+        /// Determines if the specified exception should be handled by the exception handling system.
+        /// </summary>
+        /// <param name="exception">The exception to evaluate.</param>
+        /// <returns>true if the exception should be handled; otherwise, false.</returns>
         internal bool ShouldHandleException(Exception exception)
         {
             return _options.ExceptionHandling.IsEnabled &&
@@ -105,10 +125,16 @@ namespace AspNetConventions.ExceptionHandling
                 !_options.ExceptionHandling.ExcludeStatusCodes.TryGetValue(requestDescriptor.StatusCode, out _);
         }
 
+        /// <summary>
+        /// Builds a response from an exception, applying exception handling conventions.
+        /// </summary>
+        /// <param name="exception">The exception to handle.</param>
+        /// <param name="content">Optional existing content that may be wrapped.</param>
+        /// <returns>A tuple containing the response object and HTTP status code.</returns>
+        /// <exception cref="InvalidOperationException">Thrown when response building fails due to configuration issues.</exception>
         internal async Task<(object? Response, HttpStatusCode StatusCode)> BuildResponseFromExceptionAsync(
             Exception exception, object? content)
         {
-
             // Check if should handle the exception
             if (!ShouldHandleException(exception))
             {

@@ -32,8 +32,11 @@ namespace AspNetConventions.Extensions
         }
 
         /// <summary>
-        /// Determines if the request accepts JSON responses.
+        /// Determines if the request accepts JSON responses by checking the Accept header.
         /// </summary>
+        /// <param name="httpContext">The HTTP context to check.</param>
+        /// <returns>true if the Accept header contains "application/json"; otherwise, false.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when <paramref name="httpContext"/> is null.</exception>
         internal static bool AcceptsJson(this HttpContext httpContext)
         {
             ArgumentNullException.ThrowIfNull(httpContext);
@@ -43,8 +46,11 @@ namespace AspNetConventions.Extensions
         }
 
         /// <summary>
-        /// Determines if the request accepts HTML responses.
+        /// Determines if the request accepts HTML responses by checking the Accept header.
         /// </summary>
+        /// <param name="httpContext">The HTTP context to check.</param>
+        /// <returns>true if the Accept header contains "text/html"; otherwise, false.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when <paramref name="httpContext"/> is null.</exception>
         internal static bool AcceptsHtml(this HttpContext httpContext)
         {
             ArgumentNullException.ThrowIfNull(httpContext);
@@ -118,17 +124,42 @@ namespace AspNetConventions.Extensions
                 .Replace("_", string.Empty, StringComparison.InvariantCulture);
         }
 
+        /// <summary>
+        /// Retrieves a numeric query parameter value from the HTTP request.
+        /// </summary>
+        /// <param name="httpContext">The HTTP context representing the current request.</param>
+        /// <param name="parameterName">The name of the query string parameter.</param>
+        /// <returns>The numeric value if parsing succeeds and the value is positive; otherwise, null.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when <paramref name="httpContext"/> is null.</exception>
+        /// <remarks>This method uses case-insensitive parameter name matching and only returns positive integers.</remarks>
         internal static int? GetNumericParameter(this HttpContext httpContext, string parameterName)
         {
             var raw = httpContext.GetQueryValue(parameterName);
             return int.TryParse(raw, out var value) && value > 0 ? value : null;
         }
 
+        /// <summary>
+        /// Retrieves a numeric query parameter value from the HTTP request, returning a default value if not found or invalid.
+        /// </summary>
+        /// <param name="httpContext">The HTTP context representing the current request.</param>
+        /// <param name="parameterName">The name of the query string parameter.</param>
+        /// <param name="defaultValue">The default value to return if the parameter is not found or invalid. Defaults to 0.</param>
+        /// <returns>The numeric value if parsing succeeds and the value is positive; otherwise, the default value.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when <paramref name="httpContext"/> is null.</exception>
+        /// <remarks>This method uses case-insensitive parameter name matching and only accepts positive integers.</remarks>
         internal static int GetNumericParameter(this HttpContext httpContext, string parameterName, int defaultValue = 0)
         {
             return httpContext.GetNumericParameter(parameterName) ?? defaultValue;
         }
 
+        /// <summary>
+        /// Retrieves an ILogger instance for the specified type from the HTTP context's service provider.
+        /// </summary>
+        /// <typeparam name="T">The type to create a logger for.</typeparam>
+        /// <param name="httpContext">The HTTP context containing the service provider.</param>
+        /// <returns>An ILogger instance for the specified type.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when <paramref name="httpContext"/> is null.</exception>
+        /// <exception cref="InvalidOperationException">Thrown when the logging service is not available.</exception>
         internal static ILogger GetLogger<T>(this HttpContext httpContext)
         {
             return httpContext.RequestServices.GetService(typeof(ILogger<T>)) as ILogger

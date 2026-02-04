@@ -14,12 +14,12 @@ namespace AspNetConventions.Routing
 {
     internal static class RouteTemplateManager
     {
-        /// <summary>
-        /// Transforms a route template by converting each static segment.
-        /// </summary>
-        /// <param name="model">The route template to transform.</param>
-        /// <returns>A transformed route template with each static segment converted.</returns>
-        internal static string? GetRouteTemplate(RouteModelContext model)
+    /// <summary>
+    /// Gets the route template from the route model context, handling both MVC and Razor Page routes.
+    /// </summary>
+    /// <param name="model">The route model context containing route information.</param>
+    /// <returns>The combined route template, or null if no template is found.</returns>
+    internal static string? GetRouteTemplate(RouteModelContext model)
         {
             if(model.IsRouteEndpoint)
             {
@@ -47,11 +47,18 @@ namespace AspNetConventions.Routing
         }
 
         /// <summary>
-        /// Transforms a route template by converting each static segment.
+        /// Transforms a route template by applying case conversion to static segments.
         /// </summary>
         /// <param name="template">The route template to transform.</param>
-        /// <param name="caseConverter">Defines a contract for converting strings between different naming conventions.</param>
-        /// <returns>A transformed route template with each static segment converted.</returns>
+        /// <param name="caseConverter">The case converter to apply to static segments.</param>
+        /// <returns>A transformed route template with each static segment converted to the specified case.</returns>
+        /// <remarks>
+        /// This method:
+        /// - Preserves the leading slash if present
+        /// - Converts only static segments (not parameters or tokens)
+        /// - Skips segments containing parameters, catch-all routes, or complex patterns
+        /// - Returns the original template if it's null or empty
+        /// </remarks>
         internal static string TransformRouteTemplate(string template, ICaseConverter caseConverter)
         {
             if (string.IsNullOrWhiteSpace(template))
@@ -90,10 +97,18 @@ namespace AspNetConventions.Routing
         /// Applies parameter name transformation to the route parameters in the specified route template.
         /// </summary>
         /// <param name="template">The route template to transform parameter names.</param>
-        /// <param name="modelContext">Route model context to create the parameter context</param>
-        /// <param name="options"></param>
-        /// <param name="cache"></param>
-        /// <returns>A transformed route template with each parameter converted.</returns>
+        /// <param name="modelContext">Route model context to create parameter contexts for evaluation.</param>
+        /// <param name="options">The AspNetConventions options containing transformation rules.</param>
+        /// <param name="cache">Optional cache for parameter transformation decisions to improve performance.</param>
+        /// <returns>A transformed route template with each parameter converted according to the configured case style.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when <paramref name="template"/> is null or whitespace.</exception>
+        /// <remarks>
+        /// This method:
+        /// - Uses case converters to transform parameter names
+        /// - Evaluates each parameter against configured hooks to determine if transformation should occur
+        /// - Caches transformation decisions for performance
+        /// - Preserves parameter constraints while transforming parameter names
+        /// </remarks>
         internal static string TransformRouteParameters(string template,
             RouteModelContext modelContext,
             AspNetConventionOptions options,

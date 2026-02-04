@@ -5,7 +5,14 @@ namespace AspNetConventions.Core.Enums
     /// </summary>
     public enum ResponseStatus
     {
+        /// <summary>
+        /// Indicates the operation completed successfully.
+        /// </summary>
         Success,
+
+        /// <summary>
+        /// Indicates the operation failed due to an error or exception.
+        /// </summary>
         Failure
     }
 }

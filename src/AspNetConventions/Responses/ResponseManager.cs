@@ -20,6 +20,13 @@ namespace AspNetConventions.Responses
 {
     internal class ResponseManager : ResponseAdapter
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ResponseManager"/> class.
+        /// </summary>
+        /// <param name="options">The AspNetConventions configuration options.</param>
+        /// <param name="requestDescriptor">The request descriptor containing context information about the current request.</param>
+        /// <param name="logger">Optional logger for diagnostic information. If null, a null logger will be used.</param>
+        /// <exception cref="ArgumentNullException">Thrown when <paramref name="options"/> or <paramref name="requestDescriptor"/> is null.</exception>
         public ResponseManager(AspNetConventionOptions options, RequestDescriptor requestDescriptor, ILogger? logger = null)
             : base(options, logger ?? NullLogger<ResponseManager>.Instance)
         {
@@ -31,6 +38,14 @@ namespace AspNetConventions.Responses
             _errorResponseBuilder = options.Response.GetErrorResponseBuilder(options, Logger);
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ResponseManager"/> class using an HttpContext.
+        /// </summary>
+        /// <param name="options">The AspNetConventions configuration options.</param>
+        /// <param name="httpContext">The current HTTP context.</param>
+        /// <param name="logger">Optional logger for diagnostic information. If null, a null logger will be used.</param>
+        /// <exception cref="ArgumentNullException">Thrown when <paramref name="options"/> or <paramref name="httpContext"/> is null.</exception>
+        /// <remarks>This constructor automatically extracts request descriptor information from the provided HttpContext.</remarks>
         public ResponseManager(AspNetConventionOptions options, HttpContext httpContext, ILogger? logger = null)
             : this(options, httpContext.GetRequestDescriptor(), logger)
         {
@@ -41,20 +56,32 @@ namespace AspNetConventions.Responses
         private readonly RequestDescriptor _requestDescriptor;
         private readonly ResponseCollectionResolver _responseCollectionResolver;
 
+        /// <summary>
+        /// Determines if the specified data object is already a wrapped response.
+        /// </summary>
+        /// <param name="data">The data object to check.</param>
+        /// <returns>true if the data is already wrapped; otherwise, false.</returns>
         public override bool IsWrappedResponse(object? data)
         {
             return _responseBuilder.IsWrappedResponse(data)
                 || _errorResponseBuilder.IsWrappedResponse(data);
         }
 
+        /// <summary>
+        /// Determines if the specified request result contains already wrapped response data.
+        /// </summary>
+        /// <param name="requestResult">The request result to check.</param>
+        /// <returns>true if the request result data is already wrapped; otherwise, false.</returns>
         public bool IsWrappedResponse(RequestResult requestResult)
         {
             return IsWrappedResponse(requestResult.Data);
         }
 
         /// <summary>
-        /// Builds a response from HTTP context.
+        /// Builds a standardized response from the provided content.
         /// </summary>
+        /// <param name="content">The content to wrap in a response. Can be null, an object, IResult, RequestResult, or ExceptionDescriptor.</param>
+        /// <returns>A tuple containing the wrapped response object and the HTTP status code.</returns>
         public async Task<(object? Response, HttpStatusCode StatusCode)> BuildResponseAsync(object? content)
         {
             if (content == null)
@@ -68,8 +95,10 @@ namespace AspNetConventions.Responses
         }
 
         /// <summary>
-        /// Builds a response from HTTP context.
+        /// Builds a standardized response from the provided request result.
         /// </summary>
+        /// <param name="requestResult">The request result containing response data and metadata.</param>
+        /// <returns>A tuple containing the wrapped response object and the HTTP status code.</returns>
         public async Task<(object? Response, HttpStatusCode StatusCode)> BuildResponseAsync(RequestResult requestResult)
         {
             var hooks = Options.Response.Hooks;
@@ -114,6 +143,11 @@ namespace AspNetConventions.Responses
             return (wrappedResponse, _requestDescriptor.StatusCode);
         }
 
+        /// <summary>
+        /// Converts various content types into a standardized <see cref="RequestResult"/>.
+        /// </summary>
+        /// <param name="content">The content to convert. Can be null, an object, IResult, RequestResult, ExceptionDescriptor, or ProblemDetails.</param>
+        /// <returns>A <see cref="RequestResult"/> containing the standardized response data.</returns>
         public RequestResult GetRequestResultFromContent(object? content)
         {
             object? payload = content;

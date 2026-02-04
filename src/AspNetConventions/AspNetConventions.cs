@@ -16,6 +16,10 @@ namespace AspNetConventions
     /// Provides extension methods for configuring standardized ASP.NET Core conventions and services for MVC and
     /// Minimal API applications.
     /// </summary>
+    /// <remarks>
+    /// AspNetConventions standardizes route naming, response formatting, JSON serialization, and exception handling
+    /// across your application, providing consistent APIs for Razor pages, MVC controllers and Minimal API endpoints.
+    /// </remarks>
     public static class AspNetConventions
     {
         /// <summary>
@@ -56,9 +60,10 @@ namespace AspNetConventions
         /// Configures the application to use AspNetConventions for Minimal APIs.
         /// </summary>
         /// <param name="app">The <see cref="WebApplication"/> to configure.</param>
+        /// <param name="prefix">The pattern that prefixes all routes in the API group.</param>
         /// <param name="configure">An optional action to configure conventions. If null, default settings are used.</param>
-        /// <returns>The <see cref="WebApplication"/> for method chaining.</returns>
-        /// <exception cref="ArgumentNullException">Thrown when <paramref name="app"/> is null.</exception>
+        /// <returns>A <see cref="RouteGroupBuilder"/> for the configured API group, enabling endpoint chaining.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when <paramref name="app"/> or <paramref name="prefix"/> is null.</exception>
         public static RouteGroupBuilder UseAspNetConventions(
             this WebApplication app,
             string prefix,

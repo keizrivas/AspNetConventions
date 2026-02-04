@@ -10,6 +10,11 @@ namespace AspNetConventions.Core.Converters.CaseConversion
     /// </summary>
     public class CamelCaseConverter : ICaseConverter
     {
+        /// <summary>
+        /// Converts the input string to camelCase format.
+        /// </summary>
+        /// <param name="value">The string to convert. Can be null, empty, or contain various separators like spaces, hyphens, or underscores.</param>
+        /// <returns>The camelCase version of the input string. Returns an empty string if the input is null or whitespace.</returns>
         public string Convert(string value)
         {
             if (string.IsNullOrWhiteSpace(value))
