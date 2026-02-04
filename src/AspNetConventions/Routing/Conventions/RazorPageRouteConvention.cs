@@ -32,7 +32,7 @@ namespace AspNetConventions.Routing.Conventions
                     continue;
                 }
 
-                var modelContext = new RouteModelContext(selector, pageModel);
+                var modelContext = RouteModelContext.FromPage(selector, pageModel);
 
                 // Determine if route should be transformed
                 var shouldTransformRoute = Options.Route.Hooks.ShouldTransformRoute

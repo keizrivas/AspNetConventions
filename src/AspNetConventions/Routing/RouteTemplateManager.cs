@@ -14,20 +14,20 @@ namespace AspNetConventions.Routing
 {
     internal static class RouteTemplateManager
     {
-    /// <summary>
-    /// Gets the route template from the route model context, handling both MVC and Razor Page routes.
-    /// </summary>
-    /// <param name="model">The route model context containing route information.</param>
-    /// <returns>The combined route template, or null if no template is found.</returns>
-    internal static string? GetRouteTemplate(RouteModelContext model)
+        /// <summary>
+        /// Gets the route template from the route model context, handling both MVC and Razor Page routes.
+        /// </summary>
+        /// <param name="model">The route model context containing route information.</param>
+        /// <returns>The combined route template, or null if no template is found.</returns>
+        internal static string? GetRouteTemplate(RouteModelContext model)
         {
-            if(model.IsRouteEndpoint)
+            if(model.Identity.Kind == Core.Enums.RouteSourceKind.MinimalApi)
             {
                 return model.RouteEndpointBuilder!.RoutePattern?.RawText;
             }
 
-            var baseRoute = (model.IsAction
-                    ? model.Controller!.Selectors
+            var baseRoute = (model.Identity.Kind == Core.Enums.RouteSourceKind.MvcAction
+                    ? model.Action!.Controller.Selectors
                     : model.Page!.Selectors)
                 .Select(s => s.AttributeRouteModel)
                 .FirstOrDefault(r => r != null);

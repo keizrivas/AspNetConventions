@@ -21,7 +21,7 @@ namespace AspNetConventions.Core.Enums
         /// <summary>
         /// MVC Controller action endpoint type.
         /// </summary>
-        MvcController,
+        MvcAction,
 
         /// <summary>
         /// Minimal API endpoint type.

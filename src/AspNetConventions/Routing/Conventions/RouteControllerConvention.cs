@@ -45,7 +45,7 @@ namespace AspNetConventions.Routing.Conventions
                         continue;
                     }
 
-                    var model = new RouteModelContext(selector, action);
+                    var model = RouteModelContext.FromMvc(selector, action);
                     var baseTemplate = RouteTemplateManager.GetRouteTemplate(model) ?? string.Empty;
 
                     // Determine if route should be transformed
@@ -106,7 +106,7 @@ namespace AspNetConventions.Routing.Conventions
                 // Transform action route
                 template = RouteTemplateManager.TransformRouteTemplate(template, Options.Route.GetCaseConverter());
 
-                var modelContext = new RouteModelContext(selector, action);
+                var modelContext = RouteModelContext.FromMvc(selector, action);
                 if (Options.Route.Controllers.TransformParameterNames)
                 {
                     // Apply parameter name binding

@@ -36,7 +36,7 @@ namespace AspNetConventions.Routing.Transformation
         /// </remarks>
         public RoutePattern? TransformRoutePattern(RouteEndpointBuilder routeEndpointBuilder)
         {
-            var modelContext = new RouteModelContext(routeEndpointBuilder);
+            var modelContext = RouteModelContext.FromMinimalApi(routeEndpointBuilder);
             var template = RouteTemplateManager.GetRouteTemplate(modelContext);
 
             if (string.IsNullOrEmpty(template))

@@ -32,7 +32,7 @@ namespace AspNetConventions.Http.Services
 
             // Check for MVC Controllers
             if (endpoint.Metadata.GetMetadata<ControllerActionDescriptor>() != null)
-                return EndpointType.MvcController;
+                return EndpointType.MvcAction;
 
             // Check for Blazor
             if (endpoint.Metadata.GetMetadata<ComponentTypeMetadata>() != null ||
@@ -80,7 +80,7 @@ namespace AspNetConventions.Http.Services
         public static bool IsApiEndpoint(this HttpContext httpContext)
         {
             var endpointType = httpContext.GetEndpointType();
-            return endpointType == EndpointType.MvcController ||
+            return endpointType == EndpointType.MvcAction ||
                    endpointType == EndpointType.MinimalApi;
         }
 
