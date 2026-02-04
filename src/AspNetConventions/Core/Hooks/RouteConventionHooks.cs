@@ -41,6 +41,10 @@ namespace AspNetConventions.Core.Hooks
         /// </summary>
         public AfterRouteTransformCallback? AfterRouteTransform { get; set; }
 
+        /// <summary>
+        /// Creates a deep clone of <see cref="RouteConventionHooks"/> instance.
+        /// </summary>
+        /// <returns>A new <see cref="RouteConventionHooks"/> instance with all nested objects cloned.</returns>
         public object Clone()
         {
             return new RouteConventionHooks

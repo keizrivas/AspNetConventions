@@ -29,6 +29,10 @@ namespace AspNetConventions.Configuration.Options.Response
         /// </summary>
         public int DefaultPageSize { get; set; } = 20;
 
+        /// <summary>
+        /// Creates a deep clone of <see cref="PaginationOptions"/> instance.
+        /// </summary>
+        /// <returns>A new <see cref="PaginationOptions"/> instance with all nested objects cloned.</returns>
         public object Clone() => MemberwiseClone();
     }
 }

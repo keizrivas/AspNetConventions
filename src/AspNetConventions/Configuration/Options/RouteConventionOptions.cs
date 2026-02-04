@@ -17,10 +17,19 @@ namespace AspNetConventions.Configuration.Options
         /// </summary>
         public bool IsEnabled { get; set; } = true;
 
+        /// <summary>
+        /// Razor Pages–specific route convention options.
+        /// </summary>
         public RazorPagesRouteOptions RazorPages { get; set; } = new();
 
+        /// <summary>
+        /// MVC-specific route convention options.
+        /// </summary>
         public ControllerRouteOptions Controllers { get; set; } = new();
 
+        /// <summary>
+        /// Minimal API–specific route convention options.
+        /// </summary>
         public MinimalApiRouteOptions MinimalApi { get; set; } = new();
 
         /// <summary>
@@ -47,6 +56,7 @@ namespace AspNetConventions.Configuration.Options
         /// <summary>
         /// Creates a deep clone of <see cref="RouteConventionOptions"/> instance.
         /// </summary>
+        /// <returns>A new <see cref="RouteConventionOptions"/> instance with all nested objects cloned.</returns>
         public object Clone()
         {
             var cloned = (RouteConventionOptions)MemberwiseClone();

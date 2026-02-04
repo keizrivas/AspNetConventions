@@ -88,6 +88,7 @@ namespace AspNetConventions.Configuration.Options
         /// <summary>
         /// Creates a deep clone of <see cref="JsonSerializationOptions"/> instance.
         /// </summary>
+        /// <returns>A new <see cref="JsonSerializationOptions"/> instance with all nested objects cloned.</returns>
         public object Clone() => MemberwiseClone();
 
         /// <summary>

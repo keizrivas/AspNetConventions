@@ -41,6 +41,7 @@ namespace AspNetConventions.Configuration.Options
         /// <summary>
         /// Creates a deep clone of <see cref="ExceptionHandlingOptions"/> instance.
         /// </summary>
+        /// <returns>A new <see cref="ExceptionHandlingOptions"/> instance with all nested objects cloned.</returns>
         public object Clone()
         {
             var cloned = (ExceptionHandlingOptions)MemberwiseClone();

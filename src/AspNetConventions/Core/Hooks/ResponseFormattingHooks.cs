@@ -26,6 +26,10 @@ namespace AspNetConventions.Core.Hooks
         /// </summary>
         public AfterResponseWrapCallback? AfterResponseWrapAsync { get; set; }
 
+        /// <summary>
+        /// Creates a deep clone of <see cref="ResponseFormattingHooks"/> instance.
+        /// </summary>
+        /// <returns>A new <see cref="ResponseFormattingHooks"/> instance with all nested objects cloned.</returns>
         public object Clone()
         {
             return new ResponseFormattingHooks

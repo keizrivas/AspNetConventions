@@ -40,6 +40,10 @@ namespace AspNetConventions.Core.Hooks
         /// </summary>
         public AfterMappingCallbackAsync? AfterMappingAsync { get; set; }
 
+        /// <summary>
+        /// Creates a deep clone of <see cref="ExceptionHandlingHooks"/> instance.
+        /// </summary>
+        /// <returns>A new <see cref="ExceptionHandlingHooks"/> instance with all nested objects cloned.</returns>
         public object Clone()
         {
             return new ExceptionHandlingHooks

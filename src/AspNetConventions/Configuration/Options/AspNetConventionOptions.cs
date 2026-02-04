@@ -31,6 +31,7 @@ namespace AspNetConventions.Configuration.Options
         /// <summary>
         /// Creates a deep clone of <see cref="AspNetConventionOptions"/> instance.
         /// </summary>
+        /// <returns>A new <see cref="AspNetConventionOptions"/> instance with all nested objects cloned.</returns>
         public object Clone()
         {
             return new AspNetConventionOptions

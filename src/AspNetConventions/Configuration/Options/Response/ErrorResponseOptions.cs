@@ -37,6 +37,10 @@ namespace AspNetConventions.Configuration.Options.Response
         /// </summary>
         public int MaxStackTraceDepth { get; set; } = 50;
 
+        /// <summary>
+        /// Creates a deep clone of <see cref="ErrorResponseOptions"/> instance.
+        /// </summary>
+        /// <returns>A new <see cref="ErrorResponseOptions"/> instance with all nested objects cloned.</returns>
         public object Clone() => MemberwiseClone();
     }
 }
