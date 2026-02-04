@@ -1,9 +1,7 @@
 using System;
 using AspNetConventions.Configuration.Options;
 using AspNetConventions.Extensions;
-using AspNetConventions.Responses;
 using AspNetConventions.Responses.Filters;
-using AspNetConventions.Routing;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;

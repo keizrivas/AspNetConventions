@@ -3,7 +3,6 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using AspNetConventions.Configuration.Options;
-using AspNetConventions.Core.Enums;
 using AspNetConventions.Extensions;
 using AspNetConventions.Http.Models;
 using Microsoft.AspNetCore.Diagnostics;

@@ -1,7 +1,6 @@
 using System.Net;
 using AspNetConventions.Core.Enums;
 using AspNetConventions.Extensions;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace AspNetConventions.Http.Models
 {

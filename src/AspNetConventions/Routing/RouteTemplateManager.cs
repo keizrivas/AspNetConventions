@@ -3,12 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using AspNetConventions.Configuration.Options;
 using AspNetConventions.Core.Abstractions.Contracts;
-using AspNetConventions.Core.Hooks;
 using AspNetConventions.Routing.Models;
 using AspNetConventions.Routing.Parsers;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
-using Microsoft.AspNetCore.Routing;
-using Microsoft.Extensions.Options;
 
 namespace AspNetConventions.Routing
 {

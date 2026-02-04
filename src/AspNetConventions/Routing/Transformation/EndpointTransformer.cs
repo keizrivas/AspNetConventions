@@ -1,13 +1,10 @@
 using System;
 using System.Collections.Generic;
-using System.Xml.Linq;
 using AspNetConventions.Configuration.Options;
 using AspNetConventions.Core.Abstractions.Contracts;
 using AspNetConventions.Routing.Models;
-using AspNetConventions.Routing.Parsers;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.Routing.Patterns;
-using Microsoft.Extensions.Options;
 
 namespace AspNetConventions.Routing.Transformation
 {

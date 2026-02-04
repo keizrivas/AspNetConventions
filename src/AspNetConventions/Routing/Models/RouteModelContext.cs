@@ -1,10 +1,7 @@
 using System;
-using System.Linq;
 using AspNetConventions.Core.Enums;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Routing;
-using static System.Collections.Specialized.BitVector32;
 
 namespace AspNetConventions.Routing.Models
 {

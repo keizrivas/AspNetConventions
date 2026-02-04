@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using AspNetConventions.Configuration.Options;
@@ -11,7 +10,6 @@ using AspNetConventions.Http.Models;
 using AspNetConventions.Http.Services;
 using AspNetConventions.Responses.Resolvers;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
