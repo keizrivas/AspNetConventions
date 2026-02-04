@@ -32,7 +32,7 @@
     <Description>
       Automatically standardizes routes, parameters, responses, JSON settings, and exception
       handling with zero boilerplate.
-      Drop-in support for MVC, Minimal APIs, and Razor Pages.
+      Drop-in support for MVC Controllers, Minimal APIs and Razor Pages.
     </Description>
     <PackageTags>
       mvc;csharp;dotnet;aspnetcore;rest-api;conventions;json-serialization;routing;web-api;razor-pages;minimal-api;api-conventions</PackageTags>
