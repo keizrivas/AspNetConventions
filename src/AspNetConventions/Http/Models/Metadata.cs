@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
+using AspNetConventions.Configuration.Options;
 using AspNetConventions.ExceptionHandling.Models;
 using AspNetConventions.Http.Services;
-using AspNetConventions.Configuration.Options;
 
 namespace AspNetConventions.Http.Models
 {

@@ -10,14 +10,14 @@ namespace AspNetConventions.Configuration.Options.Route
     /// These options control how Razor Pages routes are transformed and named, including parameter and property
     /// name transformations, folder and page exclusions, and binding name preservation.
     /// </remarks>
-    public class RazorPagesRouteOptions: ICloneable
+    public class RazorPagesRouteOptions : ICloneable
     {
         /// <summary>
         /// Gets or sets whether route transformations are enabled for Razor Pages.
         /// </summary>
         /// <value>Default is true. When disabled, Razor Pages routes will not be transformed.</value>
         public bool IsEnabled { get; set; } = true;
-        
+
         /// <summary>
         /// Gets or sets whether to transform parameter names in Razor Pages routes.
         /// </summary>
@@ -55,8 +55,8 @@ namespace AspNetConventions.Configuration.Options.Route
         public object Clone()
         {
             var cloned = (RazorPagesRouteOptions)MemberwiseClone();
-            cloned.ExcludeFolders = [..ExcludeFolders];
-            cloned.ExcludePages = [..ExcludePages];
+            cloned.ExcludeFolders = [.. ExcludeFolders];
+            cloned.ExcludePages = [.. ExcludePages];
             return cloned;
         }
     }

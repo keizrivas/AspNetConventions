@@ -54,7 +54,7 @@ namespace AspNetConventions.Responses.Builders
                 var result = MonitorCacheSize(_factoryCache.Count, _lastLoggedCount);
                 if (result.HasValue)
                 {
-                     _lastLoggedCount = result.Value;
+                    _lastLoggedCount = result.Value;
                 }
 
                 return requestResult =>

@@ -10,7 +10,7 @@ namespace AspNetConventions.Configuration.Options.Route
     /// These options control how Minimal API endpoints routes are transformed and named, including parameter
     /// transformations, route pattern exclusions, and tag-based exclusions.
     /// </remarks>
-    public class MinimalApiRouteOptions: ICloneable
+    public class MinimalApiRouteOptions : ICloneable
     {
         /// <summary>
         /// Gets or sets whether route transformations are enabled for Minimal API endpoints.
@@ -43,8 +43,8 @@ namespace AspNetConventions.Configuration.Options.Route
         public object Clone()
         {
             var cloned = (MinimalApiRouteOptions)MemberwiseClone();
-            cloned.ExcludeRoutePatterns = [..ExcludeRoutePatterns];
-            cloned.ExcludeTags = [..ExcludeTags];
+            cloned.ExcludeRoutePatterns = [.. ExcludeRoutePatterns];
+            cloned.ExcludeTags = [.. ExcludeTags];
             return cloned;
         }
     }

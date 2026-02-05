@@ -107,7 +107,7 @@ namespace AspNetConventions.Routing.Transformation
                 segments.Add(RoutePatternFactory.Segment(newParts));
             }
 
-            if(segments.Count == 0)
+            if (segments.Count == 0)
             {
                 return null;
             }
@@ -119,7 +119,7 @@ namespace AspNetConventions.Routing.Transformation
             {
                 return null;
             }
-            
+
             _options.Route.Hooks.BeforeRouteTransform?.Invoke(template, modelContext);
             routeEndpointBuilder.RoutePattern = newPattern;
             _options.Route.Hooks.AfterRouteTransform?.Invoke(newTemplate, template, modelContext);

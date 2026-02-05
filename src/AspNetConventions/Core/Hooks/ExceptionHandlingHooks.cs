@@ -12,7 +12,7 @@ namespace AspNetConventions.Core.Hooks
     /// </summary>
     /// <remarks>Use this class to register delegates that are invoked before, during, and after exception handling.
     /// </remarks>
-    public class ExceptionHandlingHooks: ICloneable
+    public class ExceptionHandlingHooks : ICloneable
     {
         public delegate Task TryHandleCallbackAsync(Exception exception);
         public delegate Task<bool> ShouldHandleCallbackAsync(Exception exception, RequestDescriptor requestDescriptor);

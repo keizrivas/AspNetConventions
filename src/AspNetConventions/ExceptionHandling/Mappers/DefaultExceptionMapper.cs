@@ -55,7 +55,7 @@ namespace AspNetConventions.ExceptionHandling.Mappers
         public ExceptionDescriptor MapException(Exception exception, RequestDescriptor requestDescriptor)
         {
             var (statusCode, errorCode) = GetMapping(exception);
- 
+
             var result = new ExceptionDescriptor
             {
                 StatusCode = statusCode,

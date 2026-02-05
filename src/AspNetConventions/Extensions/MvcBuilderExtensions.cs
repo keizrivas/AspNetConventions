@@ -144,7 +144,7 @@ namespace AspNetConventions.Extensions
 
             return builder;
         }
-        
+
         /// <summary>
         /// Configures MVC to use custom JSON serialization options based on application conventions.
         /// </summary>

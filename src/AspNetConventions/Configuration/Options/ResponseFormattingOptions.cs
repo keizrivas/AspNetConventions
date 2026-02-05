@@ -78,7 +78,7 @@ namespace AspNetConventions.Configuration.Options
 
             cloned.Pagination = (PaginationOptions)Pagination.Clone();
             cloned.ErrorResponse = (ErrorResponseOptions)ErrorResponse.Clone();
-            cloned.ResponseCollectionAdapters = [..ResponseCollectionAdapters];
+            cloned.ResponseCollectionAdapters = [.. ResponseCollectionAdapters];
 
             return cloned;
         }

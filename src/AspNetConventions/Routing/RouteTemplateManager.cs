@@ -18,7 +18,7 @@ namespace AspNetConventions.Routing
         /// <returns>The combined route template, or null if no template is found.</returns>
         internal static string? GetRouteTemplate(RouteModelContext model)
         {
-            if(model.Identity.Kind == Core.Enums.RouteSourceKind.MinimalApi)
+            if (model.Identity.Kind == Core.Enums.RouteSourceKind.MinimalApi)
             {
                 return model.RouteEndpointBuilder!.RoutePattern?.RawText;
             }
@@ -129,7 +129,7 @@ namespace AspNetConventions.Routing
                     shouldTransformParameter = options.Route.Hooks.ShouldTransformParameter
                         ?.Invoke(parameterContext) ?? true;
 
-                    if(cache != null)
+                    if (cache != null)
                     {
                         cache[parameterContext] = shouldTransformParameter;
                     }

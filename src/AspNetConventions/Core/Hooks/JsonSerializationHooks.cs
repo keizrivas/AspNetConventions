@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 
 namespace AspNetConventions.Core.Hooks
 {
-    public class JsonSerializationHooks: ICloneable
+    public class JsonSerializationHooks : ICloneable
     {
         public delegate Task<bool> ShouldSerializePropertyCallbackAsync(Exception exception);
 

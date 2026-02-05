@@ -201,7 +201,7 @@ namespace AspNetConventions.Responses
                     ? (HttpStatusCode)problemDetails.Status.Value
                     : _requestDescriptor.StatusCode;
 
-                if(statusCode != _requestDescriptor.StatusCode)
+                if (statusCode != _requestDescriptor.StatusCode)
                 {
                     _requestDescriptor.SetStatusCode(statusCode);
                 }
@@ -227,7 +227,7 @@ namespace AspNetConventions.Responses
             }
 
             var metadata = (Metadata)_requestDescriptor;
-            if(exceptionDescriptor == null)
+            if (exceptionDescriptor == null)
             {
                 return metadata;
             }

@@ -73,7 +73,7 @@ namespace AspNetConventions.Http.Models
         public RequestResult(object? data, string? message, HttpStatusCode statusCode, string? type)
             : this(data, message, statusCode)
         {
-            if(type != null)
+            if (type != null)
             {
                 Type = type;
             }
