@@ -17,9 +17,9 @@ namespace AspNetConventions.Routing.Transformation
     internal sealed class EndpointTransformer(AspNetConventionOptions options)
     {
         private readonly AspNetConventionOptions _options = options ?? throw new ArgumentNullException(nameof(options));
-        
+
         private readonly ICaseConverter _caseConverter = options.Route.GetCaseConverter();
-        
+
         private static readonly Dictionary<RouteParameterContext, bool> _parameterTransformCache = [];
 
         /// <summary>

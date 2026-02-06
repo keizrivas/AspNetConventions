@@ -15,7 +15,7 @@ namespace AspNetConventions.Serialization.Resolvers
     internal sealed class JsonTypeInfoResolver(JsonIgnoreRulesSnapshot rules) : DefaultJsonTypeInfoResolver
     {
         private readonly JsonIgnoreRulesSnapshot _rules = rules ?? throw new ArgumentNullException(nameof(rules));
-        
+
         private static readonly ConcurrentDictionary<string, Dictionary<string, string>>
             _jsonToDeclaredName = new();
 

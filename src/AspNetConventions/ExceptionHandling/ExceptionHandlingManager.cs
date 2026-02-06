@@ -15,6 +15,9 @@ namespace AspNetConventions.ExceptionHandling
     /// <summary>
     /// Provides helper methods for exception handling in AspNetConventions.
     /// </summary>
+    /// <param name="requestDescriptor">The descriptor of the current request, containing metadata for exception handling.</param>
+    /// <param name="options">The AspNetConventions configuration options for exception handling.</param>
+    /// <param name="logger">Optional logger for diagnostic information during exception handling.</param>
     /// <remarks>
     /// This class handles the complete exception processing pipeline, including exception mapping,
     /// logging, and response building.
@@ -34,7 +37,7 @@ namespace AspNetConventions.ExceptionHandling
         }
 
         private readonly ILogger _logger = logger ?? NullLogger<ExceptionHandlingManager>.Instance;
-        
+
         private readonly AspNetConventionOptions _options = options ?? throw new ArgumentNullException(nameof(options));
 
         /// <summary>

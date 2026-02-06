@@ -8,7 +8,7 @@ namespace AspNetConventions.Core.Abstractions.Contracts
     /// <remarks>Implementations of this interface provide access to a set of items, along with information
     /// about the total number of records and optional paging details. This interface is typically used to represent
     /// paginated results from data queries or service responses.</remarks>
-    #pragma warning disable CA1711
+#pragma warning disable CA1711
     public interface IResponseCollection
     {
         /// <summary>
@@ -31,5 +31,5 @@ namespace AspNetConventions.Core.Abstractions.Contracts
         /// </summary>
         int? PageSize { get; }
     }
-    #pragma warning restore CA1711
+#pragma warning restore CA1711
 }

@@ -167,6 +167,9 @@ namespace AspNetConventions.Routing.Conventions
         /// Transforms a route parameter name based on the configured conventions and binding information.
         /// </summary>
         /// <param name="modelContext">The route model context for the parameter.</param>
+        /// <param name="name">The original name of the route parameter.</param>
+        /// <param name="isExplicitName">Indicates whether the parameter has an explicit name defined via binding attributes.</param>
+        /// <returns>The transformed parameter name according to the configured conventions.</returns>
         private string TransformParameterName(RouteModelContext modelContext, string name, bool isExplicitName)
         {
             if (string.IsNullOrWhiteSpace(name))

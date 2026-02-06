@@ -1,3 +1,5 @@
+using AspNetConventions.Responses.Models;
+
 namespace AspNetConventions.Core.Abstractions.Contracts
 {
     /// <summary>
@@ -16,7 +18,7 @@ namespace AspNetConventions.Core.Abstractions.Contracts
         /// <returns>true if the data object is recognized as a wrapped response; otherwise, false.</returns>
         /// <remarks>
         /// This method checks if the data object matches the structure of AspNetConventions wrapped responses,
-        /// such as <see cref="DefaultApiResponse"/>, <see cref="DefaultApiErrorResponse"/> or custom wrapped response types.
+        /// such as <see cref="DefaultApiResponse{TData}"/>, <see cref="DefaultApiErrorResponse{TError}"/> or custom wrapped response types.
         /// </remarks>
         bool IsWrappedResponse(object? data);
     }
