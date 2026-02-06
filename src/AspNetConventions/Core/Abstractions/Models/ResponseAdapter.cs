@@ -12,12 +12,32 @@ namespace AspNetConventions.Core.Abstractions.Models
     /// <param name="logger">Logger instance</param>
     internal abstract class ResponseAdapter(AspNetConventionOptions options, ILogger logger) : IResponseAdapter
     {
+        /// <summary>
+        /// Gets the logger instance for diagnostic information.
+        /// </summary>
+        /// <value>The logger instance provided during construction.</value>
         public ILogger Logger => logger;
 
+        /// <summary>
+        /// Gets the AspNetConventions configuration options.
+        /// </summary>
+        /// <value>The options instance provided during construction.</value>
+        /// <exception cref="ArgumentNullException">Thrown when the options are null.</exception>
         public AspNetConventionOptions Options => options ?? throw new ArgumentNullException(nameof(options));
 
+        /// <summary>
+        /// Determines whether the specified data object represents a wrapped response.
+        /// </summary>
+        /// <param name="data">The data object to evaluate.</param>
+        /// <returns>true if the data object is recognized as a wrapped response; otherwise, false.</returns>
         public abstract bool IsWrappedResponse(object? data);
 
+        /// <summary>
+        /// Monitors and logs cache size information for response factory caching.
+        /// </summary>
+        /// <param name="count">The current cache size count.</param>
+        /// <param name="lastLoggedCount">The last logged count to prevent duplicate logging.</param>
+        /// <returns>The current count if logging occurred; otherwise, null.</returns>
         internal int? MonitorCacheSize(int count, int lastLoggedCount)
         {
             if (count >= 100 && count != lastLoggedCount)

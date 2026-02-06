@@ -16,6 +16,12 @@ using Microsoft.Extensions.Logging.Abstractions;
 
 namespace AspNetConventions.Responses
 {
+    /// <summary>
+    /// Manages the creation and formatting of standardized API responses according to AspNetConventions configuration.
+    /// </summary>
+    /// <remarks>
+    /// This class serves as the central coordinator for response processing, handling various input types and exception descriptors.
+    /// </remarks>
     internal class ResponseManager : ResponseAdapter
     {
         /// <summary>
@@ -49,9 +55,24 @@ namespace AspNetConventions.Responses
         {
         }
 
+        /// <summary>
+        /// The builder used for constructing successful responses.
+        /// </summary>
         private readonly IResponseBuilder _responseBuilder;
+
+        /// <summary>
+        /// The builder used for constructing error responses.
+        /// </summary>
         private readonly IErrorResponseBuilder _errorResponseBuilder;
+
+        /// <summary>
+        /// The descriptor containing information about the current HTTP request.
+        /// </summary>
         private readonly RequestDescriptor _requestDescriptor;
+
+        /// <summary>
+        /// The resolver used to convert data into response collections for pagination support.
+        /// </summary>
         private readonly ResponseCollectionResolver _responseCollectionResolver;
 
         /// <summary>
@@ -219,6 +240,12 @@ namespace AspNetConventions.Responses
                 .WithPayload(payload);
         }
 
+        /// <summary>
+        /// Generates metadata for the response based on the request descriptor and exception information.
+        /// </summary>
+        /// <param name="_requestDescriptor">The request descriptor containing context information.</param>
+        /// <param name="exceptionDescriptor">Optional exception descriptor containing exception details.</param>
+        /// <returns>A <see cref="Metadata"/> object containing the response metadata, or null if metadata inclusion is disabled.</returns>
         private Metadata? GetMetadata(RequestDescriptor _requestDescriptor, ExceptionDescriptor? exceptionDescriptor)
         {
             if (!Options.Response.IncludeMetadata)
@@ -248,6 +275,11 @@ namespace AspNetConventions.Responses
             return metadata;
         }
 
+        /// <summary>
+        /// Generates pagination metadata for the response based on the provided response collection.
+        /// </summary>
+        /// <param name="responseCollection">The response collection containing pagination information.</param>
+        /// <returns>A <see cref="PaginationMetadata"/> object containing pagination details, or null if pagination metadata inclusion is disabled.</returns>
         private PaginationMetadata? GetPaginationMetadata(IResponseCollection responseCollection)
         {
             ArgumentNullException.ThrowIfNull(responseCollection);

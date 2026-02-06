@@ -9,9 +9,8 @@ namespace AspNetConventions.Core.Converters
     /// Provides factory methods for creating case converter instances for various casing styles.
     /// </summary>
     /// <remarks>This class offers static methods to obtain converters for common casing styles such as
-    /// kebab-case, snake_case, camelCase, and PascalCase. All methods return shared instances and are thread-safe. Use
-    /// these methods to obtain an appropriate converter for transforming strings between different casing
-    /// conventions.</remarks>
+    /// kebab-case, snake_case, camelCase, and PascalCase. All methods return shared instances and are thread-safe.
+    /// </remarks>
     public static class CaseConverterFactory
     {
         private static readonly Lazy<KebabCaseConverter> KebabCase =

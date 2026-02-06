@@ -50,7 +50,7 @@ namespace AspNetConventions.Http.Models
         /// Gets or sets the stack trace information when an exception occurred.
         /// </summary>
         /// <value>A collection of stack frame details when stack traces are included in responses.</value>
-        /// <remarks>Only populated in development environments when stack traces are enabled. This is an internal property.</remarks>
+        /// <remarks>Only populated in development environments when stack traces are enabled.</remarks>
         public HashSet<StackFrameInfo>? StackTrace { get; internal set; }
 
         /// <summary>
@@ -58,6 +58,8 @@ namespace AspNetConventions.Http.Models
         /// </summary>
         /// <param name="requestDescriptor">The HTTP request context to convert.</param>
         /// <returns>An <see cref="Metadata"/> representing the provided HTTP request context.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when <paramref name="requestDescriptor"/> is null.</exception>
+        /// <remarks>This explicit operator provides a convenient way to convert request descriptors to metadata objects.</remarks>
         public static explicit operator Metadata(RequestDescriptor requestDescriptor)
         {
             ArgumentNullException.ThrowIfNull(requestDescriptor);
@@ -76,6 +78,8 @@ namespace AspNetConventions.Http.Models
         /// </summary>
         /// <param name="requestDescriptor">The HTTP request context to convert.</param>
         /// <returns>An <see cref="Metadata"/> representing the provided HTTP request context.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when <paramref name="requestDescriptor"/> is null.</exception>
+        /// <remarks>This method provides an alternative to the explicit operator for converting request descriptors to metadata.</remarks>
         public static Metadata ToMetadata(RequestDescriptor requestDescriptor)
         {
             return (Metadata)requestDescriptor;

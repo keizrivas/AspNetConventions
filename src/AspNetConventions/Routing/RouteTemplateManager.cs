@@ -9,6 +9,13 @@ using Microsoft.AspNetCore.Mvc.ApplicationModels;
 
 namespace AspNetConventions.Routing
 {
+    /// <summary>
+    /// Provides utility methods for managing and transforming route templates across different endpoint types.
+    /// </summary>
+    /// <remarks>
+    /// This static class handles route template extraction, case transformation, and parameter name transformation. 
+    /// It serves as the central utility for applying naming conventions to route templates while preserving route functionality.
+    /// </remarks>
     internal static class RouteTemplateManager
     {
         /// <summary>
@@ -49,13 +56,6 @@ namespace AspNetConventions.Routing
         /// <param name="template">The route template to transform.</param>
         /// <param name="caseConverter">The case converter to apply to static segments.</param>
         /// <returns>A transformed route template with each static segment converted to the specified case.</returns>
-        /// <remarks>
-        /// This method:
-        /// - Preserves the leading slash if present
-        /// - Converts only static segments (not parameters or tokens)
-        /// - Skips segments containing parameters, catch-all routes, or complex patterns
-        /// - Returns the original template if it's null or empty
-        /// </remarks>
         internal static string TransformRouteTemplate(string template, ICaseConverter caseConverter)
         {
             if (string.IsNullOrWhiteSpace(template))
@@ -99,13 +99,6 @@ namespace AspNetConventions.Routing
         /// <param name="cache">Optional cache for parameter transformation decisions to improve performance.</param>
         /// <returns>A transformed route template with each parameter converted according to the configured case style.</returns>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="template"/> is null or whitespace.</exception>
-        /// <remarks>
-        /// This method:
-        /// - Uses case converters to transform parameter names
-        /// - Evaluates each parameter against configured hooks to determine if transformation should occur
-        /// - Caches transformation decisions for performance
-        /// - Preserves parameter constraints while transforming parameter names
-        /// </remarks>
         internal static string TransformRouteParameters(string template,
             RouteModelContext modelContext,
             AspNetConventionOptions options,

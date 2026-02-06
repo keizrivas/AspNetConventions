@@ -13,7 +13,7 @@ namespace AspNetConventions.Configuration.Options.Response
         /// <summary>
         /// Gets or sets the default error code for unhandled exceptions.
         /// </summary>
-        public string DefaultErrorType { get; set; } = "INTERNAL_ERROR";
+        public string DefaultErrorType { get; set; } = "UNEXPECTED_ERROR";
 
         /// <summary>
         /// Gets or sets the default error message for unhandled exceptions.

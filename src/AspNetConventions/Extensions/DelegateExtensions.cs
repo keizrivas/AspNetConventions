@@ -9,12 +9,20 @@ namespace AspNetConventions.Extensions
     /// </summary>
     /// <remarks>
     /// These helpers are intended for scenarios where callbacks or hooks are optional
+    /// and need to be invoked safely without causing exceptions when null.
     /// </remarks>
     internal static class AsyncDelegateExtensions
     {
         /// <summary>
         /// Invokes the specified delegate asynchronously, if it is not <see langword="null"/>.
         /// </summary>
+        /// <param name="del">The delegate to invoke, or null if no action should be taken.</param>
+        /// <param name="args">The arguments to pass to the delegate.</param>
+        /// <returns>The result of the delegate invocation, or null if the delegate is null.</returns>
+        /// <exception cref="TargetInvocationException">Thrown when the delegate throws an exception; the original exception is unwrapped.</exception>
+        /// <remarks>
+        /// This method safely handles null delegates and automatically unwraps Task-based results.
+        /// </remarks>
         internal static async Task<object?> InvokeAsync(this Delegate? del, params object?[] args)
         {
             if (del is null)
@@ -30,8 +38,8 @@ namespace AspNetConventions.Extensions
             }
             catch (TargetInvocationException ex) when (ex.InnerException is not null)
             {
-                // Unwrap the original exception thrown by the delegate for clearer stack traces.
-                throw ex.InnerException;
+                ExceptionDispatchInfo.Capture(ex.InnerException).Throw();
+                throw;
             }
 
             if (result is null)
@@ -43,14 +51,13 @@ namespace AspNetConventions.Extensions
             {
                 await task.ConfigureAwait(false);
 
-                var taskType = task.GetType();
-
                 // Handle Task<T>
+                var taskType = task.GetType();
                 if (taskType.IsGenericType &&
                     taskType.GetGenericTypeDefinition() == typeof(Task<>))
                 {
                     return taskType
-                        .GetProperty("Result", BindingFlags.Public | BindingFlags.Instance)?
+                        .GetProperty(nameof(Task<object>.Result), BindingFlags.Public | BindingFlags.Instance)!
                         .GetValue(task);
                 }
 
@@ -58,8 +65,7 @@ namespace AspNetConventions.Extensions
                 return null;
             }
 
-            // Delegate did not return a Task; this is allowed but generally not recommended
-            // in async pipelines. We return the raw value to avoid hiding behavior.
+            // Synchronous return value
             return result;
         }
 
@@ -67,6 +73,16 @@ namespace AspNetConventions.Extensions
         /// Invokes the specified delegate asynchronously, if it is not <see langword="null"/>,
         /// and returns a strongly typed result.
         /// </summary>
+        /// <typeparam name="TResult">The expected return type of the delegate.</typeparam>
+        /// <param name="del">The delegate to invoke, or null if no action should be taken.</param>
+        /// <param name="args">The arguments to pass to the delegate.</param>
+        /// <returns>The strongly typed result of the delegate invocation, or default(TResult) if the delegate is null or returns null.</returns>
+        /// <exception cref="TargetInvocationException">Thrown when the delegate throws an exception; the original exception is unwrapped.</exception>
+        /// <exception cref="InvalidCastException">Thrown when the delegate result cannot be cast to the specified type.</exception>
+        /// <remarks>
+        /// This method provides a type-safe wrapper around the generic InvokeAsync method.
+        /// It automatically handles null delegates and performs type casting for the result.
+        /// </remarks>
         internal static async Task<TResult?> InvokeAsync<TResult>(this Delegate? del, params object?[] args)
         {
             var result = await del.InvokeAsync(args).ConfigureAwait(false);

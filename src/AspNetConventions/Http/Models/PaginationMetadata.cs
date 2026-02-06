@@ -56,6 +56,7 @@ namespace AspNetConventions.Http.Models
         /// <param name="pageSizeName">The query parameter name for page size (e.g., "pageSize").</param>
         /// <param name="pageNumberName">The query parameter name for page number (e.g., "pageNumber").</param>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="context"/> is null.</exception>
+        /// <exception cref="ArgumentException">Thrown when <paramref name="pageSizeName"/> or <paramref name="pageNumberName"/> is null or empty.</exception>
         /// <remarks>
         /// This method constructs URLs for first, last, next, and previous pages while preserving
         /// other query parameters from the original request.
@@ -63,6 +64,8 @@ namespace AspNetConventions.Http.Models
         public void BuildLinks(HttpContext context, string pageSizeName, string pageNumberName)
         {
             ArgumentNullException.ThrowIfNull(context, nameof(context));
+            ArgumentException.ThrowIfNullOrWhiteSpace(pageSizeName, nameof(pageSizeName));
+            ArgumentException.ThrowIfNullOrWhiteSpace(pageNumberName, nameof(pageNumberName));
 
             var request = context.Request;
             var baseUri = $"{request.Scheme}://{request.Host.ToUriComponent()}{request.Path}";

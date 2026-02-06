@@ -11,13 +11,21 @@ using Microsoft.AspNetCore.Routing;
 namespace AspNetConventions.Http.Services
 {
     /// <summary>
-    /// Detects the type of ASP.NET Core endpoint.
+    /// Provides extension methods for detecting the type of ASP.NET Core endpoint from HTTP context.
     /// </summary>
+    /// <remarks>
+    /// This class analyzes the current HTTP request context to determine what type of endpoint
+    /// is being processed. It supports detection of MVC controllers, Razor Pages, Minimal APIs,
+    /// Blazor components, health checks, SignalR hubs, and static files.
+    /// </remarks>
     internal static class EndpointTypeDetector
     {
         /// <summary>
-        /// Gets the endpoint type from HTTP context.
+        /// Gets the endpoint type from the current HTTP context.
         /// </summary>
+        /// <param name="httpContext">The HTTP context containing endpoint information.</param>
+        /// <returns>The detected <see cref="EndpointType"/> of the current request.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when <paramref name="httpContext"/> is null.</exception>
         public static EndpointType GetEndpointType(this HttpContext httpContext)
         {
             ArgumentNullException.ThrowIfNull(httpContext);
@@ -75,8 +83,15 @@ namespace AspNetConventions.Http.Services
         }
 
         /// <summary>
-        /// Determines if the context is an API endpoint.
+        /// Determines if the current context represents an API endpoint.
         /// </summary>
+        /// <param name="httpContext">The HTTP context to analyze.</param>
+        /// <returns>true if the endpoint is an MVC action or Minimal API; otherwise, false.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when <paramref name="httpContext"/> is null.</exception>
+        /// <remarks>
+        /// API endpoints are typically those that return data rather than UI content.
+        /// This method identifies both traditional MVC controller actions and modern Minimal APIs.
+        /// </remarks>
         public static bool IsApiEndpoint(this HttpContext httpContext)
         {
             var endpointType = httpContext.GetEndpointType();
@@ -85,8 +100,15 @@ namespace AspNetConventions.Http.Services
         }
 
         /// <summary>
-        /// Determines if the context is a UI endpoint.
+        /// Determines if the current context represents a UI endpoint.
         /// </summary>
+        /// <param name="httpContext">The HTTP context to analyze.</param>
+        /// <returns>true if the endpoint is a Razor Page or Blazor component; otherwise, false.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when <paramref name="httpContext"/> is null.</exception>
+        /// <remarks>
+        /// UI endpoints are those that render user interface content rather than returning data.
+        /// This method identifies both Razor Pages and Blazor components as UI endpoints.
+        /// </remarks>
         public static bool IsUIEndpoint(this HttpContext httpContext)
         {
             var endpointType = httpContext.GetEndpointType();
@@ -94,6 +116,19 @@ namespace AspNetConventions.Http.Services
                    endpointType == EndpointType.Blazor;
         }
 
+        /// <summary>
+        /// Determines if the file path represents a static file based on its extension.
+        /// </summary>
+        /// <param name="path">The file path to analyze.</param>
+        /// <returns>true if the path has a static file extension; otherwise, false.</returns>
+        /// <remarks>
+        /// This method checks for common static file extensions including:
+        /// - Stylesheets (.CSS)
+        /// - JavaScript files (.JS, .MAP)
+        /// - Images (.JPG, .JPEG, .PNG, .GIF, .SVG, .ICO)
+        /// - Fonts (.WOFF, .WOFF2, .TTF, .EOT)
+        /// - Data files (.JSON, .XML)
+        /// </remarks>
         private static bool IsStaticFileExtension(string path)
         {
             var extension = Path.GetExtension(path).ToUpperInvariant();

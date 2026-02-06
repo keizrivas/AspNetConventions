@@ -10,7 +10,7 @@ namespace AspNetConventions.Routing.Models
     /// </summary>
     /// <remarks>
     /// This record struct encapsulates the context needed for route transformations, providing unified access
-    /// to different endpoint types (controllers, pages, and route endpoints) and their associated metadata.
+    /// to different endpoint types and their associated metadata.
     /// </remarks>
     public readonly record struct RouteModelContext
     {
@@ -28,11 +28,6 @@ namespace AspNetConventions.Routing.Models
         /// <summary>
         /// Gets the display name of the route model.
         /// </summary>
-        /// <value>
-        /// For MVC actions: "Controller.Action" format
-        /// For Razor Pages: The view engine path
-        /// For route endpoints: The display name, routePattern raw text or "Unknown"
-        /// </value>
         public string DisplayName { get; init; }
 
         /// <summary>

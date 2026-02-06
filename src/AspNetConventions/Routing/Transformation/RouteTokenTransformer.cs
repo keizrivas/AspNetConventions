@@ -21,9 +21,6 @@ namespace AspNetConventions.Routing.Transformation
         /// </summary>
         /// <param name="value">The route token to transform.</param>
         /// <returns>The transformed route token, or the original token if transformation is disabled or not applicable.</returns>
-        /// <remarks>
-        /// Returns the original token if any transformation condition is not met.
-        /// </remarks>
         public string? TransformOutbound(object? value)
         {
             // Check if route token transformation is enabled

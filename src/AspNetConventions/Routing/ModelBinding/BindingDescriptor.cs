@@ -15,6 +15,13 @@ namespace AspNetConventions.Routing.ModelBinding
     /// </summary>
     public static class BindingDescriptor
     {
+        /// <summary>
+        /// Extracts binding context information from a BindingMetadataProviderContext, which is used in 
+        /// the model metadata pipeline for both MVC and Razor Pages.
+        /// </summary>
+        /// <param name="context">The binding metadata provider context to extract information from.</param>
+        /// <returns>A <see cref="BindingContext"/> containing the extracted binding information.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when <paramref name="context"/> is null.</exception>
         public static BindingContext GetBindingContext(BindingMetadataProviderContext context)
         {
             ArgumentNullException.ThrowIfNull(context, nameof(context));
@@ -30,6 +37,13 @@ namespace AspNetConventions.Routing.ModelBinding
             );
         }
 
+        /// <summary>
+        /// Extracts binding context information from a ParameterModelBase, which can represent both MVC and 
+        /// Razor Page parameters and properties.
+        /// </summary>
+        /// <param name="modelBase">The parameter model to extract binding context from.</param>
+        /// <returns>A <see cref="BindingContext"/> containing the extracted binding information.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when <paramref name="modelBase"/> is null.</exception>
         public static BindingContext GetBindingContext(ParameterModelBase modelBase)
         {
             ArgumentNullException.ThrowIfNull(modelBase, nameof(modelBase));
@@ -59,6 +73,17 @@ namespace AspNetConventions.Routing.ModelBinding
             );
         }
 
+        /// <summary>
+        /// Creates a BindingContext based on the provided parameters, applying conventions and determining bindability.
+        /// </summary>
+        /// <param name="name">The name of the model or parameter.</param>
+        /// <param name="kind">The kind of metadata (parameter or property).</param>
+        /// <param name="modelType">The type of the model being bound.</param>
+        /// <param name="containerType">The type of the container (e.g., class) that holds the model, if applicable.</param>
+        /// <param name="attributes">The attributes applied to the model or parameter.</param>
+        /// <param name="source">The binding source, if specified.</param>
+        /// <param name="existingBinderName">An existing binder model name, if specified.</param>
+        /// <returns>A <see cref="BindingContext"/> with the appropriate properties set based on conventions and attributes.</returns>
         private static BindingContext CreateContext(
             string name,
             ModelMetadataKind kind,
@@ -106,6 +131,12 @@ namespace AspNetConventions.Routing.ModelBinding
             return context;
         }
 
+        /// <summary>
+        /// Determines whether the model name should be set for the given binding context, based on bindability and explicit naming rules.
+        /// </summary>
+        /// <param name="bindingContext">The binding context to evaluate.</param>
+        /// <param name="name">Outputs the model name to set if applicable.</param>
+        /// <returns>True if the model name should be set; otherwise, false.</returns>
         public static bool ShouldSetBinderModelName(BindingContext bindingContext, out string name)
         {
             name = string.Empty;
@@ -133,6 +164,13 @@ namespace AspNetConventions.Routing.ModelBinding
             return shouldSetModelName;
         }
 
+        /// <summary>
+        /// Determines whether a property should be included in model binding based on the BindInclude 
+        /// settings in the parent context.
+        /// </summary>
+        /// <param name="propertyName">The name of the property to evaluate for inclusion.</param>
+        /// <param name="parentContext">The parent binding context that may contain BindInclude settings.</param>
+        /// <returns>True if the property should be included in model binding; otherwise, false.</returns>
         public static bool ShouldIncludeProperty(
             string propertyName,
             BindingContext parentContext)
@@ -149,6 +187,12 @@ namespace AspNetConventions.Routing.ModelBinding
                 .Contains(propertyName, StringComparer.OrdinalIgnoreCase);
         }
 
+        /// <summary>
+        /// Determines the bindability of a model or parameter based on its attributes and binding source.
+        /// </summary>
+        /// <param name="context">The binding context containing metadata about the model or parameter.</param>
+        /// <param name="attributes">The attributes applied to the model or parameter.</param>
+        /// <returns>True if the model or parameter is bindable; otherwise, false.</returns>
         private static bool DetermineBindability(BindingContext context, IReadOnlyList<object> attributes)
         {
             // Explicit exclusions

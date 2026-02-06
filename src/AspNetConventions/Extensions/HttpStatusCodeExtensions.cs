@@ -4,8 +4,17 @@ using AspNetConventions.Core.Enums;
 
 namespace AspNetConventions.Extensions
 {
+    /// <summary>
+    /// Provides extension methods for HTTP status code classification and analysis.
+    /// </summary>
     internal static class HttpStatusCodeExtensions
     {
+        /// <summary>
+        /// Categorizes an HTTP status code into its corresponding type classification.
+        /// </summary>
+        /// <param name="statusCode">The HTTP status code to categorize.</param>
+        /// <returns>A <see cref="HttpStatusCodeType"/> representing the category of the status code.</returns>
+        /// <exception cref="InvalidOperationException">Thrown when the status code is outside the valid HTTP status code range (100-599).</exception>
         internal static HttpStatusCodeType GetHttpStatusCodeType(this HttpStatusCode statusCode)
         {
             var code = (int)statusCode;

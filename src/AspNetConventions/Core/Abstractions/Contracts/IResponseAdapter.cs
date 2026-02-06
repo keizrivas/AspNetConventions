@@ -1,5 +1,12 @@
 namespace AspNetConventions.Core.Abstractions.Contracts
 {
+    /// <summary>
+    /// Defines a contract for adapting and detecting wrapped response objects.
+    /// </summary>
+    /// <remarks>
+    /// This interface provides the ability to identify whether a data object has already been wrapped
+    /// by AspNetConventions response formatting, preventing double-wrapping and maintaining response integrity.
+    /// </remarks>
     public interface IResponseAdapter
     {
         /// <summary>
@@ -7,6 +14,10 @@ namespace AspNetConventions.Core.Abstractions.Contracts
         /// </summary>
         /// <param name="data">The data object to evaluate.</param>
         /// <returns>true if the data object is recognized as a wrapped response; otherwise, false.</returns>
+        /// <remarks>
+        /// This method checks if the data object matches the structure of AspNetConventions wrapped responses,
+        /// such as <see cref="DefaultApiResponse"/>, <see cref="DefaultApiErrorResponse"/> or custom wrapped response types.
+        /// </remarks>
         bool IsWrappedResponse(object? data);
     }
 }

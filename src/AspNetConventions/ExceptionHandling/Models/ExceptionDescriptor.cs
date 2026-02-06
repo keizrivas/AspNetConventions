@@ -35,8 +35,14 @@ namespace AspNetConventions.ExceptionHandling.Models
         /// </summary>
         public bool ShouldLog { get; set; } = true;
 
+        /// <summary>
+        /// Gets or sets the log level for this exception.
+        /// </summary>
         public LogLevel LogLevel { get; set; } = LogLevel.Error;
 
-        internal Exception? Exception { get; set; }
+        /// <summary>
+        /// Gets or sets the original exception.
+        /// </summary>
+        public Exception? Exception { get; set; }
     }
 }

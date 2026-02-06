@@ -9,6 +9,8 @@ namespace AspNetConventions.Http.Models
     /// </summary>
     public sealed class RequestResult
     {
+        private const string DefaultResponseType = "SUCCESS";
+
         /// <summary>
         /// Initializes a new instance of the <see cref="RequestResult"/> class with default values.
         /// </summary>
@@ -87,7 +89,7 @@ namespace AspNetConventions.Http.Models
         /// <summary>
         /// Gets or sets the response type.
         /// </summary>
-        public string Type { get; init; } = "SUCCESS";
+        public string Type { get; init; } = DefaultResponseType;
 
         /// <summary>
         /// Gets or sets the response message.
@@ -173,6 +175,10 @@ namespace AspNetConventions.Http.Models
         /// Determines the response type based on the HTTP status code.
         /// </summary>
         /// <returns>A string representing the response type category.</returns>
+        /// <remarks>
+        /// This method uses the <see cref="HttpStatusCodeExtensions.GetHttpStatusCodeType"/> extension method
+        /// to categorize the status code and returns a corresponding string representation.
+        /// </remarks>
         private string GetResponseType()
         {
             var statusCodeType = StatusCode.GetHttpStatusCodeType();
@@ -183,7 +189,7 @@ namespace AspNetConventions.Http.Models
                 HttpStatusCodeType.Redirection => "REDIRECTION",
                 HttpStatusCodeType.ClientError => "CLIENT_ERROR",
                 HttpStatusCodeType.ServerError => "SERVER_ERROR",
-                _ => "UNKNOWN"
+                _ => DefaultResponseType
             };
         }
     }

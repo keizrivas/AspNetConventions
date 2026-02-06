@@ -25,8 +25,7 @@ namespace AspNetConventions.Extensions
         /// Adds standard MVC conventions, filters, and formatters to the specified MVC builder.
         /// </summary>
         /// <remarks>This method registers custom controller conventions, global exception filters and a
-        /// response wrapping JSON formatter. It is intended for use during application startup to standardize MVC
-        /// behavior across the application.</remarks>
+        /// response wrapping JSON formatter.</remarks>
         /// <param name="builder">The <see cref="IMvcBuilder"/> to configure.</param>
         /// <returns>The same <see cref="IMvcBuilder"/> instance so that additional calls can be chained.</returns>
         internal static IMvcBuilder AddMvcConventions(this IMvcBuilder builder)
@@ -148,9 +147,11 @@ namespace AspNetConventions.Extensions
         /// <summary>
         /// Configures MVC to use custom JSON serialization options based on application conventions.
         /// </summary>
-        /// <remarks>This method applies JSON serializer settings according to the application's
+        /// <remarks>
+        /// This method applies JSON serializer settings according to the application's
         /// configured conventions. It should be called before adding controllers or other MVC services that depend on
-        /// JSON serialization.</remarks>
+        /// JSON serialization.
+        /// </remarks>
         /// <param name="builder">The <see cref="IMvcBuilder"/> to configure.</param>
         /// <returns>The same <see cref="IMvcBuilder"/> instance so that additional calls can be chained.</returns>
         internal static IMvcBuilder AddMvcJsonOptions(this IMvcBuilder builder)
@@ -170,7 +171,7 @@ namespace AspNetConventions.Extensions
 
                     // Set json serializer options
                     var serializerOptions = options.Json.BuildSerializerOptions();
-                    jsonOptions.JsonSerializerOptions.ApplyOptions(serializerOptions);
+                    jsonOptions.JsonSerializerOptions.ApplyFrom(serializerOptions);
                 });
             });
 

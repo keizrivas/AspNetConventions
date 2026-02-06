@@ -5,8 +5,21 @@ using System.Reflection;
 
 namespace AspNetConventions.Routing.ModelBinding
 {
+    /// <summary>
+    /// Provides utilities for classifying model types for binding purposes.
+    /// </summary>
+    /// <remarks>
+    /// This static class contains methods to determine whether a type should be treated as a complex
+    /// bindable type versus a simple scalar type.
+    /// </remarks>
     internal static class ModelTypeClassifier
     {
+        /// <summary>
+        /// Determines whether the specified type is a complex bindable type.
+        /// </summary>
+        /// <param name="type">The type to classify.</param>
+        /// <returns>true if the type is a complex bindable type; otherwise, false.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when <paramref name="type"/> is null.</exception>
         public static bool IsComplexBindableType(Type type)
         {
             ArgumentNullException.ThrowIfNull(type);

@@ -101,35 +101,6 @@ namespace AspNetConventions.Extensions
         }
 
         /// <summary>
-        /// Adds HTTP JSON options configuration to the service collection.
-        /// </summary>
-        /// <param name="services">The service collection to configure.</param>
-        /// <returns>The same <see cref="IServiceCollection"/> instance for method chaining.</returns>
-        /// <exception cref="InvalidOperationException">Thrown when AspNetConventions options cannot be built or are invalid.</exception>
-        /// <remarks>
-        /// This method configures the ASP.NET Core JSON options by applying the AspNetConventions
-        /// JSON serialization settings. It registers a singleton configuration service that builds the
-        /// AspNetConventions options and applies the JSON serializer options to the framework's JSON options.
-        /// </remarks>
-        internal static IServiceCollection AddHttpJsonOptions(this IServiceCollection services)
-        {
-            // Configure MVC JSON options
-            services.AddSingleton<IConfigureOptions<Microsoft.AspNetCore.Http.Json.JsonOptions>>(serviceProvider =>
-            {
-                // Build and validate options
-                var options = serviceProvider.BuildAspNetConventionOptions();
-
-                return new ConfigureOptions<Microsoft.AspNetCore.Http.Json.JsonOptions>(jsonOptions =>
-                {
-                    var serializerOptions = options.Json.BuildSerializerOptions();
-                    jsonOptions.SerializerOptions.ApplyOptions(serializerOptions);
-                });
-            });
-
-            return services;
-        }
-
-        /// <summary>
         /// Applies HTTP JSON options to the web application's existing JSON configuration.
         /// </summary>
         /// <param name="app">The web application to configure JSON options for.</param>
@@ -151,7 +122,7 @@ namespace AspNetConventions.Extensions
 
             // Apply json serializer options to existing service
             var serializerOptions = options.BuildSerializerOptions();
-            httpJsonOptions.SerializerOptions.ApplyOptions(serializerOptions);
+            httpJsonOptions.SerializerOptions.ApplyFrom(serializerOptions);
 
             return app;
         }

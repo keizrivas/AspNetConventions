@@ -19,7 +19,7 @@ namespace AspNetConventions.ExceptionHandling.Handlers
     /// <param name="logger">The logger for diagnostic information.</param>
     /// <remarks>
     /// This handler integrates with AspNetConventions to provide consistent error response formatting
-    /// across Minimal API endpoints, including proper status codes, error types, messages, and metadata.
+    /// across Minimal API endpoints.
     /// </remarks>
     internal sealed class MinimalApiExceptionHandler(
         AspNetConventionOptions options,

@@ -6,6 +6,10 @@ using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace AspNetConventions.ExceptionHandling.Filters
 {
+    /// <summary>
+    /// An ASP.NET Core MVC result filter that checks for the presence of an <see cref="ExceptionDescriptor"/> 
+    /// in the action result content and sets the HTTP status code accordingly.
+    /// </summary>
     internal class ExceptionStatusCodeResultFilter : IAsyncResultFilter
     {
         public async Task OnResultExecutionAsync(ResultExecutingContext context, ResultExecutionDelegate next)

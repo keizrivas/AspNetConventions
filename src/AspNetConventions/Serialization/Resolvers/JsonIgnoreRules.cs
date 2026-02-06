@@ -58,6 +58,10 @@ namespace AspNetConventions.Serialization.Resolvers
         /// <summary>
         /// Configures a specific property on a type to be ignored.
         /// </summary>
+        /// <typeparam name="T">The type containing the property to ignore.</typeparam>
+        /// <param name="propertySelector">An expression selecting the property to ignore.</param>
+        /// <param name="condition">The condition under which the property should be ignored.</param>
+        /// <exception cref="ArgumentNullException">Thrown when <paramref name="propertySelector"/> is null.</exception>
         public void IgnoreProperty<T>(
             Expression<Func<T, object?>> propertySelector,
             JsonIgnoreCondition condition)
@@ -82,6 +86,14 @@ namespace AspNetConventions.Serialization.Resolvers
             );
         }
 
+        /// <summary>
+        /// Configures a specific property on a type to be ignored.
+        /// </summary>
+        /// <param name="type">The type containing the property to ignore.</param>
+        /// <param name="propertyName">The name of the property to ignore.</param>
+        /// <param name="condition">The condition under which the property should be ignored.</param>
+        /// <exception cref="ArgumentNullException">Thrown when <paramref name="type"/> is null.</exception>
+        /// <exception cref="ArgumentException">Thrown when <paramref name="propertyName"/> is null or empty.</exception>
         public void IgnoreProperty(
             Type type,
             string propertyName,
@@ -105,6 +117,9 @@ namespace AspNetConventions.Serialization.Resolvers
         /// <summary>
         /// Configures all types in an assembly to be ignored.
         /// </summary>
+        /// <param name="assembly">The assembly to ignore.</param>
+        /// <param name="condition">The condition under which types in the assembly should be ignored.</param>
+        /// <exception cref="ArgumentNullException">Thrown when <paramref name="assembly"/> is null.</exception>
         public void IgnoreAssembly(Assembly assembly, JsonIgnoreCondition condition)
         {
             ArgumentNullException.ThrowIfNull(assembly);
@@ -114,6 +129,9 @@ namespace AspNetConventions.Serialization.Resolvers
         /// <summary>
         /// Configures a property by name (applies to all types).
         /// </summary>
+        /// <param name="propertyName">The name of the property to ignore globally.</param>
+        /// <param name="condition">The condition under which the property should be ignored globally.</param>
+        /// <exception cref="ArgumentException">Thrown when <paramref name="propertyName"/> is null or empty.</exception>
         public void IgnorePropertyName(string propertyName, JsonIgnoreCondition condition)
         {
             ArgumentException.ThrowIfNullOrEmpty(propertyName);
@@ -123,11 +141,20 @@ namespace AspNetConventions.Serialization.Resolvers
         /// <summary>
         /// Configures a specific type to be ignored.
         /// </summary>
+        /// <typeparam name="TType">The type to ignore.</typeparam>
+        /// <param name="condition">The condition under which the type should be ignored.</param>
         public void IgnoreType<TType>(JsonIgnoreCondition condition)
         {
             _typeRules[typeof(TType)] = condition;
         }
 
+        /// <summary>
+        /// Extracts the member expression from a property selector expression.
+        /// </summary>
+        /// <typeparam name="T">The type containing the property.</typeparam>
+        /// <param name="expr">The expression selecting the property.</param>
+        /// <returns>The member expression representing the property access.</returns>
+        /// <exception cref="InvalidOperationException">Thrown when the expression does not select a property.</exception>
         private static MemberExpression ExtractMember<T>(Expression<Func<T, object?>> expr)
         {
             return (expr.Body as MemberExpression)

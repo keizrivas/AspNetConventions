@@ -17,7 +17,7 @@ namespace AspNetConventions.Routing.Conventions
     /// <summary>
     /// Apply conventions to user-defined complex types properties
     /// </summary>
-    /// <param name="options"></param>
+    /// <param name="options">The convention options for routing and binding.</param>
     internal sealed class ComplexTypeBindingMetadataProvider(IOptions<AspNetConventionOptions> options) : ConventionOptions(options), IBindingMetadataProvider
     {
         // Cache for complex type parameters discovered at startup
@@ -26,6 +26,10 @@ namespace AspNetConventions.Routing.Conventions
         // Cache for already-processed properties to avoid redundant transformations
         private static readonly ConcurrentDictionary<string, bool> _processedProperties = new();
 
+        /// <summary>
+        /// Creates binding metadata for complex type properties based on the configured conventions.
+        /// </summary>
+        /// <param name="context">The context for which to create binding metadata.</param>
         public void CreateBindingMetadata(BindingMetadataProviderContext context)
         {
             ArgumentNullException.ThrowIfNull(context);
@@ -68,6 +72,7 @@ namespace AspNetConventions.Routing.Conventions
         /// <summary>
         /// Handles Parameter metadata
         /// </summary>
+        /// <param name="context">The context containing the parameter metadata to process.</param>
         private void HandleParameterMetadata(BindingMetadataProviderContext context)
         {
             var key = context.Key;
@@ -104,6 +109,7 @@ namespace AspNetConventions.Routing.Conventions
         /// <summary>
         /// Handles Property metadata
         /// </summary>
+        /// <param name="context">The context containing the property metadata to process.</param>
         private void HandlePropertyMetadata(BindingMetadataProviderContext context)
         {
             var key = context.Key;
@@ -146,6 +152,8 @@ namespace AspNetConventions.Routing.Conventions
         /// <summary>
         /// Performs the actual transformation of the binding name
         /// </summary>
+        /// <param name="context">The context containing the metadata to transform.</param>
+        /// <param name="rootComplexType">The root complex type that this property belongs to, used for caching.</param>
         private void TransformBindingName(
             BindingMetadataProviderContext context,
             Type rootComplexType)
@@ -184,6 +192,7 @@ namespace AspNetConventions.Routing.Conventions
         /// <summary>
         /// Caches a complex type for tracking its properties
         /// </summary>
+        /// <param name="complexType">The complex type to cache.</param>
         private static void CacheComplexType(Type complexType)
         {
             if (_complexTypeCache.ContainsKey(complexType))
@@ -208,6 +217,9 @@ namespace AspNetConventions.Routing.Conventions
         /// <summary>
         /// Checks if the current context represents a property of a cached complex type
         /// </summary>
+        /// <param name="context">The context to evaluate.</param>
+        /// <param name="rootComplexType">Outputs the root complex type if a match is found.</param>
+        /// <returns>True if the context is a property of a cached complex type; otherwise, false.</returns>
         private static bool IsPropertyOfComplexType(
             BindingMetadataProviderContext context,
             out Type? rootComplexType)
@@ -268,6 +280,8 @@ namespace AspNetConventions.Routing.Conventions
         /// <summary>
         /// Checks if childType is nested within parentType through property relationships
         /// </summary>
+        /// <param name="childType">The type to check for being nested.</param>
+        /// <param name="parentType">The type to check against for nesting.</param>
         private static bool IsNestedWithin(Type childType, Type parentType)
         {
             if (parentType == childType)
@@ -324,6 +338,8 @@ namespace AspNetConventions.Routing.Conventions
         /// <summary>
         /// Checks if a type is safe to transform (user-defined, not framework)
         /// </summary>
+        /// <param name="type">The type to evaluate.</param>
+        /// <param name="context">The context for additional metadata checks.</param>
         private static bool IsSafeUserDefinedType(
             Type type,
             BindingMetadataProviderContext context)

@@ -12,6 +12,7 @@ namespace AspNetConventions.Routing.Conventions
     /// <summary>
     /// Applies naming conventions to Razor Page handler parameters.
     /// </summary>
+    /// <param name="options">The convention options to apply.</param>
     internal sealed class RazorPageParameterConvention(IOptions<AspNetConventionOptions> options) : ConventionOptions(options), IPageApplicationModelConvention
     {
         public void Apply(PageApplicationModel model)

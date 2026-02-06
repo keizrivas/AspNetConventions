@@ -15,9 +15,11 @@ namespace AspNetConventions.Routing.Conventions
     /// Applies route naming and parameter conventions to controllers and actions based on the configured ASP.NET
     /// conventions options.
     /// </summary>
-    /// <remarks>This convention is intended for use with ASP.NET Core applications to standardize route
-    /// templates and parameter names according to project-wide settings.</remarks>
     /// <param name="Options">The options used to configure conventions.</param>
+    /// <remarks>
+    /// This convention is intended for use with ASP.NET Core applications to standardize route
+    /// templates and parameter names according to project-wide settings.
+    /// </remarks>
     internal sealed class RouteControllerConvention(IOptions<AspNetConventionOptions> Options) : ConventionOptions(Options), IControllerModelConvention
     {
         private static readonly HashSet<RouteParameterContext> _explicitNameCache = [];
@@ -161,6 +163,10 @@ namespace AspNetConventions.Routing.Conventions
             }
         }
 
+        /// <summary>
+        /// Transforms a route parameter name based on the configured conventions and binding information.
+        /// </summary>
+        /// <param name="modelContext">The route model context for the parameter.</param>
         private string TransformParameterName(RouteModelContext modelContext, string name, bool isExplicitName)
         {
             if (string.IsNullOrWhiteSpace(name))

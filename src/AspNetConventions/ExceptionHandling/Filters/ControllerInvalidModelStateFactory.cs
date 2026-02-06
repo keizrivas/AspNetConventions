@@ -8,6 +8,10 @@ using Microsoft.Extensions.Options;
 
 namespace AspNetConventions.ExceptionHandling.Filters
 {
+    /// <summary>
+    /// Factory for creating standardized responses when a controller action receives an invalid model state.
+    /// </summary>
+    /// <param name="options">The options that configure response formatting and validation error messages.</param>
     public sealed class ControllerInvalidModelStateFactory(IOptions<AspNetConventionOptions> options) : IInvalidModelStateFactory
     {
         public IActionResult Create(ActionContext context)
@@ -18,6 +22,7 @@ namespace AspNetConventions.ExceptionHandling.Filters
                 context.ModelState.Count,
                 StringComparer.Ordinal);
 
+            // Iterate through the model state entries and extract validation error messages
             foreach (var entry in context.ModelState)
             {
                 var modelState = entry.Value;
@@ -41,6 +46,7 @@ namespace AspNetConventions.ExceptionHandling.Filters
                 }
             }
 
+            // Return a BadRequestObjectResult with the standardized error response
             return new BadRequestObjectResult(new ExceptionDescriptor
             {
                 Data = errors,

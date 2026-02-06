@@ -17,8 +17,7 @@ namespace AspNetConventions.ExceptionHandling
     /// </summary>
     /// <remarks>
     /// This class handles the complete exception processing pipeline, including exception mapping,
-    /// logging, and response building. It integrates with configurable hooks and mappers to provide
-    /// flexible exception handling strategies.
+    /// logging, and response building.
     /// </remarks>
     internal class ExceptionHandlingManager(RequestDescriptor requestDescriptor, AspNetConventionOptions options, ILogger? logger = null)
     {
@@ -35,6 +34,7 @@ namespace AspNetConventions.ExceptionHandling
         }
 
         private readonly ILogger _logger = logger ?? NullLogger<ExceptionHandlingManager>.Instance;
+        
         private readonly AspNetConventionOptions _options = options ?? throw new ArgumentNullException(nameof(options));
 
         /// <summary>

@@ -11,12 +11,20 @@ namespace AspNetConventions.Serialization.Resolvers
     /// <summary>
     /// Resolves JSON type information with custom ignore rules.
     /// </summary>
+    /// <param name="rules">The snapshot of JSON ignore rules to apply during type information resolution.</param>
     internal sealed class JsonTypeInfoResolver(JsonIgnoreRulesSnapshot rules) : DefaultJsonTypeInfoResolver
     {
         private readonly JsonIgnoreRulesSnapshot _rules = rules ?? throw new ArgumentNullException(nameof(rules));
+        
         private static readonly ConcurrentDictionary<string, Dictionary<string, string>>
             _jsonToDeclaredName = new();
 
+        /// <summary>
+        /// Gets JSON type information for the specified type with custom ignore rules applied.
+        /// </summary>
+        /// <param name="type">The type to get JSON type information for.</param>
+        /// <param name="options">The JSON serializer options.</param>
+        /// <returns>The JSON type information with custom ignore rules applied.</returns>
         public override JsonTypeInfo GetTypeInfo(Type type, JsonSerializerOptions options)
         {
             var info = base.GetTypeInfo(type, options);
@@ -28,7 +36,7 @@ namespace AspNetConventions.Serialization.Resolvers
 
             var resultType = type.IsGenericType ? type.GetGenericTypeDefinition() : type;
 
-            // Build reverse map: JSON name -> C# property name
+            // Build reverse map: JSON name -> CLR property name
             var cacheKey = $"{resultType.FullName}|{options.PropertyNamingPolicy?.GetType().Name ?? "none"}";
             var jsonToDeclaredName = _jsonToDeclaredName.GetOrAdd(
                 cacheKey,
@@ -53,6 +61,12 @@ namespace AspNetConventions.Serialization.Resolvers
             return info;
         }
 
+        /// <summary>
+        /// Builds a reverse mapping from JSON property names to CLR property names.
+        /// </summary>
+        /// <param name="type">The type to analyze.</param>
+        /// <param name="options">The JSON serializer options containing naming policy.</param>
+        /// <returns>A dictionary mapping JSON property names to their original CLR property names.</returns>
         private static Dictionary<string, string> BuildJsonToDeclaredName(
             Type type,
             JsonSerializerOptions options)
@@ -85,6 +99,13 @@ namespace AspNetConventions.Serialization.Resolvers
             return map;
         }
 
+        /// <summary>
+        /// Resolves the JSON ignore condition for a property based on configured rules.
+        /// </summary>
+        /// <param name="type">The type containing the property.</param>
+        /// <param name="originalPropertyName">The original CLR property name.</param>
+        /// <param name="jsonPropertyName">The JSON property name after naming policy transformation.</param>
+        /// <returns>The ignore condition to apply, or null if no rule matches.</returns>
         private JsonIgnoreCondition? ResolveCondition(
             Type type,
             string originalPropertyName,
@@ -128,7 +149,13 @@ namespace AspNetConventions.Serialization.Resolvers
             return null;
         }
 
-        //[MethodImpl(MethodImplOptions.AggressiveInlining)]
+        /// <summary>
+        /// Determines whether a property should be serialized based on the ignore condition.
+        /// </summary>
+        /// <param name="value">The property value to check.</param>
+        /// <param name="propertyType">The type of the property.</param>
+        /// <param name="condition">The ignore condition to apply.</param>
+        /// <returns>true if the property should be serialized; otherwise, false.</returns>
         private static bool ShouldSerializeProperty(
             object? value,
             Type propertyType,
@@ -144,7 +171,12 @@ namespace AspNetConventions.Serialization.Resolvers
             };
         }
 
-        //[MethodImpl(MethodImplOptions.AggressiveInlining)]
+        /// <summary>
+        /// Determines whether a value is the default value for its type.
+        /// </summary>
+        /// <param name="value">The value to check.</param>
+        /// <param name="propertyType">The type of the property.</param>
+        /// <returns>true if the value is the default for its type; otherwise, false.</returns>
         private static bool IsDefaultValue(object? value, Type propertyType)
         {
             if (value is null)

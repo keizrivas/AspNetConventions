@@ -5,8 +5,22 @@ using AspNetConventions.Http.Models;
 
 namespace AspNetConventions.Core.Abstractions.Models
 {
+    /// <summary>
+    /// Represents a standardized API response with common properties.
+    /// </summary>
+    /// <remarks>
+    /// This abstract base class provides the foundation for all standardized API responses in AspNetConventions,
+    /// ensuring consistent response structure across different endpoint types.
+    /// </remarks>
     public abstract class ApiResponse
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ApiResponse"/> class with the specified HTTP status code.
+        /// </summary>
+        /// <param name="statusCode">The HTTP status code for the response.</param>
+        /// <remarks>
+        /// The constructor automatically sets the <see cref="Status"/> property based on the status code.
+        /// </remarks>
         protected ApiResponse(HttpStatusCode statusCode)
         {
             StatusCode = (int)statusCode;

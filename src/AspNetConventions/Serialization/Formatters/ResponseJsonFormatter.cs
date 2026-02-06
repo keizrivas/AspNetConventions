@@ -19,8 +19,7 @@ namespace AspNetConventions.Serialization.Formatters
     /// <param name="jsonSerializerOptions">The JSON serializer options for output formatting.</param>
     /// <remarks>
     /// This formatter automatically wraps API responses with standardized structure including metadata,
-    /// pagination information, and error details when applicable. It handles various response types
-    /// and excludes certain types from wrapping to maintain compatibility with existing MVC behavior.
+    /// pagination information, and error details when applicable.
     /// </remarks>
     public sealed class ResponseJsonFormatter(
         IOptions<AspNetConventionOptions> options,

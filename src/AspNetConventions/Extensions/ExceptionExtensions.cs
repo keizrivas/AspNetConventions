@@ -4,8 +4,18 @@ using AspNetConventions.ExceptionHandling.Models;
 
 namespace AspNetConventions.Extensions
 {
+    /// <summary>
+    /// Provides extension methods for exception analysis and stack trace processing.
+    /// </summary>
     internal static class ExceptionExtensions
     {
+        /// <summary>
+        /// Extracts and processes the stack trace from an exception, returning a set of unique stack frame information.
+        /// </summary>
+        /// <param name="ex">The exception to extract the stack trace from.</param>
+        /// <param name="maxDepth">The maximum number of stack frames to process. Defaults to 50.</param>
+        /// <returns>A <see cref="HashSet{T}"/> containing unique <see cref="StackFrameInfo"/> objects representing the stack trace.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when <paramref name="ex"/> is null.</exception>
         internal static HashSet<StackFrameInfo> GetStackTrace(this Exception ex, int maxDepth = 50)
         {
             ArgumentNullException.ThrowIfNull(ex);

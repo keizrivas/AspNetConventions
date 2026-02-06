@@ -17,6 +17,11 @@ namespace AspNetConventions.Core.Converters
         /// </summary>
         public int Length { get; }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="WordRange"/> struct with the specified starting index and length.
+        /// </summary> <param name="start">The zero-based starting index of the range.</param>
+        /// <param name="length">The number of words included in the range. Must be non-negative.</param>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="length"/> is negative.</exception>
         public WordRange(int start, int length)
         {
             if (length < 0)

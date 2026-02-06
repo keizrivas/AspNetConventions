@@ -12,14 +12,14 @@ namespace AspNetConventions.Routing.Transformation
     /// Transforms Minimal API endpoints to apply naming conventions.
     /// </summary>
     /// <remarks>
-    /// This transformer applies configured route naming conventions to Minimal API endpoints, including
-    /// case conversion for route segments and parameters, while supporting exclusion rules and
-    /// hooks for customization.
+    /// This transformer applies configured route naming conventions to Minimal API endpoints.
     /// </remarks>
     internal sealed class EndpointTransformer(AspNetConventionOptions options)
     {
         private readonly AspNetConventionOptions _options = options ?? throw new ArgumentNullException(nameof(options));
+        
         private readonly ICaseConverter _caseConverter = options.Route.GetCaseConverter();
+        
         private static readonly Dictionary<RouteParameterContext, bool> _parameterTransformCache = [];
 
         /// <summary>
@@ -28,9 +28,6 @@ namespace AspNetConventions.Routing.Transformation
         /// <param name="routeEndpointBuilder">The route endpoint builder to transform.</param>
         /// <returns>The transformed route pattern, or null if no transformation was applied.</returns>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="routeEndpointBuilder"/> is null.</exception>
-        /// <remarks>
-        /// Returns null if the pattern is unchanged or transformation is disabled
-        /// </remarks>
         public RoutePattern? TransformRoutePattern(RouteEndpointBuilder routeEndpointBuilder)
         {
             var modelContext = RouteModelContext.FromMinimalApi(routeEndpointBuilder);

@@ -3,8 +3,8 @@ namespace AspNetConventions.Core.Enums
     /// <summary>
     /// Specifies the casing style options for formatting text identifiers.
     /// </summary>
-    /// <remarks>Use this enumeration to indicate how strings should be cased. The available styles include
-    /// "camelCase", "PascalCase", "kebab-case", and "snake_case" for consistent naming conventions across your application.
+    /// <remarks>
+    /// Use this enumeration to indicate how strings should be cased.
     /// </remarks>
     public enum CasingStyle
     {
