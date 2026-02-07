@@ -46,12 +46,6 @@ namespace AspNetConventions.Serialization.Formatters
                 return false;
             }
 
-            // Exclude ProblemDetails types
-            if (typeof(ProblemDetails).IsAssignableFrom(type))
-            {
-                return false;
-            }
-
             // Exclude Streaming JSON types
             if ((type != null && type.IsGenericType &&
                 type.GetGenericTypeDefinition() == typeof(IAsyncEnumerable<>)) ||

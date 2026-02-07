@@ -42,9 +42,6 @@ namespace AspNetConventions.ExceptionHandling.Mappers
             [typeof(TimeoutException)] = (HttpStatusCode.RequestTimeout, "TIMEOUT"),
             [typeof(TaskCanceledException)] = (HttpStatusCode.RequestTimeout, "REQUEST_CANCELLED"),
             [typeof(OperationCanceledException)] = (HttpStatusCode.RequestTimeout, "OPERATION_CANCELLED"),
-
-            // Fallback
-            [typeof(Exception)] = (HttpStatusCode.InternalServerError, "INTERNAL_SERVER_ERROR")
         };
 
         public bool CanMapException(Exception exception, RequestDescriptor requestDescriptor)

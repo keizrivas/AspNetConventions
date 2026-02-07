@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Net;
 
 namespace AspNetConventions.Configuration.Options.Response
@@ -25,6 +26,18 @@ namespace AspNetConventions.Configuration.Options.Response
         /// </summary>
         public string DefaultValidationMessage { get; set; } = "One or more validation errors occurred.";
 
+        /// <summary>
+        /// Gets the collection of allowed ProblemDetails extension keys that can be included in error responses.
+        /// </summary>
+        public HashSet<string> AllowedProblemDetailsExtensions { get; private set; } = new(StringComparer.Ordinal)
+        {
+            "code",
+            "details"
+        };
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the exception type should be included in the output.
+        /// </summary>
         public bool? IncludeExceptionType { get; set; }
 
         /// <summary>
@@ -41,6 +54,15 @@ namespace AspNetConventions.Configuration.Options.Response
         /// Creates a deep clone of <see cref="ErrorResponseOptions"/> instance.
         /// </summary>
         /// <returns>A new <see cref="ErrorResponseOptions"/> instance with all nested objects cloned.</returns>
-        public object Clone() => MemberwiseClone();
+        public object Clone()
+        {
+            var cloned = (ErrorResponseOptions)MemberwiseClone();
+            cloned.AllowedProblemDetailsExtensions = new HashSet<string>(
+                AllowedProblemDetailsExtensions, 
+                StringComparer.Ordinal
+            );
+
+            return cloned;
+        }
     }
 }

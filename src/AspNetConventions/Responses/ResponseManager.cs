@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using AspNetConventions.Configuration.Options;
@@ -13,6 +15,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
+using Microsoft.Extensions.Options;
 
 namespace AspNetConventions.Responses
 {
@@ -228,8 +231,8 @@ namespace AspNetConventions.Responses
                 }
 
                 return new RequestResult(
-                    data: problemDetails.Extensions,
-                    message: problemDetails.Detail ?? problemDetails.Title,
+                    data: GetProblemData(problemDetails),
+                    message: ResolveMessage(problemDetails),
                     statusCode: statusCode)
                     .WithPayload(payload);
             }
@@ -238,6 +241,56 @@ namespace AspNetConventions.Responses
                 data: content,
                 statusCode: statusCode)
                 .WithPayload(payload);
+        }
+
+        /// <summary>
+        /// Resolves the most appropriate message to use in the response based on the provided ProblemDetails instance and configuration options.
+        /// </summary>
+        /// <param name="problem">The ProblemDetails instance from which to resolve the message.</param>
+        /// <returns>A string message to be included in the response.</returns>
+        private string ResolveMessage(ProblemDetails problem)
+        {
+            if (!string.IsNullOrWhiteSpace(problem.Detail))
+            {
+                return problem.Detail;
+            }
+
+            if (!string.IsNullOrWhiteSpace(problem.Title))
+            {
+                return problem.Title;
+            }
+
+            return Options.Response.ErrorResponse.DefaultErrorMessage;
+        }
+
+        /// <summary>
+        /// Extracts relevant data from ProblemDetails extensions based on the allowed keys configured in ErrorResponseOptions.
+        /// </summary>
+        /// <param name="problem">The ProblemDetails instance from which to extract data.</param>
+        /// <returns>An object containing the extracted data, or null if no relevant data is found.</returns>
+        private object? GetProblemData(ProblemDetails problem)
+        {
+            if (problem.Extensions.TryGetValue("errors", out var errors))
+            {
+                return errors;
+            }
+
+            Dictionary<string, object?>? result = null;
+            var allowedExtensions = Options.Response.ErrorResponse.AllowedProblemDetailsExtensions;
+
+            // Filter extensions based on allowed list
+            foreach (var extension in problem.Extensions)
+            {
+                if (!allowedExtensions.Contains(extension.Key))
+                {
+                    continue;
+                }
+
+                result ??= [];
+                result[extension.Key] = extension.Value;
+            }
+
+            return result;
         }
 
         /// <summary>

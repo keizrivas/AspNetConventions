@@ -18,7 +18,7 @@ namespace AspNetConventions
     /// AspNetConventions standardizes route naming, response formatting, JSON serialization, and exception handling
     /// across your application, providing consistent APIs for Razor pages, MVC controllers and Minimal API endpoints.
     /// </remarks>
-    public static class AspNetConventions
+    public static class AspNetConventionsExtensions
     {
         /// <summary>
         /// Adds AspNetConventions to the MVC services with optional configuration.
