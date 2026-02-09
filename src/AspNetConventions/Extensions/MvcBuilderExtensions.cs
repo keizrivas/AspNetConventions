@@ -1,4 +1,3 @@
-using System;
 using System.Threading;
 using AspNetConventions.Configuration.Options;
 using AspNetConventions.Core.Abstractions.Contracts;
@@ -126,7 +125,7 @@ namespace AspNetConventions.Extensions
                     var serializerOptions = context.RequestServices
                         .GetOptions<Microsoft.AspNetCore.Mvc.JsonOptions>()
                         .Value.JsonSerializerOptions;
-                    
+
                     var exception = context.Features
                         .Get<IExceptionHandlerFeature>()?.Error;
 

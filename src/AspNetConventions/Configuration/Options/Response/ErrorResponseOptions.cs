@@ -53,7 +53,7 @@ namespace AspNetConventions.Configuration.Options.Response
         {
             var cloned = (ErrorResponseOptions)MemberwiseClone();
             cloned.AllowedProblemDetailsExtensions = new HashSet<string>(
-                AllowedProblemDetailsExtensions, 
+                AllowedProblemDetailsExtensions,
                 StringComparer.Ordinal
             );
 

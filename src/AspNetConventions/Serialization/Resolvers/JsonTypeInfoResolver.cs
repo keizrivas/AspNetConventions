@@ -33,7 +33,7 @@ namespace AspNetConventions.Serialization.Resolvers
             {
                 return info;
             }
-            
+
             // Build reverse map: JSON name -> CLR property name
             var cacheKey = $"{type.FullName}|{options.PropertyNamingPolicy?.GetType().FullName ?? "none"}";
             var jsonToDeclaredName = _jsonToDeclaredName.GetOrAdd(

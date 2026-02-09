@@ -1,5 +1,4 @@
 using System;
-using System.Xml.Linq;
 using AspNetConventions.Configuration.Options;
 using AspNetConventions.ExceptionHandling.Abstractions;
 using AspNetConventions.ExceptionHandling.Handlers;

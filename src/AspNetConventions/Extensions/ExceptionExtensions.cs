@@ -32,7 +32,7 @@ namespace AspNetConventions.Extensions
 
             while (i < length)
             {
-                if(result.Count == maxDepth)
+                if (result.Count == maxDepth)
                 {
                     break;
                 }

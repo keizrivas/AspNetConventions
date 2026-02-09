@@ -16,7 +16,7 @@ namespace AspNetConventions.ExceptionHandling.Models
         /// </summary>
         /// <value>A string representing the full name of the exception type, or "UnknownException" if the type information is unavailable.</value>
         public string Type { get; } = exception.GetType().FullName ?? "UnknownException";
-        
+
         /// <summary>
         /// Gets the message associated with the exception.
         /// </summary>
