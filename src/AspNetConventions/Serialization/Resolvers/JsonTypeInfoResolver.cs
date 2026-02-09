@@ -33,14 +33,12 @@ namespace AspNetConventions.Serialization.Resolvers
             {
                 return info;
             }
-
-            var resultType = type.IsGenericType ? type.GetGenericTypeDefinition() : type;
-
+            
             // Build reverse map: JSON name -> CLR property name
-            var cacheKey = $"{resultType.FullName}|{options.PropertyNamingPolicy?.GetType().Name ?? "none"}";
+            var cacheKey = $"{type.FullName}|{options.PropertyNamingPolicy?.GetType().FullName ?? "none"}";
             var jsonToDeclaredName = _jsonToDeclaredName.GetOrAdd(
                 cacheKey,
-                _ => BuildJsonToDeclaredName(resultType, options));
+                _ => BuildJsonToDeclaredName(type, options));
 
             // Apply ignore rules
             foreach (var property in info.Properties)
@@ -49,7 +47,7 @@ namespace AspNetConventions.Serialization.Resolvers
                     ? csharpName
                     : property.Name;
 
-                var condition = ResolveCondition(resultType, originalPropertyName, property.Name);
+                var condition = ResolveCondition(type, originalPropertyName, property.Name);
                 if (condition.HasValue)
                 {
                     var propertyType = property.PropertyType;
@@ -107,43 +105,61 @@ namespace AspNetConventions.Serialization.Resolvers
         /// <param name="jsonPropertyName">The JSON property name after naming policy transformation.</param>
         /// <returns>The ignore condition to apply, or null if no rule matches.</returns>
         private JsonIgnoreCondition? ResolveCondition(
-            Type type,
-            string originalPropertyName,
-            string jsonPropertyName)
+        Type type,
+        string originalPropertyName,
+        string jsonPropertyName)
         {
-            // 1. Type-specific property rules (case-sensitive)
-            if (_rules.PropertyTypeRules.TryGetValue(type, out var properties) &&
-                properties.TryGetValue(originalPropertyName, out var propertyRule))
+            // 1. Walk inheritance chain (most specific → least specific)
+            for (var current = type; current != null; current = current.BaseType)
             {
-                return propertyRule;
+                var lookupType = current.IsGenericType
+                    ? current.GetGenericTypeDefinition()
+                    : current;
+
+                if (_rules.PropertyTypeRules.TryGetValue(lookupType, out var props) &&
+                    props.TryGetValue(originalPropertyName, out var rule))
+                {
+                    return rule;
+                }
             }
 
-            // 2. Global property rules (case-insensitive)
+            // 2. Interfaces
+            foreach (var iface in type.GetInterfaces())
+            {
+                var ifaceType = iface.IsGenericType
+                    ? iface.GetGenericTypeDefinition()
+                    : iface;
+
+                if (_rules.PropertyTypeRules.TryGetValue(ifaceType, out var props) &&
+                    props.TryGetValue(originalPropertyName, out var rule))
+                {
+                    return rule;
+                }
+            }
+
+            // 3. Global property rules
             if (_rules.GlobalPropertyRules.TryGetValue(jsonPropertyName, out var globalRule))
             {
                 return globalRule;
             }
 
-            // 3. Assembly rules
-            if (type.Assembly != null &&
-                _rules.AssemblyRules.TryGetValue(type.Assembly, out var assemblyRule))
+            // 4. Assembly rule
+            if (_rules.AssemblyRules.TryGetValue(type.Assembly, out var assemblyRule))
             {
                 return assemblyRule;
             }
 
-            // 4. Interface rules
-            foreach (var iType in type.GetInterfaces())
+            // 5. Type rules (walk base types again)
+            for (var current = type; current != null; current = current.BaseType)
             {
-                if (_rules.TypeRules.TryGetValue(iType, out var interfaceRule))
-                {
-                    return interfaceRule;
-                }
-            }
+                var lookupType = current.IsGenericType
+                    ? current.GetGenericTypeDefinition()
+                    : current;
 
-            // 5. Type rules
-            if (_rules.TypeRules.TryGetValue(type, out var typeRule))
-            {
-                return typeRule;
+                if (_rules.TypeRules.TryGetValue(lookupType, out var typeRule))
+                {
+                    return typeRule;
+                }
             }
 
             return null;

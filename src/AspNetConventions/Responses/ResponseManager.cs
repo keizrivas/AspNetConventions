@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using AspNetConventions.Configuration.Options;
@@ -15,7 +14,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
-using Microsoft.Extensions.Options;
 
 namespace AspNetConventions.Responses
 {
@@ -312,17 +310,13 @@ namespace AspNetConventions.Responses
                 return metadata;
             }
 
-            // Include stack trace
-            if (Options.Response.ErrorResponse.IncludeStackTrace ?? _requestDescriptor.IsDevelopment)
-            {
-                metadata.StackTrace = exceptionDescriptor.Exception
-                    ?.GetStackTrace(Options.Response.ErrorResponse.MaxStackTraceDepth);
-            }
-
             // Include exception details
-            if (Options.Response.ErrorResponse.IncludeExceptionType ?? _requestDescriptor.IsDevelopment)
+            if ((Options.Response.ErrorResponse.IncludeExceptionDetails ?? _requestDescriptor.IsDevelopment)
+                && exceptionDescriptor.Exception != null)
             {
-                metadata.ExceptionType = exceptionDescriptor.Exception?.GetType()?.Name;
+                metadata.Exception = new ExceptionMetadata(
+                    exceptionDescriptor.Exception,
+                    Options.Response.ErrorResponse.MaxStackTraceDepth);
             }
 
             return metadata;

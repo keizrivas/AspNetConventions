@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using AspNetConventions.Configuration.Options;
 using AspNetConventions.ExceptionHandling.Models;
 using AspNetConventions.Http.Services;
@@ -40,18 +39,10 @@ namespace AspNetConventions.Http.Models
         public string? Path { get; set; }
 
         /// <summary>
-        /// Gets or sets the exception type when an error occurred.
+        /// Gets or sets metadata describing an exception that occurred during the operation.
         /// </summary>
-        /// <value>The name of the exception type when included in development or error responses.</value>
-        /// <remarks>Only populated when error responses include exception type information.</remarks>
-        public string? ExceptionType { get; set; }
-
-        /// <summary>
-        /// Gets or sets the stack trace information when an exception occurred.
-        /// </summary>
-        /// <value>A collection of stack frame details when stack traces are included in responses.</value>
-        /// <remarks>Only populated in development environments when stack traces are enabled.</remarks>
-        public HashSet<StackFrameInfo>? StackTrace { get; internal set; }
+        /// <value>An <see cref="ExceptionMetadata"/> instance containing details about the exception, if one occurred; otherwise, null.</value>
+        public ExceptionMetadata? Exception { get; set; }
 
         /// <summary>
         /// Converts the specified <see cref="RequestDescriptor"/> to an <see cref="Metadata"/> instance.

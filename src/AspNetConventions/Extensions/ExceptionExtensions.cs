@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using AspNetConventions.ExceptionHandling.Models;
 
 namespace AspNetConventions.Extensions
 {
@@ -10,51 +9,71 @@ namespace AspNetConventions.Extensions
     internal static class ExceptionExtensions
     {
         /// <summary>
-        /// Extracts and processes the stack trace from an exception, returning a set of unique stack frame information.
+        /// Extracts and processes the stack trace from an exception, returning a set of stack frame information.
         /// </summary>
-        /// <param name="ex">The exception to extract the stack trace from.</param>
-        /// <param name="maxDepth">The maximum number of stack frames to process. Defaults to 50.</param>
-        /// <returns>A <see cref="HashSet{T}"/> containing unique <see cref="StackFrameInfo"/> objects representing the stack trace.</returns>
-        /// <exception cref="ArgumentNullException">Thrown when <paramref name="ex"/> is null.</exception>
-        internal static HashSet<StackFrameInfo> GetStackTrace(this Exception ex, int maxDepth = 50)
+        /// <param name="exception">The exception to extract the stack trace from.</param>
+        /// <param name="maxDepth">The maximum number of stack frames to process.</param>
+        /// <returns>A <see cref="IReadOnlyList{T}"/> containing string representing the stack trace.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when <paramref name="exception"/> is null.</exception>
+        internal static IReadOnlyList<string> GetStackTrace(this Exception exception, int maxDepth)
         {
-            ArgumentNullException.ThrowIfNull(ex);
+            ArgumentNullException.ThrowIfNull(exception);
 
-            var trace = new System.Diagnostics.StackTrace(ex, true);
-            var frames = trace.GetFrames();
-
-            if (frames == null || frames.Length == 0)
+            var trace = exception.StackTrace;
+            if (string.IsNullOrEmpty(trace))
             {
                 return [];
             }
 
-            var result = new HashSet<StackFrameInfo>(frames.Length);
-            var seenMethods = new HashSet<object>();
+            var result = new List<string>(15);
 
-            int count = 0;
-            for (int i = 0; i < frames.Length && count < maxDepth; i++)
+            int length = trace.Length;
+            int i = 0;
+
+            while (i < length)
             {
-                var frame = frames[i];
-                var file = frame.GetFileName();
-                var method = frame.GetMethod()?.ToString();
-                var lineNumber = frame.GetFileLineNumber();
-
-                var key = method ?? $"{file}:{lineNumber}";
-
-                // skip duplicates
-                if (!seenMethods.Add(key))
+                if(result.Count == maxDepth)
                 {
-                    continue;
+                    break;
                 }
 
-                var info = new StackFrameInfo(
-                    Method: method ?? "Unknown",
-                    File: file,
-                    Line: lineNumber != 0 ? lineNumber : null
-                );
+                // Find line start
+                int lineStart = i;
 
-                result.Add(info);
-                count++;
+                // Find line end
+                int lineEnd = trace.IndexOf('\n', i);
+                if (lineEnd < 0)
+                {
+                    lineEnd = length;
+                }
+
+                // Trim leading whitespace
+                int start = lineStart;
+                while (start < lineEnd && trace[start] == ' ')
+                {
+                    start++;
+                }
+
+                // Must start with "at "
+                if (start + 3 <= lineEnd &&
+                    trace[start] == 'a' &&
+                    trace[start + 1] == 't' &&
+                    trace[start + 2] == ' ')
+                {
+                    int methodEnd = lineEnd;
+
+                    int methodStart = start + 3;
+
+                    // Trim trailing '\r'
+                    if (methodEnd > methodStart && trace[methodEnd - 1] == '\r')
+                    {
+                        methodEnd--;
+                    }
+
+                    result.Add(trace.Substring(methodStart, methodEnd - methodStart));
+                }
+
+                i = lineEnd + 1;
             }
 
             return result;

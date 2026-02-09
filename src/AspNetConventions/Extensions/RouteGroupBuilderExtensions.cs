@@ -1,12 +1,13 @@
 using System;
+using System.Xml.Linq;
 using AspNetConventions.Configuration.Options;
+using AspNetConventions.ExceptionHandling.Abstractions;
 using AspNetConventions.ExceptionHandling.Handlers;
 using AspNetConventions.Routing.Transformation;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
@@ -60,7 +61,7 @@ namespace AspNetConventions.Extensions
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="app"/> or <paramref name="options"/> is null.</exception>
         /// <remarks>
         /// This method configures the ASP.NET Core exception handling middleware to use AspNetConventions'
-        /// standardized exception handling. It creates a <see cref="MinimalApiExceptionHandler"/> to process
+        /// standardized exception handling. It creates a <see cref="GlobalExceptionHandler"/> to process
         /// exceptions and return formatted error responses according to the configured options.
         /// </remarks>
         internal static void UseExceptionHandlingMiddleware(
@@ -71,12 +72,16 @@ namespace AspNetConventions.Extensions
             ArgumentNullException.ThrowIfNull(options);
 
             // Get services
-            var logger = app.Services.GetRequiredService<ILogger<MinimalApiExceptionHandler>>();
+            var logger = app.Services.GetRequiredService<ILogger<GlobalExceptionHandler>>();
             var serializer = app.Services.GetOptions<Microsoft.AspNetCore.Http.Json.JsonOptions>()
-                .Value.SerializerOptions ?? options.Json.BuildSerializerOptions();
+                .Value.SerializerOptions;
+
 
             // Create the exception handler
-            var handler = new MinimalApiExceptionHandler(options, serializer, logger);
+            var writer = app.Services.GetRequiredService<IExceptionResponseWriter>()
+                ?? new ExceptionResponseWriter(Options.Create(options), logger);
+
+            var handler = new GlobalExceptionHandler(writer, serializer);
 
             app.UseExceptionHandler(exceptionHandlerApp =>
             {

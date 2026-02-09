@@ -47,6 +47,9 @@ namespace AspNetConventions
             // Add JSON serialization settings
             builder.AddMvcJsonOptions();
 
+            // Add exception response writer
+            builder.AddExceptionResponseWriter();
+
             // Add MVC and Razor Page conventions
             builder.AddRazorPageConventions();
             builder.AddMvcConventions();

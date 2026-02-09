@@ -30,15 +30,17 @@ namespace AspNetConventions.Core.Abstractions.Models
         /// Creates a snapshot of the current AspNetConventions options.
         /// </summary>
         /// <exception cref="ArgumentNullException">Thrown when the provided options are null.</exception>
+        /// <returns>The snapshot of AspNetConventions options.</returns>
         /// <remarks>
         /// This method captures the current state of AspNetConventions options and stores them internally.
         /// Subsequent calls to this method will not update the snapshot, ensuring consistency across the
         /// lifetime of this instance. Call this method before accessing the <see cref="Options"/> property.
         /// </remarks>
-        public void CreateOptionSnapshot()
+        public AspNetConventionOptions CreateOptionSnapshot()
         {
             ArgumentNullException.ThrowIfNull(options, nameof(options));
             _options ??= options.Value;
+            return _options;
         }
     }
 }

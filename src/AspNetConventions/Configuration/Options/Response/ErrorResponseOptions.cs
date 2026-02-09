@@ -29,26 +29,21 @@ namespace AspNetConventions.Configuration.Options.Response
         /// <summary>
         /// Gets the collection of allowed ProblemDetails extension keys that can be included in error responses.
         /// </summary>
-        public HashSet<string> AllowedProblemDetailsExtensions { get; private set; } = new(StringComparer.Ordinal)
-        {
-            "code",
-            "details"
-        };
+        public HashSet<string> AllowedProblemDetailsExtensions { get; private set; } = new(StringComparer.Ordinal);
 
         /// <summary>
-        /// Gets or sets a value indicating whether the exception type should be included in the output.
+        /// Gets or sets a value indicating whether the exception details should be included in the response output.
         /// </summary>
-        public bool? IncludeExceptionType { get; set; }
-
-        /// <summary>
-        /// Include stack trace in error responses (typically only in Development)
-        /// </summary>
-        public bool? IncludeStackTrace { get; set; }
+        /// <value>
+        /// When true, exception details are included in error responses (Not recommended for production). 
+        /// When false, exception details will be omitted from the response. 
+        /// Default is null, which means exception details are included in development environments and omitted in production.</value>
+        public bool? IncludeExceptionDetails { get; set; }
 
         /// <summary>
         /// Maximum depth for nested stack trace
         /// </summary>
-        public int MaxStackTraceDepth { get; set; } = 50;
+        public int MaxStackTraceDepth { get; set; } = 25;
 
         /// <summary>
         /// Creates a deep clone of <see cref="ErrorResponseOptions"/> instance.

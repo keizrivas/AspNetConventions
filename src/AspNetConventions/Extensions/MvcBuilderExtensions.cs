@@ -1,11 +1,15 @@
+using System;
+using System.Threading;
 using AspNetConventions.Configuration.Options;
 using AspNetConventions.Core.Abstractions.Contracts;
 using AspNetConventions.ExceptionHandling.Abstractions;
 using AspNetConventions.ExceptionHandling.Filters;
+using AspNetConventions.ExceptionHandling.Handlers;
 using AspNetConventions.Routing.Conventions;
 using AspNetConventions.Routing.Providers;
 using AspNetConventions.Routing.Transformation;
 using AspNetConventions.Serialization.Formatters;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Metadata;
@@ -16,8 +20,8 @@ using Microsoft.Extensions.Options;
 namespace AspNetConventions.Extensions
 {
     /// <summary>
-    /// Provides extension methods for configuring MVC and Razor Pages with standardized conventions, filters, and JSON
-    /// serialization options.
+    /// Provides extension methods for configuring MVC and Razor Pages with standardized 
+    /// conventions, filters, and JSON serialization options.
     /// </summary>
     internal static partial class MvcBuilderExtensions
     {
@@ -40,8 +44,6 @@ namespace AspNetConventions.Extensions
             builder.Services.AddSingleton<IOutboundParameterTransformer, RouteTokenTransformer>();
             builder.Services.AddSingleton<IBindingMetadataProvider, ComplexTypeBindingMetadataProvider>();
 
-            //builder.Services.AddSingleton<IModelBinderProvider, ComplexTypeModelBinderProvider>();
-
             // Add Mvc conventions
             builder.Services.AddSingleton<IConfigureOptions<Microsoft.AspNetCore.Mvc.MvcOptions>>(serviceProvider =>
             {
@@ -52,7 +54,6 @@ namespace AspNetConventions.Extensions
                 var jsonOptions = serviceProvider.GetOptions<Microsoft.AspNetCore.Mvc.JsonOptions>();
                 var metadataProvider = serviceProvider.GetRequiredService<IBindingMetadataProvider>();
                 var valueProviderFactory = serviceProvider.GetRequiredService<IValueProviderFactory>();
-                //var binderProvider = serviceProvider.GetRequiredService<IModelBinderProvider>();
 
                 return new ConfigureOptions<Microsoft.AspNetCore.Mvc.MvcOptions>(mvcOptions =>
                 {
@@ -104,6 +105,51 @@ namespace AspNetConventions.Extensions
         }
 
         /// <summary>
+        /// Configures global exception handling for MVC controllers by adding a custom exception response writer 
+        /// and setting up the exception handling middleware.
+        /// </summary>
+        /// <param name="builder">The <see cref="IMvcBuilder"/> to configure.</param>
+        /// <returns>The same <see cref="IMvcBuilder"/> instance so that additional calls can be chained.</returns>
+        internal static IMvcBuilder AddExceptionResponseWriter(this IMvcBuilder builder)
+        {
+            // Exception hanlder
+            builder.Services.AddSingleton<IExceptionResponseWriter, ExceptionResponseWriter>();
+
+            // Configure exception handling middleware
+            builder.Services.AddExceptionHandler(options =>
+            {
+                options.ExceptionHandler = async context =>
+                {
+                    var writer = context.RequestServices
+                        .GetRequiredService<IExceptionResponseWriter>();
+
+                    var serializerOptions = context.RequestServices
+                        .GetOptions<Microsoft.AspNetCore.Mvc.JsonOptions>()
+                        .Value.JsonSerializerOptions;
+                    
+                    var exception = context.Features
+                        .Get<IExceptionHandlerFeature>()?.Error;
+
+                    if (exception == null)
+                    {
+                        return;
+
+                        // Log the exception
+                        //var logger = context.RequestServices.GetRequiredService<Microsoft.Extensions.Logging.ILogger<Program>>();
+                        //logger.LogError(exception, "An unhandled exception occurred while processing the request.");
+                    }
+
+                    await writer
+                        .WithSerializerOptions(serializerOptions)
+                        .WriteResponseAsync(context, exception, CancellationToken.None)
+                        .ConfigureAwait(false);
+                };
+            });
+
+            return builder;
+        }
+
+        /// <summary>
         /// Adds Razor Page conventions and exception handling filters to the MVC builder for enhanced Razor Pages
         /// configuration.
         /// </summary>
@@ -119,7 +165,6 @@ namespace AspNetConventions.Extensions
             // Register conventions
             builder.Services.AddSingleton<RazorPageRouteConvention>();
             builder.Services.AddSingleton<RazorPageParameterConvention>();
-            //builder.Services.AddSingleton<RazorPagesBindingMetadataProvider>();
 
             // Add razor pages conventions
             builder.Services.AddSingleton<IConfigureOptions<Microsoft.AspNetCore.Mvc.RazorPages.RazorPagesOptions>>(serviceProvider =>
