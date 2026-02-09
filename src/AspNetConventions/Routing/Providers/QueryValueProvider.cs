@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using AspNetConventions.Configuration.Options;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
@@ -24,6 +25,11 @@ namespace AspNetConventions.Routing.Providers
         /// The case conversion function to apply to parameter names.
         /// </summary>
         private readonly Func<string, string> _convert;
+
+        /// <summary>
+        /// A cache to store results of prefix checks to optimize repeated lookups.
+        /// </summary>
+        private readonly Dictionary<string, bool> _prefixCache = [];
 
         /// <summary>
         /// Initializes a new instance of the <see cref="QueryValueProvider"/> class.
@@ -53,12 +59,18 @@ namespace AspNetConventions.Routing.Providers
                 return false;
             }
 
+            // Return cached result if available
+            if (_prefixCache.TryGetValue(prefix, out var cached))
+            {
+                return cached;
+            }
+
             var converted = _convert(prefix);
 
             // Exact prefix match (fast path)
             if (_query.ContainsKey(converted))
             {
-                return true;
+                return _prefixCache[prefix] = true;
             }
 
             // Check for: prefix.*
@@ -68,11 +80,11 @@ namespace AspNetConventions.Routing.Providers
             {
                 if (key.StartsWith(prefixDot, StringComparison.OrdinalIgnoreCase))
                 {
-                    return true;
+                    return _prefixCache[prefix] = true;
                 }
             }
 
-            return false;
+            return _prefixCache[prefix] = false;
         }
 
         /// <summary>
