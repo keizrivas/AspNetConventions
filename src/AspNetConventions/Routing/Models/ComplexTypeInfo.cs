@@ -10,7 +10,7 @@ namespace AspNetConventions.Routing.Models
     /// This class stores metadata about user-defined complex types that have been analyzed
     /// for property binding and naming convention transformation.
     /// </remarks>
-    internal class ComplexTypeInfo
+    internal sealed class ComplexTypeInfo
     {
         /// <summary>
         /// Gets or sets the complex type being cached.

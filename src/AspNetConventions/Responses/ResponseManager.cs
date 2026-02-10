@@ -23,7 +23,7 @@ namespace AspNetConventions.Responses
     /// <remarks>
     /// This class serves as the central coordinator for response processing, handling various input types and exception descriptors.
     /// </remarks>
-    internal class ResponseManager : ResponseAdapter
+    internal sealed class ResponseManager : ResponseAdapter
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="ResponseManager"/> class.

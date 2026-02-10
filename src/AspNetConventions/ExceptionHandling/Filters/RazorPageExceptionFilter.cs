@@ -52,7 +52,7 @@ namespace AspNetConventions.ExceptionHandling.Filters
                 else
                 {
                     // Let Razor Pages error handling continue
-                    _logger.LogError(exception, "Unhandled exception in Razor Page handler");
+                    _logger.LogException("Unhandled exception in Razor Page handler", exception);
                     throw;
                 }
             }

@@ -22,7 +22,7 @@ namespace AspNetConventions.ExceptionHandling
     /// This class handles the complete exception processing pipeline, including exception mapping,
     /// logging, and response building.
     /// </remarks>
-    internal class ExceptionHandlingManager(RequestDescriptor requestDescriptor, AspNetConventionOptions options, ILogger? logger = null)
+    internal sealed class ExceptionHandlingManager(RequestDescriptor requestDescriptor, AspNetConventionOptions options, ILogger? logger = null)
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="ExceptionHandlingManager"/> class using an HttpContext.

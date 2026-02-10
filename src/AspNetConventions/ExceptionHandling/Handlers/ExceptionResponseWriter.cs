@@ -17,7 +17,7 @@ namespace AspNetConventions.ExceptionHandling.Handlers
     /// </summary>
     /// <param name="options">The AspNetConventions configuration options.</param>
     /// <param name="logger">The logger instance for logging exception details and response writing process.</param>
-    internal class ExceptionResponseWriter(
+    internal sealed class ExceptionResponseWriter(
         IOptions<AspNetConventionOptions> options,
         ILogger<GlobalExceptionHandler> logger) : ConventionOptions(options), IExceptionResponseWriter
     {

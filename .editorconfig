@@ -90,3 +90,15 @@ dotnet_naming_symbols.async_methods.required_modifiers = async
 
 dotnet_naming_style.ends_with_async.required_suffix = Async
 dotnet_naming_style.ends_with_async.capitalization = pascal_case
+
+# Ignore warning
+dotnet_diagnostic.CA1724.severity = none
+
+[**/Routing/Conventions/*.cs]
+dotnet_diagnostic.CA1812.severity = none
+
+[**/Routing/Transformation/*.cs]
+dotnet_diagnostic.CA1812.severity = none
+
+[**/ExceptionHandling/Filters/*.cs]
+dotnet_diagnostic.CA1812.severity = none
