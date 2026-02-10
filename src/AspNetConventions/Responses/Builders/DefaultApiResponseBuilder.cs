@@ -4,6 +4,7 @@ using System.Net;
 using AspNetConventions.Configuration.Options;
 using AspNetConventions.Core.Abstractions.Contracts;
 using AspNetConventions.Core.Abstractions.Models;
+using AspNetConventions.Extensions;
 using AspNetConventions.Http.Models;
 using AspNetConventions.Http.Services;
 using AspNetConventions.Responses.Models;
@@ -75,7 +76,7 @@ namespace AspNetConventions.Responses.Builders
                 var metadataProp = responseType.GetProperty(nameof(DefaultApiResponse<object>.Metadata))!;
                 var paginationProp = responseType.GetProperty(nameof(DefaultApiResponse<object>.Pagination))!;
 
-                var result = MonitorCacheSize(_factoryCache.Count, _lastLoggedCount);
+                var result = Logger.LogCacheSize("_factoryCache", _factoryCache.Count, _lastLoggedCount);
                 if (result.HasValue)
                 {
                     _lastLoggedCount = result.Value;

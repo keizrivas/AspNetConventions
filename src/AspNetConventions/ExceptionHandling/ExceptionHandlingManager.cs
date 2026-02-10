@@ -101,16 +101,12 @@ namespace AspNetConventions.ExceptionHandling
             // Log exception if needed
             if (exceptionDescriptor.ShouldLog)
             {
-                var logMessage = $"Exception occurred: StatusCode={exceptionDescriptor.StatusCode}, ErrorType={exceptionDescriptor.Type}, Message={exceptionDescriptor.Message}";
-
-                if (exception != null)
-                {
-                    _logger.Log(exceptionDescriptor.LogLevel, exception, logMessage);
-                }
-                else
-                {
-                    _logger.Log(exceptionDescriptor.LogLevel, logMessage);
-                }
+                _logger.LogExceptionDescriptor(
+                    exceptionDescriptor.LogLevel,
+                    exceptionDescriptor.StatusCode,
+                    exceptionDescriptor.Type,
+                    exceptionDescriptor.Message,
+                    exception);
             }
 
             return exceptionDescriptor;
