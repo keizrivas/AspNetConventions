@@ -31,7 +31,7 @@ namespace AspNetConventions.Routing.ModelBinding
                 context.Key.MetadataKind,
                 context.Key.ModelType,
                 context.Key.ContainerType,
-                context.Attributes,
+                context.PropertyAttributes ?? context.Attributes,
                 context.BindingMetadata?.BindingSource,
                 context.BindingMetadata?.BinderModelName
             );
@@ -58,7 +58,7 @@ namespace AspNetConventions.Routing.ModelBinding
                 PropertyModel p => (p.PropertyName, ModelMetadataKind.Property, p.PropertyInfo.DeclaringType),
                 ParameterModel p => (p.ParameterName, ModelMetadataKind.Parameter, p.ParameterInfo.Member?.DeclaringType),
 
-                // Future-proof fallback
+                // Default
                 _ => (modelBase.Name, ModelMetadataKind.Parameter, null)
             };
 
@@ -102,24 +102,23 @@ namespace AspNetConventions.Routing.ModelBinding
                 ModelType = modelType,
                 ContainerType = containerType,
                 BindingSource = source,
-                SupportsModelName = attrList.OfType<IModelNameProvider>().Any()
+                SupportsModelName = attrList.OfType<IModelNameProvider>().Any(),
+                // Resolve the active model name
+                BinderModelName = !string.IsNullOrWhiteSpace(existingBinderName)
+                    ? existingBinderName
+                    : GetExplicitModelName(attrList)
             };
 
             context.IsBindable = DetermineBindability(context, attrList);
 
-            if (!context.IsBindable)
+            if (!context.IsBindable && context.MetadataKind == ModelMetadataKind.Parameter)
             {
                 return context;
             }
 
             // Check if it's a complex bindable type
             context.IsComplexBindableType
-                = ModelTypeClassifier.IsComplexBindableType(modelType);
-
-            // Resolve the active model name
-            context.BinderModelName = !string.IsNullOrWhiteSpace(existingBinderName)
-                ? existingBinderName
-                : attrList.OfType<IModelNameProvider>().FirstOrDefault()?.Name;
+                = ModelTypeClassifier.IsComplexType(modelType);
 
             // Handle Bind Include
             var bindAttr = attrList.OfType<BindAttribute>().FirstOrDefault();
@@ -150,7 +149,7 @@ namespace AspNetConventions.Routing.ModelBinding
 
             // Do not set the model name for complex types without an explicit name unless
             // the binding source supports the IModelNameProvider interface.
-            // See: https://learn.microsoft.com/en-us/aspnet/core/mvc/models/model-binding?view=aspnetcore-8.0#complex-types
+            // See: https://learn.microsoft.com/en-us/aspnet/core/mvc/models/model-binding?#complex-types
 
             var shouldSetModelName = !(bindingContext.SupportsModelName &&
                 bindingContext.IsComplexBindableType &&
@@ -185,6 +184,29 @@ namespace AspNetConventions.Routing.ModelBinding
 
             return parentContext.BindInclude
                 .Contains(propertyName, StringComparer.OrdinalIgnoreCase);
+        }
+
+        /// <summary>
+        /// Extracts an explicit model name from the provided attributes if any implement the IModelNameProvider interface.
+        /// </summary>
+        /// <param name="attributes">The collection of attributes to inspect for explicit model name providers.</param>
+        /// <returns>The explicit model name if found; otherwise, null.</returns>
+        static string? GetExplicitModelName(IReadOnlyList<object>? attributes)
+        {
+            if (attributes == null)
+                return null;
+
+            for (int i = 0; i < attributes.Count; i++)
+            {
+                if (attributes[i] is IModelNameProvider provider)
+                {
+                    var name = provider.Name;
+                    if (!string.IsNullOrWhiteSpace(name))
+                        return name;
+                }
+            }
+
+            return null;
         }
 
         /// <summary>

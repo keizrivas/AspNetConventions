@@ -1,7 +1,9 @@
 using System;
 using System.Collections;
-using System.Linq;
-using System.Reflection;
+using System.IO;
+using System.IO.Pipelines;
+using System.Security.Claims;
+using System.Threading;
 
 namespace AspNetConventions.Routing.ModelBinding
 {
@@ -20,12 +22,13 @@ namespace AspNetConventions.Routing.ModelBinding
         /// <param name="type">The type to classify.</param>
         /// <returns>true if the type is a complex bindable type; otherwise, false.</returns>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="type"/> is null.</exception>
-        public static bool IsComplexBindableType(Type type)
+        /// <remarks>
+        /// A complex type must have a public default constructor and public writable properties to bind.
+        /// <see href="https://learn.microsoft.com/en-us/aspnet/core/mvc/models/model-binding?#complex-types">Complex Types</see>.
+        /// </remarks>
+        public static bool IsComplexType(Type type)
         {
             ArgumentNullException.ThrowIfNull(type);
-
-            // Unwrap nullable
-            type = Nullable.GetUnderlyingType(type) ?? type;
 
             // Scalars & enums
             if (type.IsPrimitive ||
@@ -34,8 +37,14 @@ namespace AspNetConventions.Routing.ModelBinding
                 type == typeof(decimal) ||
                 type == typeof(DateTime) ||
                 type == typeof(DateTimeOffset) ||
+                type == typeof(TimeOnly) ||
+                type == typeof(DateOnly) ||
                 type == typeof(TimeSpan) ||
-                type == typeof(Guid))
+                type == typeof(Guid) ||
+                type == typeof(ClaimsPrincipal) ||
+                type == typeof(CancellationToken) ||
+                type == typeof(Stream) ||
+                type == typeof(PipeReader))
             {
                 return false;
             }
@@ -52,18 +61,14 @@ namespace AspNetConventions.Routing.ModelBinding
                 return false;
             }
 
-            // Must be a class or struct (records included)
-            if (!type.IsClass && !type.IsValueType)
+            // Check if the underlying type in a nullable is valid
+            if (Nullable.GetUnderlyingType(type) is { } nullableType)
             {
-                return false;
+                return IsComplexType(nullableType);
             }
 
-            // Must have public instance properties
-            return type
-                .GetProperties(BindingFlags.Public | BindingFlags.Instance)
-                .Any(p =>
-                    p.CanRead &&
-                    p.GetIndexParameters().Length == 0);
+            // Must be a class or struct (records included)
+            return type.IsClass || type.IsValueType;
         }
     }
 }

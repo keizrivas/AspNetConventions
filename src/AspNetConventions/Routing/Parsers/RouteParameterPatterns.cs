@@ -5,7 +5,7 @@ namespace AspNetConventions.Routing.Parsers
 {
     /// <summary>
     /// Provides compiled regex patterns for parsing route parameters.
-    /// <see href="https://learn.microsoft.com/en-us/aspnet/core/fundamentals/routing?view=aspnetcore-8.0#parameter-transformers">Route parameter transformers</see>.
+    /// <see href="https://learn.microsoft.com/en-us/aspnet/core/fundamentals/routing?#parameter-transformers">Route parameter transformers</see>.
     /// </summary>
     internal static partial class RouteParameterPatterns
     {

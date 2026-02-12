@@ -82,8 +82,9 @@ namespace AspNetConventions.Extensions
                     mvcOptions.Filters.Add<ExceptionStatusCodeResultFilter>();
 
                     // Add model metadata provider
-                    mvcOptions.ModelMetadataDetailsProviders.Insert(0, metadataProvider);
-                    //mvcOptions.ModelBinderProviders.Insert(0, binderProvider);
+                    // Note: This is added as a filter (not inserted) to ensure it runs after 
+                    // the model metadata is created but before model binding occurs.
+                    mvcOptions.ModelMetadataDetailsProviders.Add(metadataProvider);
                 });
             });
 

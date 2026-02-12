@@ -16,6 +16,9 @@ namespace AspNetConventions.Routing.Models
     /// </remarks>
     public class BindingContext
     {
+        private HashSet<string>? _bindInclude;
+        private HashSet<string>? _bindExclude;
+
         /// <summary>
         /// Gets or sets the name of the property or parameter.
         /// </summary>
@@ -79,12 +82,12 @@ namespace AspNetConventions.Routing.Models
         /// Gets the set of property names to include in binding.
         /// </summary>
         /// <value>Property names specified in Bind attributes, or empty if no restrictions.</value>
-        public HashSet<string> BindInclude { get; } = [];
+        public HashSet<string> BindInclude => _bindInclude ??= [];
 
         /// <summary>
         /// Gets the set of property names to exclude from binding.
         /// </summary>
         /// <value>Property names to exclude, typically empty unless explicitly specified.</value>
-        public HashSet<string> BindExclude { get; } = [];
+        public HashSet<string> BindExclude => _bindExclude ??= [];
     }
 }

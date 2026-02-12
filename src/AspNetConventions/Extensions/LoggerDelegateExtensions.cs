@@ -1,6 +1,5 @@
 using System;
 using System.Net;
-using AspNetConventions.Routing.Models;
 using Microsoft.Extensions.Logging;
 
 namespace AspNetConventions.Extensions
