@@ -292,11 +292,10 @@ namespace AspNetConventions.Routing.Conventions
             // Cache the complex type information for later reference during property processing
             _complexTypeCache.TryAdd(complexType, info);
 
-            var type = bindingContext.IsComplexBindableType ? "COMPLEX" : "SIMPLE";
-            var kind = bindingContext.MetadataKind == ModelMetadataKind.Parameter ? "PARAM" : "PROP";
-
             if (_logger.IsEnabled(LogLevel.Debug))
             {
+                var type = bindingContext.IsComplexBindableType ? "COMPLEX" : "SIMPLE";
+                var kind = bindingContext.MetadataKind == ModelMetadataKind.Parameter ? "PARAM" : "PROP";
                 _logger.LogBindingMetadataDebug(
                     $"{kind}-{type}",
                     "Cached",
