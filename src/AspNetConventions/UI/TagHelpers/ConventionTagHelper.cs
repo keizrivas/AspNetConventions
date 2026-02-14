@@ -24,12 +24,10 @@ namespace AspNetConventions.UI.TagHelpers
 
         internal const string ForAttributeName = "asp-for";
 
-        private const string DataValidationForAttributeName = "data-valmsg-for";
-
         public override int Order => 10000;
 
         [HtmlAttributeName(ForAttributeName)]
-        public required ModelExpression For { get; set; } = default!;
+        public virtual required ModelExpression ForModel { get; set; } = default!;
 
         [ViewContext]
         [HtmlAttributeNotBound]
@@ -47,7 +45,7 @@ namespace AspNetConventions.UI.TagHelpers
             }
 
             string? propertyName;
-            if (_propertyCache.TryGetValue(For.Name, out var propertyCache))
+            if (_propertyCache.TryGetValue(ForModel.Name, out var propertyCache))
             {
                 propertyName = propertyCache;
             }
@@ -55,35 +53,28 @@ namespace AspNetConventions.UI.TagHelpers
             {
                 var caseConverter = _options.Value.Route.GetCaseConverter();
                 propertyName = caseConverter.Convert(GetPropertyName());
-                _propertyCache[For.Name] = propertyName;
+                _propertyCache[ForModel.Name] = propertyName;
             }
 
             if (OnProcess != null)
             {
-                OnProcess.Invoke(context, output, For.Name, propertyName);
+                OnProcess.Invoke(context, output, ForModel.Name, propertyName);
                 return;
             }
 
             // Set "name" attribute
             output.Attributes.RemoveAll("name");
             output.Attributes.Add("name", propertyName);
-
-            // Set "id" attribute
-            //output.Attributes.RemoveAll("id");
-            //output.Attributes.Add("id", name);
-
-            // Update validation attributes if present
-            UpdateValidationAttributes(ref output, propertyName);
         }
 
         private string GetPropertyName()
         {
-            var parts = For.Name.Split('.');
-            var propertyName = For.Metadata.BinderModelName ?? For.Metadata.PropertyName;
+            var parts = ForModel.Name.Split('.');
+            var propertyName = ForModel.Metadata.BinderModelName ?? ForModel.Metadata.PropertyName;
 
             if (parts.Length == 1 || string.IsNullOrEmpty(propertyName))
             {
-                return propertyName ?? For.Name;
+                return propertyName ?? ForModel.Name;
             }
 
             // Get container metadata
@@ -117,15 +108,6 @@ namespace AspNetConventions.UI.TagHelpers
             }
 
             return $"{prefix}.{propertyName}";
-        }
-
-        private static void UpdateValidationAttributes(ref TagHelperOutput output, string propertyName)
-        {
-            if (output.Attributes.TryGetAttribute(DataValidationForAttributeName, out var valmsgAttr))
-            {
-                output.Attributes.Remove(valmsgAttr);
-                output.Attributes.Add(DataValidationForAttributeName, propertyName);
-            }
         }
     }
 }
