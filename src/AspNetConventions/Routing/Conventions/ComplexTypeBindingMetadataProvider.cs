@@ -94,7 +94,7 @@ namespace AspNetConventions.Routing.Conventions
             BindingContext bindingContext)
         {
             // Check if it's a complex bindable type
-            if (bindingContext.IsComplexBindableType)
+            if (bindingContext.IsComplexType)
             {
                 // This is a complex type parameter
                 // cache it for later property processing
@@ -148,7 +148,7 @@ namespace AspNetConventions.Routing.Conventions
             {
                 // This might be a PageModel property or other framework property
                 // Check if the container itself is a complex type we should process
-                if (bindingContext.IsComplexBindableType &&
+                if (bindingContext.IsComplexType &&
                     BindingDescriptor.ShouldSetBinderModelName(bindingContext, out _))
                 {
                     // This is a property of a user-defined complex type
@@ -189,8 +189,8 @@ namespace AspNetConventions.Routing.Conventions
                     ? $"{rootComplexType.Name}*.{container.Name}"
                     : rootComplexType.Name;
 
-                debugKindName = bindingContext.MetadataKind == ModelMetadataKind.Parameter 
-                    ? "PARAM" 
+                debugKindName = bindingContext.MetadataKind == ModelMetadataKind.Parameter
+                    ? "PARAM"
                     : "PROP";
             }
 
@@ -258,7 +258,7 @@ namespace AspNetConventions.Routing.Conventions
         /// Caches a complex type for tracking its properties
         /// </summary>
         /// <param name="bindingContext">The binding context containing the complex type to cache.</param>
-        private void CacheComplexType(BindingContext bindingContext)
+        internal void CacheComplexType(BindingContext bindingContext)
         {
             var complexType = bindingContext.ModelType;
             if (_complexTypeCache.ContainsKey(complexType))
@@ -294,7 +294,7 @@ namespace AspNetConventions.Routing.Conventions
 
             if (_logger.IsEnabled(LogLevel.Debug))
             {
-                var type = bindingContext.IsComplexBindableType ? "COMPLEX" : "SIMPLE";
+                var type = bindingContext.IsComplexType ? "COMPLEX" : "SIMPLE";
                 var kind = bindingContext.MetadataKind == ModelMetadataKind.Parameter ? "PARAM" : "PROP";
                 _logger.LogBindingMetadataDebug(
                     $"{kind}-{type}",
@@ -470,26 +470,45 @@ namespace AspNetConventions.Routing.Conventions
                 }
             }
 
-            // Skip body parameters
-            if(context.BindingMetadata.BindingSource == BindingSource.Body)
+            var bindingSource = context.BindingMetadata.BindingSource;
+
+            // Skip body and service contexts
+            if (bindingSource == BindingSource.Body ||
+                bindingSource == BindingSource.Services)
             {
                 return false;
             }
 
             // [FromBody] is inferred for complex type parameters.
-            // If a parameter type is a complex type and no binding source attribute [FromBody] is present,
-            // model binding assumes it came from the body.
+            // If a parameter type is a complex type and no binding source
+            // attribute [FromBody] is present, model binding assumes it came from the body.
             // See: https://learn.microsoft.com/en-us/aspnet/core/mvc/models/model-binding?#frombody-attribute
+
+            // Note: In Razor Pages, handlers don't use [FromBody] inference.
+            // Handler parameters are always bound from the request ambient
+            // values (query, route, form) regardless of their type complexity.
 
             // Skip inferred [FromBody] parameters
             if (context.Key.MetadataKind == ModelMetadataKind.Parameter &&
-                context.BindingMetadata.BindingSource == null &&
-                ModelTypeClassifier.IsComplexType(context.Key.ModelType))
+                bindingSource == null &&
+                ModelTypeClassifier.IsComplexType(context.Key.ModelType) &&
+                !IsRazorPagesParameter(context.Key.ModelType))
             {
                 return false;
             }
 
             return true;
+        }
+
+        /// <summary>
+        /// Determines if the given type is a parameter of a Razor Page handler, which affects binding source inference.
+        /// </summary>
+        /// <param name="type">The type to check.</param>
+        /// <returns>True if the type is a Razor Page handler parameter; otherwise, false.</returns>
+        private static bool IsRazorPagesParameter(Type type)
+        {
+            return _complexTypeCache.TryGetValue(type, out var info)
+                && info.RazorPageContainer;
         }
     }
 }

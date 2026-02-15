@@ -117,7 +117,7 @@ namespace AspNetConventions.Routing.ModelBinding
             }
 
             // Check if it's a complex bindable type
-            context.IsComplexBindableType
+            context.IsComplexType
                 = ModelTypeClassifier.IsComplexType(modelType);
 
             // Handle Bind Include
@@ -152,7 +152,7 @@ namespace AspNetConventions.Routing.ModelBinding
             // See: https://learn.microsoft.com/en-us/aspnet/core/mvc/models/model-binding?#complex-types
 
             var shouldSetModelName = !(bindingContext.SupportsModelName &&
-                bindingContext.IsComplexBindableType &&
+                bindingContext.IsComplexType &&
                 string.IsNullOrEmpty(bindingContext.BinderModelName));
 
             if (shouldSetModelName)

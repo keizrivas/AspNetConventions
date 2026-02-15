@@ -9,14 +9,14 @@ namespace AspNetConventions.UI.TagHelpers
     /// Custom Label Tag Helper for kebab-case
     /// </summary>
     [HtmlTargetElement("input", Attributes = ForAttributeName)]
-    public class SuppressInvariantTagHelper : ConventionTagHelper
+    public class InvariantTagHelper : ConventionTagHelper
     {
         public override int Order => 20000;
 
         /// The name attribute used to identify the invariant input element in the output HTML.
         public const string NameAttribute = "__Invariant";
 
-        public SuppressInvariantTagHelper(IOptions<AspNetConventionOptions> options) : base(options)
+        public InvariantTagHelper(IOptions<AspNetConventionOptions> options) : base(options)
         {
             OnProcess = (context, output, parameterName, transformedParameterName) =>
             {

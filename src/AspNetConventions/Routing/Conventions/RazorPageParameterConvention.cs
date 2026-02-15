@@ -30,7 +30,6 @@ namespace AspNetConventions.Routing.Conventions
             {
                 var bindingContext = BindingDescriptor.GetBindingContext(property);
                 TransformBinderModelName(property, bindingContext);
-                //TransformProperty(property);
             }
 
             // Handle page model parameters
@@ -40,11 +39,15 @@ namespace AspNetConventions.Routing.Conventions
                 {
                     var bindingContext = BindingDescriptor.GetBindingContext(parameter);
                     TransformBinderModelName(parameter, bindingContext);
-                    //TransformParameter(parameter);
                 }
             }
         }
 
+        /// <summary>
+        /// Transforms the binder model name for a given parameter based on the convention options.
+        /// </summary>
+        /// <param name="parameter">The parameter for which to transform the binder model name.</param>
+        /// <param name="bindingContext">The binding context for the parameter.</param>
         private void TransformBinderModelName(ParameterModelBase parameter, BindingContext bindingContext)
         {
             if (!bindingContext.IsBindable)

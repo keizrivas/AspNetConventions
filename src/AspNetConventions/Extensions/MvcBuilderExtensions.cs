@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Metadata;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
 
 namespace AspNetConventions.Extensions
@@ -165,6 +166,11 @@ namespace AspNetConventions.Extensions
             // Register conventions
             builder.Services.AddSingleton<RazorPageRouteConvention>();
             builder.Services.AddSingleton<RazorPageParameterConvention>();
+
+            // Add application model provider to pre-cache complex type metadata for Razor Page handler parameters
+            builder.Services.TryAddEnumerable(
+                ServiceDescriptor.Singleton<IPageApplicationModelProvider, ComplexTypePageApplicationModelProvider>()
+            );
 
             // Add razor pages conventions
             builder.Services.AddSingleton<IConfigureOptions<Microsoft.AspNetCore.Mvc.RazorPages.RazorPagesOptions>>(serviceProvider =>

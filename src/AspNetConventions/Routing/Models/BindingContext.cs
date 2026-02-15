@@ -64,7 +64,7 @@ namespace AspNetConventions.Routing.Models
         /// </summary>
         /// <value>true if the type is complex and bindable; otherwise, false.</value>
         /// <remarks>This is determined using the <see cref="ModelTypeClassifier"/>.</remarks>
-        public bool IsComplexBindableType { get; set; }
+        public bool IsComplexType { get; set; }
 
         /// <summary>
         /// Gets or sets the explicit binder model name if specified.
