@@ -11,9 +11,9 @@ namespace AspNetConventions.UI.TagHelpers
     [HtmlTargetElement("input", Attributes = ForAttributeName)]
     public class SuppressInvariantTagHelper : ConventionTagHelper
     {
-
         public override int Order => 20000;
 
+        /// The name attribute used to identify the invariant input element in the output HTML.
         public const string NameAttribute = "__Invariant";
 
         public SuppressInvariantTagHelper(IOptions<AspNetConventionOptions> options) : base(options)
@@ -48,6 +48,7 @@ namespace AspNetConventions.UI.TagHelpers
                     html.AsSpan(index + original.Length)
                 );
 
+                // Update the PostElement content with the modified HTML.
                 output.PostElement.SetHtmlContent(result);
             };
         }

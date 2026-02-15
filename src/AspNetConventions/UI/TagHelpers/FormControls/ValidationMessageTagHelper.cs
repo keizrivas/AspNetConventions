@@ -6,7 +6,8 @@ using Microsoft.Extensions.Options;
 namespace AspNetConventions.UI.TagHelpers.FormControls
 {
     /// <summary>
-    /// Custom Validation Message Tag Helper for kebab-case
+    /// Custom ValidationMessage Tag Helper that targets "span" elements with the "asp-validation-for" 
+    /// attribute and ensures that the validation message is correctly associated with the transformed parameter name. 
     /// </summary>
     [HtmlTargetElement("span", Attributes = ValidationForAttributeName)]
     public class ValidationMessageTagHelper : ConventionTagHelper
