@@ -23,9 +23,6 @@ jobs:
       - name: Build
         run: dotnet build ./src/AspNetConventions/AspNetConventions.csproj -c Release --no-restore
 
-      # - name: Pack
-      #   run: dotnet pack ./src/AspNetConventions/AspNetConventions.csproj -c Release --no-build -o ./nupkg
-
       - name: Pack
         run: |
           VERSION=${GITHUB_REF#refs/tags/v}
@@ -36,6 +33,7 @@ jobs:
             --no-build
 
       - name: Publish to NuGet
-        run: dotnet nuget push ./nupkg/*.nupkg \
+        run:  |
+          dotnet nuget push ./nupkg/*.nupkg \
               --api-key ${{ secrets.NUGET_API_KEY }} \
               --source https://api.nuget.org/v3/index.json
