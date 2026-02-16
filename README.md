@@ -1,38 +1,35 @@
 # AspNetConventions
 
-![NuGet Version](https://img.shields.io/nuget/v/AspNetConventions)
-![NuGet Downloads](https://img.shields.io/nuget/dt/AspNetConventions)
-![Build Status](https://github.com/keizrivas/AspNetConventions/workflows/CI/badge.svg)
-![License](https://img.shields.io/github/license/keizrivas/AspNetConventions)
-[![DotNet](https://img.shields.io/badge/dotnet-8.0%20|%209.0%20|%2010.0-blue.svg)](https://dotnet.microsoft.com/en-us/download)
+[![License](https://img.shields.io/github/license/keizrivas/AspNetConventions)](https://github.com/keizrivas/AspNetConventions/blob/main/LICENSE)
+[![Build Status](https://github.com/keizrivas/AspNetConventions/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/keizrivas/AspNetConventions/actions)
+[![NuGet Version](https://img.shields.io/nuget/v/AspNetConventions.svg)](https://www.nuget.org/packages/AspNetConventions)
+[![NuGet Downloads](https://img.shields.io/nuget/dt/AspNetConventions.svg)](https://www.nuget.org/packages/AspNetConventions)
+[![.NET](https://img.shields.io/badge/.NET-8.0+-512BD4.svg)](https://dotnet.microsoft.com/download)
 
+<p align="center">
+  <img src="https://raw.githubusercontent.com/keizrivas/AspNetConventions/main/assets/asp_net_conventions.svg" width="250">
+</p>
 
-<br />
-<div align="center">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="./assets/asp_net_conventions_dark.svg" width="250">
-    <img alt="AspNetConventions" src="./assets/asp_net_conventions.svg" width="250">
-  </picture>
-</div>
-<br />
+**Convention-driven standardization for ASP.NET Core** - Automatically applies consistent standardization across ASP.NET Core applications — including APIs, MVC, and Razor Pages — with minimal configuration and zero boilerplate.
 
-**Automatic naming conventions for ASP.NET Core** - Transform your routes, parameters, and responses to kebab-case, snake_case, camelCase, or PascalCase with zero boilerplate.
+<p align="center">
+  <img src="https://raw.githubusercontent.com/keizrivas/AspNetConventions/main/assets/banner.png" width="100%">
+</p>
 
-<div align="center">
-    <picture>
-        <source media="(prefers-color-scheme: dark)" srcset="./assets/banner_dark.png" width="100%">
-        <img alt="AspNetConventions" src="./assets/banner.png" width="100%">
-  </picture>
-</div>
+---
 
-## Features
+## Why AspNetConventions?
 
-- **Automatic Route Transformation** - `/GetUserById` → `/get-user-by-id`
-- **Parameter Binding** - `{UserId}` → `{user-id}` with automatic binding
-- **Response Formatting** - Standardized JSON responses
-- **Multiple Endpoint/Routes Types** - MVC Controllers, Minimal APIs, Razor Pages
-- **Flexible Casing** - kebab-case, snake_case, camelCase, PascalCase
-- **Zero Overhead** - Conventions applied at startup
+Building consistent ASP.NET Core applications shouldn't require hundreds of lines of configuration code. AspNetConventions applies standards automatically:
+
+- **Universal Endpoint Support** - Consistent URL structure across MVC, Minimal APIs, and Razor Pages.
+- **Automatic Route standardization** - Routes and parameters follow your preferred casing style.
+- **Standardized responses** - Uniform JSON formatting and consistent response formatting application-wide.
+- **Global exception handling** - Centralized error handling and formatting.
+- **Fully Extensible** - Supports custom converters, mappers, hooks, and response formatters, as well as third-party library compatibility.
+- **Zero Runtime Overhead** - Conventions are applied during application startup, no performance impact on requests.
+
+---
 
 ## Quick Start
 
@@ -42,79 +39,45 @@
 dotnet add package AspNetConventions
 ```
 
-### Basic Usage
+### Basic Configuration
 
 ```csharp
-// ./Program.cs
+// Program.cs
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add conventions to MVC/Razor Pages (IMvcBuilder)
+// Apply conventions to MVC Controllers/Razor Pages
 builder.Services.AddControllersWithViews()
     .AddAspNetConventions();
 
 var app = builder.Build();
 
-app.MapGet("/GetUser/{UserId}", (int UserId) => new { userId = UserId });
+// Apply conventions to Minimal APIs
+var api = app.UseAspNetConventions("/");
 
-// Apply conventions to Minimal APIs (WebApplication)
-app.UseAspNetConventions();
+api.MapGet("/GetUser/{UserId}", (int UserId) => new { userId = UserId });
 
 app.Run();
 ```
 
-
-## Examples
-
-### MVC Controllers
-
-```csharp
-[ApiController]
-[Route("api/[controller]")]
-public class UserProfileController : ControllerBase
-{
-    [HttpGet("GetById/{UserId}")]
-    public IActionResult GetById(int UserId) => Ok();
-}
-
-//Result: GET /api/user-profile/get-by-id/{user-id}
-```
-
-### Minimal APIs
-
-```csharp
-app.MapGet("/WeatherForecast/{CityName}", (string CityName) => 
-    Results.Ok(new { city = CityName }));
-    
-// Result: GET /weather-forecast/{city-name}
-```
-
-### Razor Pages
-
-```csharp
-// ./Pages/UserProfile/Edit.cshtml.cs
-public class EditModel : PageModel
-{
-    public void OnGet(int UserId) { }
-}
-
-// Result: /user-profile/edit/{user-id}
-```
-
-## License
-
-This project is licensed under the MIT License - see [LICENSE](LICENSE) file for details.
-
-## Acknowledgments
-
-- Built on ASP.NET Core's extensibility
-- Thanks to all [contributors](https://github.com/keizrivas/AspNetConventions/graphs/contributors)
-
-## Support
-
-- [Report Issues](https://github.com/keizrivas/AspNetConventions/issues)
-- [Discussions](https://github.com/keizrivas/AspNetConventions/discussions)
+**That's it!** Your entire application now follows consistent conventions.
 
 ---
 
-**Made with ❤️ for the ASP.NET Core community**
+## Contributing
+
+Contributions are welcome! See [CONTRIBUTING.md](https://github.com/keizrivas/AspNetConventions/blob/main/CONTRIBUTING.md) for more information.
+
+---
+
+## Support & Community
+
+- [Report Issues](https://github.com/keizrivas/AspNetConventions/issues)
+- [Join Discussions](https://github.com/keizrivas/AspNetConventions/discussions)
+- [Documentation](https://github.com/keizrivas/AspNetConventions/wiki)
+
+---
+
+## License
+
+This project is licensed under the MIT License. See [LICENSE](https://github.com/keizrivas/AspNetConventions/blob/main/LICENSE) for details.

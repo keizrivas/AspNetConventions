@@ -32,6 +32,13 @@ jobs:
             -o ./nupkg \
             --no-build
 
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: Release ${{ github.ref_name }}
+          generate_release_notes: true
+
       - name: Publish to NuGet
         run:  |
           dotnet nuget push ./nupkg/*.nupkg \
