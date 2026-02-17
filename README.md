@@ -16,20 +16,16 @@
   <img src="https://raw.githubusercontent.com/keizrivas/AspNetConventions/main/assets/banner.png" width="100%">
 </p>
 
----
-
 ## Why AspNetConventions?
 
-Building consistent ASP.NET Core applications shouldn't require hundreds of lines of configuration code. AspNetConventions applies standards automatically:
+We believe API building should be intuitive. AspNetConventions transforms standard ASP.NET setups into a modern API solution by applying smart global behaviors automatically:
 
 - **Universal Endpoint Support** - Consistent URL structure across MVC, Minimal APIs, and Razor Pages.
-- **Automatic Route standardization** - Routes and parameters follow your preferred casing style.
+- **Automatic Route standardization** - Route and parameter names are transformed and bound automatically follow your preferred casing style.
 - **Standardized responses** - Uniform JSON formatting and consistent response formatting application-wide.
-- **Global exception handling** - Centralized error handling and formatting.
+- **Global exception handling** - Centralized error handling and formatting throughout your codebase.
 - **Fully Extensible** - Supports custom converters, mappers, hooks, and response formatters, as well as third-party library compatibility.
 - **Zero Runtime Overhead** - Conventions are applied during application startup, no performance impact on requests.
-
----
 
 ## Quick Start
 
@@ -47,8 +43,9 @@ dotnet add package AspNetConventions
 var builder = WebApplication.CreateBuilder(args);
 
 // Apply conventions to MVC Controllers/Razor Pages
-builder.Services.AddControllersWithViews()
-    .AddAspNetConventions();
+builder.Services
+  .AddControllersWithViews()
+  .AddAspNetConventions();
 
 var app = builder.Build();
 
@@ -62,21 +59,11 @@ app.Run();
 
 **That's it!** Your entire application now follows consistent conventions.
 
----
-
 ## Contributing
 
-Contributions are welcome! See [CONTRIBUTING.md](https://github.com/keizrivas/AspNetConventions/blob/main/CONTRIBUTING.md) for more information.
+[Contributions](https://github.com/keizrivas/AspNetConventions/blob/main/CONTRIBUTING.md), [issues](https://github.com/keizrivas/AspNetConventions/issues), and [feature requests](https://github.com/keizrivas/AspNetConventions/pulls) are welcome!
 
----
-
-## Support & Community
-
-- [Report Issues](https://github.com/keizrivas/AspNetConventions/issues)
-- [Join Discussions](https://github.com/keizrivas/AspNetConventions/discussions)
-- [Documentation](https://github.com/keizrivas/AspNetConventions/wiki)
-
----
+If you believe a convention should be improved or added, feel free to open a [discussion](https://github.com/keizrivas/AspNetConventions/discussions).
 
 ## License
 
