@@ -61,10 +61,10 @@ app.Run();
 
 ## Contributing
 
-[Contributions](https://github.com/keizrivas/AspNetConventions/blob/main/CONTRIBUTING.md), [issues](https://github.com/keizrivas/AspNetConventions/issues), and [feature requests](https://github.com/keizrivas/AspNetConventions/pulls) are welcome!
+[Contributions](https://github.com/keizrivas/AspNetConventions/tree/main?tab=contributing-ov-file), [issues](https://github.com/keizrivas/AspNetConventions/issues), and [feature requests](https://github.com/keizrivas/AspNetConventions/pulls) are welcome!
 
 If you believe a convention should be improved or added, feel free to open a [discussion](https://github.com/keizrivas/AspNetConventions/discussions).
 
 ## License
 
-This project is licensed under the MIT License. See [LICENSE](https://github.com/keizrivas/AspNetConventions/blob/main/LICENSE) for details.
+This project is licensed under the MIT License. See [LICENSE](https://github.com/keizrivas/AspNetConventions/tree/main?tab=MIT-1-ov-file) for details.
