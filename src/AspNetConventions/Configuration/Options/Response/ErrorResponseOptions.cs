@@ -12,17 +12,22 @@ namespace AspNetConventions.Configuration.Options.Response
         public HttpStatusCode DefaultStatusCode { get; set; } = HttpStatusCode.InternalServerError;
 
         /// <summary>
-        /// Gets or sets the default error code for unhandled exceptions.
+        /// Gets or sets the default type for unhandled exceptions.
         /// </summary>
         public string DefaultErrorType { get; set; } = "UNEXPECTED_ERROR";
 
         /// <summary>
-        /// Gets or sets the default error message for unhandled exceptions.
+        /// Gets or sets the default response message for unhandled exceptions.
         /// </summary>
         public string DefaultErrorMessage { get; set; } = "An unexpected error occurred.";
 
         /// <summary>
-        /// Gets or sets the default error message for validation exceptions.
+        /// Gets or sets the default type for validation exceptions.
+        /// </summary>
+        public string DefaultValidationType { get; set; } = "VALIDATION_ERROR";
+
+        /// <summary>
+        /// Gets or sets the default response message for validation exceptions.
         /// </summary>
         public string DefaultValidationMessage { get; set; } = "One or more validation errors occurred.";
 

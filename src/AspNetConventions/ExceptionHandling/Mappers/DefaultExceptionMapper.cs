@@ -62,7 +62,7 @@ namespace AspNetConventions.ExceptionHandling.Mappers
             // Handle validation exceptions specially
             if (TryGetValidationErrors(exception, out var validationErrors))
             {
-                result.Data = validationErrors;
+                result.Value = validationErrors;
             }
 
             return result;

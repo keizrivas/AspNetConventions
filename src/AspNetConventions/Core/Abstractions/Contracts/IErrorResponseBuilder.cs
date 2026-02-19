@@ -13,7 +13,7 @@ namespace AspNetConventions.Core.Abstractions.Contracts
         /// Builds a response object from error mapping result.
         /// </summary>
         object BuildResponse(
-            RequestResult requestResult,
+            ApiResult apiResult,
             Exception? exception,
             RequestDescriptor requestDescriptor);
     }

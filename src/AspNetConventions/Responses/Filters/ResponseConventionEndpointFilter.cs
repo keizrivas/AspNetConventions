@@ -50,14 +50,14 @@ namespace AspNetConventions.Responses.Filters
             }
 
             // Already wrapped
-            var requestResult = responseManager.GetRequestResultFromContent(result);
-            if (responseManager.IsWrappedResponse(requestResult))
+            var apiResult = responseManager.GetRequestResultFromContent(result);
+            if (responseManager.IsWrappedResponse(apiResult))
             {
                 return result;
             }
 
             var (response, statusCode) = await responseManager
-                .BuildResponseAsync(requestResult)
+                .BuildResponseAsync(apiResult)
                 .ConfigureAwait(false);
 
             return Results.Json(response, statusCode: (int)statusCode);

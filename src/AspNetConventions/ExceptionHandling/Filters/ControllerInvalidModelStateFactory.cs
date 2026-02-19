@@ -49,7 +49,8 @@ namespace AspNetConventions.ExceptionHandling.Filters
             // Return a BadRequestObjectResult with the standardized error response
             return new BadRequestObjectResult(new ExceptionDescriptor
             {
-                Data = errors,
+                Value = errors,
+                Type = options.Value.Response.ErrorResponse.DefaultValidationType,
                 Message = options.Value.Response.ErrorResponse.DefaultValidationMessage,
                 LogLevel = Microsoft.Extensions.Logging.LogLevel.Debug,
             });

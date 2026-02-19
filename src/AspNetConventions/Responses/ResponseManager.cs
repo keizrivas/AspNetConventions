@@ -90,17 +90,17 @@ namespace AspNetConventions.Responses
         /// <summary>
         /// Determines if the specified request result contains already wrapped response data.
         /// </summary>
-        /// <param name="requestResult">The request result to check.</param>
+        /// <param name="apiResult">The request result to check.</param>
         /// <returns>true if the request result data is already wrapped; otherwise, false.</returns>
-        public bool IsWrappedResponse(RequestResult requestResult)
+        public bool IsWrappedResponse(ApiResult apiResult)
         {
-            return IsWrappedResponse(requestResult.Data);
+            return IsWrappedResponse(apiResult.GetValue());
         }
 
         /// <summary>
         /// Builds a standardized response from the provided content.
         /// </summary>
-        /// <param name="content">The content to wrap in a response. Can be null, an object, IResult, RequestResult, or ExceptionDescriptor.</param>
+        /// <param name="content">The content to wrap in a response. Can be null, an object, IResult, ApiResult, or ExceptionDescriptor.</param>
         /// <returns>A tuple containing the wrapped response object and the HTTP status code.</returns>
         public async Task<(object? Response, HttpStatusCode StatusCode)> BuildResponseAsync(object? content)
         {
@@ -109,66 +109,66 @@ namespace AspNetConventions.Responses
                 return (null, _requestDescriptor.StatusCode);
             }
 
-            var requestResult = GetRequestResultFromContent(content);
-            return await BuildResponseAsync(requestResult)
+            var apiResult = GetRequestResultFromContent(content);
+            return await BuildResponseAsync(apiResult)
                 .ConfigureAwait(false);
         }
 
         /// <summary>
         /// Builds a standardized response from the provided request result.
         /// </summary>
-        /// <param name="requestResult">The request result containing response data and metadata.</param>
+        /// <param name="apiResult">The request result containing response data and metadata.</param>
         /// <returns>A tuple containing the wrapped response object and the HTTP status code.</returns>
-        public async Task<(object? Response, HttpStatusCode StatusCode)> BuildResponseAsync(RequestResult requestResult)
+        public async Task<(object? Response, HttpStatusCode StatusCode)> BuildResponseAsync(ApiResult apiResult)
         {
             var hooks = Options.Response.Hooks;
-            var exceptionDescriptor = requestResult.Payload as ExceptionDescriptor;
+            var exceptionDescriptor = apiResult.Payload as ExceptionDescriptor;
 
             // Set metadata
             var metadata = GetMetadata(_requestDescriptor, exceptionDescriptor);
-            requestResult.WithMetadata(metadata);
+            apiResult.WithMetadata(metadata);
 
             // Determine if we should wrap the response
             var shouldWrap = await hooks.ShouldWrapResponseAsync
-                .InvokeAsync<bool?>(requestResult, _requestDescriptor)
+                .InvokeAsync<bool?>(apiResult, _requestDescriptor)
                 .ConfigureAwait(false) ?? true;
 
             if (!shouldWrap)
             {
-                return (null, requestResult.StatusCode);
+                return (null, apiResult.StatusCode);
             }
 
             // Handle pagination metadata and resolve collections
-            var collection = _responseCollectionResolver.TryResolve(requestResult.Data);
+            var collection = _responseCollectionResolver.TryResolve(apiResult.GetValue());
             if (collection is not null)
             {
                 var paginationMetadata = GetPaginationMetadata(collection);
-                requestResult.WithPagination(paginationMetadata);
-                requestResult.WithData(collection);
+                apiResult.WithPagination(paginationMetadata);
+                apiResult.WithValue(collection);
             }
 
             // Invoke hooks before wrapping
-            await hooks.BeforeResponseWrapAsync.InvokeAsync(requestResult, _requestDescriptor)
+            await hooks.BeforeResponseWrapAsync.InvokeAsync(apiResult, _requestDescriptor)
                 .ConfigureAwait(false);
 
             // Build the wrapped response
-            var wrappedResponse = requestResult.IsSuccess
-                ? _responseBuilder.BuildResponse(requestResult, _requestDescriptor)
-                : _errorResponseBuilder.BuildResponse(requestResult, exceptionDescriptor?.Exception, _requestDescriptor);
+            var wrappedResponse = apiResult.IsSuccess
+                ? _responseBuilder.BuildResponse(apiResult, _requestDescriptor)
+                : _errorResponseBuilder.BuildResponse(apiResult, exceptionDescriptor?.Exception, _requestDescriptor);
 
             // Invoke hooks after wrapping
-            await hooks.AfterResponseWrapAsync.InvokeAsync(wrappedResponse, requestResult, _requestDescriptor)
+            await hooks.AfterResponseWrapAsync.InvokeAsync(wrappedResponse, apiResult, _requestDescriptor)
                 .ConfigureAwait(false);
 
             return (wrappedResponse, _requestDescriptor.StatusCode);
         }
 
         /// <summary>
-        /// Converts various content types into a standardized <see cref="RequestResult"/>.
+        /// Converts various content types into a standardized <see cref="ApiResult"/>.
         /// </summary>
-        /// <param name="content">The content to convert. Can be null, an object, IResult, RequestResult, ExceptionDescriptor, or ProblemDetails.</param>
-        /// <returns>A <see cref="RequestResult"/> containing the standardized response data.</returns>
-        public RequestResult GetRequestResultFromContent(object? content)
+        /// <param name="content">The content to convert. Can be null, an object, IResult, ApiResult, ExceptionDescriptor, or ProblemDetails.</param>
+        /// <returns>A <see cref="ApiResult"/> containing the standardized response data.</returns>
+        public ApiResult GetRequestResultFromContent(object? content)
         {
             object? payload = content;
             HttpStatusCode statusCode = _requestDescriptor.StatusCode;
@@ -192,9 +192,9 @@ namespace AspNetConventions.Responses
             }
 
             // Is already a request result
-            if (content is RequestResult requestResult)
+            if (content is ApiResult apiResult)
             {
-                return requestResult;
+                return apiResult;
             }
 
             if (content is ExceptionDescriptor exceptionDescriptor)
@@ -208,8 +208,8 @@ namespace AspNetConventions.Responses
                 }
 
                 // Parse to response result
-                return new RequestResult(
-                    data: exceptionDescriptor.Data,
+                return new ApiResult<object>(
+                    value: exceptionDescriptor.Value,
                     type: exceptionDescriptor.Type,
                     message: exceptionDescriptor.Message,
                     statusCode: statusCode)
@@ -228,15 +228,15 @@ namespace AspNetConventions.Responses
                     _requestDescriptor.SetStatusCode(statusCode);
                 }
 
-                return new RequestResult(
-                    data: GetProblemData(problemDetails),
+                return new ApiResult<object>(
+                    value: GetProblemData(problemDetails),
                     message: ResolveMessage(problemDetails),
                     statusCode: statusCode)
                     .WithPayload(payload);
             }
 
-            return new RequestResult(
-                data: content,
+            return new ApiResult<object>(
+                value: content,
                 statusCode: statusCode)
                 .WithPayload(payload);
         }
@@ -314,6 +314,11 @@ namespace AspNetConventions.Responses
             if ((Options.Response.ErrorResponse.IncludeExceptionDetails ?? _requestDescriptor.IsDevelopment)
                 && exceptionDescriptor.Exception != null)
             {
+                if(Options.Response.ErrorResponse.IncludeExceptionDetails == true && !_requestDescriptor.IsDevelopment)
+                {
+                    Logger.LogDisclosureVulnerabilityWarning("Exception details should not be exposed in non-development environments.");
+                }
+
                 metadata.Exception = new ExceptionMetadata(
                     exceptionDescriptor.Exception,
                     Options.Response.ErrorResponse.MaxStackTraceDepth);

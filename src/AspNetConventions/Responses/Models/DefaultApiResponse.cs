@@ -8,15 +8,14 @@ namespace AspNetConventions.Responses.Models
     /// <summary>
     /// Represents a standardized response structure.
     /// </summary>
-    /// <typeparam name="TData">The type of data included in the response.</typeparam>
-    public sealed class DefaultApiResponse<TData>(HttpStatusCode statusCode) : ApiResponse(statusCode)
+    public sealed class DefaultApiResponse(HttpStatusCode statusCode) : ApiResponse(statusCode)
     {
         /// <summary>
         /// Gets or sets the response data payload.
         /// </summary>
         /// <value>The data object to be serialized in the response. Can be null for responses without data.</value>
         [JsonPropertyOrder(5)]
-        public TData? Data { get; set; }
+        public object? Data { get; set; }
 
         /// <summary>
         /// Gets or sets pagination metadata for paginated responses.

@@ -1,76 +1,86 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
+  <!-- targets -->
   <PropertyGroup>
     <TargetFrameworks>net8.0;net9.0;net10.0</TargetFrameworks>
-    <RollForward>LatestMajor</RollForward>
-    <LangVersion>latest</LangVersion>
     <Nullable>enable</Nullable>
-    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
-    <WarningsAsErrors></WarningsAsErrors>
-    <NoWarn>$(NoWarn);CS1591</NoWarn>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NoWarn>$(NoWarn);CS1591</NoWarn>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
-    <Optimize>true</Optimize>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-  </PropertyGroup>
-
+  <!-- build -->
   <PropertyGroup>
-    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+    <Deterministic>true</Deterministic>
+    <ContinuousIntegrationBuild Condition="'$(CI)' == 'true'">true</ContinuousIntegrationBuild>
+    <DebugType>portable</DebugType>
+    <EmbedAllSources>true</EmbedAllSources>
+  </PropertyGroup>
+
+  <!-- analyzers -->
+  <PropertyGroup>
     <EnableNETAnalyzers>true</EnableNETAnalyzers>
-    <AnalysisLevel>latest</AnalysisLevel>
+    <AnalysisLevel>latest-recommended</AnalysisLevel>
     <AnalysisMode>AllEnabledByDefault</AnalysisMode>
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+    <NullablePublicOnly>true</NullablePublicOnly>
   </PropertyGroup>
 
+  <!-- nuget package -->
   <PropertyGroup>
-    <!-- Package Information -->
+    <GeneratePackageOnBuild Condition="'$(Configuration)'=='Release'">true</GeneratePackageOnBuild>
+    <EnablePackageValidation>true</EnablePackageValidation>
+
+    <!-- Package Info -->
     <PackageId>AspNetConventions</PackageId>
     <Version>1.0.0</Version>
     <Authors>keizrivas</Authors>
     <Title>Convention-driven standardization for ASP.NET Core.</Title>
     <Description>
-      Automatically standardizes routes, parameters, responses, JSON settings, and exception
-      handling with zero boilerplate.
+      Automatically standardizes routes, parameters, responses, JSON settings,
+      and exception handling with zero boilerplate.
       Drop-in support for MVC Controllers, Minimal APIs and Razor Pages.
     </Description>
     <PackageTags>
-      mvc;csharp;dotnet;aspnetcore;rest-api;conventions;json-serialization;routing;web-api;razor-pages;minimal-api;api-conventions</PackageTags>
+      mvc;csharp;dotnet;aspnetcore;rest-api;conventions;json-serialization;routing;web-api;razor-pages;minimal-api;api-conventions
+    </PackageTags>
+
     <RepositoryUrl>https://github.com/keizrivas/AspNetConventions</RepositoryUrl>
     <PackageProjectUrl>https://github.com/keizrivas/AspNetConventions</PackageProjectUrl>
     <RepositoryType>git</RepositoryType>
+
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageIcon>logo_128.png</PackageIcon>
     <PackageReadmeFile>README.md</PackageReadmeFile>
-    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+  </PropertyGroup>
 
-    <!-- Deterministic Build -->
-    <Deterministic>true</Deterministic>
-    <ContinuousIntegrationBuild Condition="'$(CI)' == 'true'">true</ContinuousIntegrationBuild>
-
-    <!-- Source Link -->
+  <!-- sourcelink -->
+  <PropertyGroup>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <RepositoryCommit>$(SourceRevisionId)</RepositoryCommit>
   </PropertyGroup>
 
-  <!-- Includes -->
+  <!-- files -->
   <ItemGroup>
     <None Include="..\..\assets\logo_128.png" Pack="true" PackagePath="\" />
     <None Include="..\..\README.md" Pack="true" PackagePath="\" />
   </ItemGroup>
 
+  <!-- Implicit using -->
+  <ItemGroup>
+    <ImplicitUsing Include="AspNetConventions.Http.ApiResults" />
+  </ItemGroup>
+
+  <!-- references -->
   <ItemGroup>
     <!-- ASP.NET Core -->
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
-
-    <!-- Source Link -->
+    <!-- SourceLink -->
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="10.0.103" PrivateAssets="All" />
-
     <!-- Code Analysis -->
-    <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="10.0.103">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
+    <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="10.0.103" PrivateAssets="All" />
   </ItemGroup>
+
 </Project>

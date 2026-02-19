@@ -37,7 +37,7 @@ namespace AspNetConventions.Core.Abstractions.Models
         /// Gets or sets the HTTP status code.
         /// </summary>
         [JsonPropertyOrder(2)]
-        public int StatusCode { get; set; } = (int)HttpStatusCode.OK;
+        public int StatusCode { get; } = (int)HttpStatusCode.OK;
 
         /// <summary>
         /// Gets or sets an optional message.

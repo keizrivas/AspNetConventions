@@ -17,27 +17,27 @@ namespace AspNetConventions.Core.Hooks
         /// <summary>
         /// Represents an asynchronous callback method to determine whether a response should be wrapped.
         /// </summary>
-        /// <param name="requestResult">The request result containing response data.</param>
+        /// <param name="apiResult">The request result containing response data.</param>
         /// <param name="requestDescriptor">The request descriptor containing context information.</param>
         /// <returns>A task that returns true if the response should be wrapped; otherwise, false.</returns>
-        public delegate Task<bool> ShouldWrapResponseCallback(RequestResult requestResult, RequestDescriptor requestDescriptor);
+        public delegate Task<bool> ShouldWrapResponseCallback(ApiResult apiResult, RequestDescriptor requestDescriptor);
 
         /// <summary>
         /// Represents an asynchronous callback method called before response wrapping.
         /// </summary>
-        /// <param name="requestResult">The request result containing response data.</param>
+        /// <param name="apiResult">The request result containing response data.</param>
         /// <param name="requestDescriptor">The request descriptor containing context information.</param>
         /// <returns>A task representing the asynchronous operation.</returns>
-        public delegate Task BeforeResponseWrapCallback(RequestResult requestResult, RequestDescriptor requestDescriptor);
+        public delegate Task BeforeResponseWrapCallback(ApiResult apiResult, RequestDescriptor requestDescriptor);
 
         /// <summary>
         /// Represents an asynchronous callback method called after response wrapping.
         /// </summary>
         /// <param name="wrappedResponse">The wrapped response object.</param>
-        /// <param name="requestResult">The original request result before wrapping.</param>
+        /// <param name="apiResult">The original request result before wrapping.</param>
         /// <param name="requestDescriptor">The request descriptor containing context information.</param>
         /// <returns>A task representing the asynchronous operation.</returns>
-        public delegate Task AfterResponseWrapCallback(object? wrappedResponse, RequestResult requestResult, RequestDescriptor requestDescriptor);
+        public delegate Task AfterResponseWrapCallback(object? wrappedResponse, ApiResult apiResult, RequestDescriptor requestDescriptor);
 
         /// <summary>
         /// Gets or sets the asynchronous callback to determine whether a response should be wrapped.

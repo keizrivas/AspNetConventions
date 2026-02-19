@@ -113,9 +113,9 @@ namespace AspNetConventions.Routing.Conventions
                 {
                     // Simple standalone parameter, handled elsewhere
                     _logger.LogBindingMetadataDebug(
-                        "PARAM-SIMPLE",
                         "Skipped",
-                        $"{bindingContext.Name}",
+                        "PARAM-SIMPLE",
+                        bindingContext.Name,
                         "Simple standalone parameter.");
                 }
             }
@@ -159,8 +159,8 @@ namespace AspNetConventions.Routing.Conventions
                 else if (_logger.IsEnabled(LogLevel.Debug))
                 {
                     _logger.LogBindingMetadataDebug(
-                        "PROP",
                         "Skipped",
+                        "PROP",
                         $"{containerType.Name}.{bindingContext.Name}",
                         "Not a complex or bindable type.");
                 }
@@ -180,10 +180,9 @@ namespace AspNetConventions.Routing.Conventions
         {
             var debugKindName = string.Empty;
             var debugPrefixName = string.Empty;
-            var debugIsEnabled = _logger.IsEnabled(LogLevel.Debug);
             var container = bindingContext.ContainerType;
 
-            if (debugIsEnabled)
+            if (_logger.IsEnabled(LogLevel.Debug))
             {
                 debugPrefixName = container != null && container.Name != rootComplexType.Name
                     ? $"{rootComplexType.Name}*.{container.Name}"
@@ -204,11 +203,11 @@ namespace AspNetConventions.Routing.Conventions
             // Check if already processed
             if (_processedProperties.ContainsKey(cacheKey))
             {
-                if (debugIsEnabled)
+                if (_logger.IsEnabled(LogLevel.Debug))
                 {
                     _logger.LogBindingMetadataDebug(
-                        debugKindName,
                         "Skipped",
+                        debugKindName,
                         $"{debugPrefixName}.{bindingContext.Name}",
                         "Already processed.");
                 }
@@ -220,11 +219,11 @@ namespace AspNetConventions.Routing.Conventions
             if (bindingContext.BinderModelName != null &&
                 (Options.Route.Controllers.PreserveExplicitBindingNames || Options.Route.RazorPages.PreserveExplicitBindingNames))
             {
-                if (debugIsEnabled)
+                if (_logger.IsEnabled(LogLevel.Debug))
                 {
                     _logger.LogBindingMetadataDebug(
-                        debugKindName,
                         "Skipped",
+                        debugKindName,
                         $"{debugPrefixName}.{bindingContext.Name} => {context.BindingMetadata.BinderModelName}",
                         "Explicit name preserved.");
                 }
@@ -241,11 +240,11 @@ namespace AspNetConventions.Routing.Conventions
             var transformed = Options.Route.GetCaseConverter().Convert(sourceName);
             context.BindingMetadata.BinderModelName = transformed;
 
-            if (debugIsEnabled)
+            if (_logger.IsEnabled(LogLevel.Debug))
             {
                 _logger.LogBindingMetadataDebug(
-                    debugKindName,
                     "Transform",
+                    debugKindName,
                     $"{debugPrefixName}.{bindingContext.Name} => {transformed}",
                     "Apply binder model name.");
             }
@@ -297,8 +296,8 @@ namespace AspNetConventions.Routing.Conventions
                 var type = bindingContext.IsComplexType ? "COMPLEX" : "SIMPLE";
                 var kind = bindingContext.MetadataKind == ModelMetadataKind.Parameter ? "PARAM" : "PROP";
                 _logger.LogBindingMetadataDebug(
-                    $"{kind}-{type}",
                     "Cached",
+                    $"{kind}-{type}",
                     $"{bindingContext.Name} ({complexType.Name}) | ({propertyNames.Count}) props",
                     "Cache complex type info.");
             }

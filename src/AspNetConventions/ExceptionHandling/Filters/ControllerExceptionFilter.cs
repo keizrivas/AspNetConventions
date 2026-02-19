@@ -1,6 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using AspNetConventions.Configuration.Options;
+using AspNetConventions.Core.Abstractions.Models;
 using AspNetConventions.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
@@ -18,14 +19,14 @@ namespace AspNetConventions.ExceptionHandling.Filters
     /// <param name="options">The options that configure exception handling behavior and response formatting.</param>
     internal sealed class ControllerExceptionFilter(
         ILogger<ControllerExceptionFilter> logger,
-        IOptions<AspNetConventionOptions> options) : IAsyncExceptionFilter
+        IOptions<AspNetConventionOptions> options) : ConventionOptions(options), IAsyncExceptionFilter
     {
         private readonly ILogger<ControllerExceptionFilter> _logger = logger ?? NullLogger<ControllerExceptionFilter>.Instance;
-        private readonly IOptions<AspNetConventionOptions> _options = options ?? throw new ArgumentNullException(nameof(options));
 
         public async Task OnExceptionAsync(ExceptionContext context)
         {
-            var exceptionHandling = new ExceptionHandlingManager(context.HttpContext, _options.Value, _logger);
+            CreateOptionSnapshot();
+            var exceptionHandling = new ExceptionHandlingManager(context.HttpContext, Options, _logger);
 
             var (response, statusCode) = await exceptionHandling
                 .BuildResponseFromExceptionAsync(context.Exception, context.Result?.GetContent())
