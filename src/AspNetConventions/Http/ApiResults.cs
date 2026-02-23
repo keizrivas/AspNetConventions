@@ -421,7 +421,6 @@ namespace AspNetConventions.Http
         /// <returns>
         /// An <see cref="ApiResult{TValue}"/> of <see cref="CollectionResult{TValue}"/> containing pagination metadata and the current page's items.
         /// </returns>
-        /// <example>
         public static ApiResult<CollectionResult<TValue>> Paginate<TValue>(IEnumerable<TValue> items, int totalRecords, int pageNumber, int pageSize, string? message = null)
             => Ok(new CollectionResult<TValue>(items, totalRecords, pageNumber, pageSize), message);
 
