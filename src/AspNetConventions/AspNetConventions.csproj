@@ -64,8 +64,8 @@
 
   <!-- files -->
   <ItemGroup>
+    <None Include="README.md" Pack="true" PackagePath="\" />
     <None Include="..\..\assets\logo_128.png" Pack="true" PackagePath="\" />
-    <None Include="..\..\README.md" Pack="true" PackagePath="\" />
   </ItemGroup>
 
   <!-- Implicit using -->
@@ -80,7 +80,8 @@
     <!-- SourceLink -->
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="10.0.103" PrivateAssets="All" />
     <!-- Code Analysis -->
-    <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="10.0.103" PrivateAssets="All" />
+    <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="10.0.103"
+      PrivateAssets="All" />
   </ItemGroup>
 
 </Project>
