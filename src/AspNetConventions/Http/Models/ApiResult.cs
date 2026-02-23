@@ -1,12 +1,9 @@
-using System;
 using System.Net;
 using System.Threading.Tasks;
 using AspNetConventions.Core.Enums;
 using AspNetConventions.Extensions;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Infrastructure;
 
 namespace AspNetConventions.Http.Models
 {
@@ -102,7 +99,7 @@ namespace AspNetConventions.Http.Models
     /// Encapsulates a standard execution result structure for http request.
     /// </summary>
     /// <typeparam name="TValue">The type of value included in the result.</typeparam>
-    public sealed class ApiResult<TValue> : ApiResult
+    public sealed class ApiResult<TValue> : ApiResult, IResult
     {
         /// <summary>
         /// Gets or sets the response value.
@@ -226,6 +223,23 @@ namespace AspNetConventions.Http.Models
             };
         }
 
+        /// <summary>
+        /// Executes the result operation of the current action synchronously.
+        /// </summary>
+        /// <param name="httpContext">The <see cref="HttpContext"/> for the current request.</param>
+        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
+        public async Task ExecuteAsync(HttpContext httpContext)
+        {
+            await httpContext.Response
+                .WriteAsJsonAsync(this)
+                .ConfigureAwait(false);
+        }
+
+        /// <summary>
+        /// Converts an <see cref="ApiResult{TValue}"/> to an <see cref="ActionResult{TValue}"/> implicitly.
+        /// </summary>
+        /// <param name="result">The <see cref="ApiResult{TValue}"/> to convert.</param>
+        /// <returns>An <see cref="ActionResult{TValue}"/> with the appropriate status code.</returns>
         public static implicit operator ActionResult<TValue>(ApiResult<TValue> result)
         {
             return new ObjectResult(result)
@@ -234,6 +248,11 @@ namespace AspNetConventions.Http.Models
             };
         }
 
+        /// <summary>
+        /// Converts an <see cref="ApiResult{TValue}"/> to an <see cref="ActionResult"/> implicitly.
+        /// </summary>
+        /// <param name="result">The <see cref="ApiResult{TValue}"/> to convert.</param>
+        /// <returns>An <see cref="ActionResult"/> with the appropriate status code.</returns>
         public static implicit operator ActionResult(ApiResult<TValue> result)
         {
             return new ObjectResult(result)
@@ -241,10 +260,5 @@ namespace AspNetConventions.Http.Models
                 StatusCode = (int)result.StatusCode
             };
         }
-
-        //public static implicit operator Ok<TValue>(EndpointResult<TValue> result)
-        //{
-        //    return TypedResults.Ok(result);
-        //}
     }
 }

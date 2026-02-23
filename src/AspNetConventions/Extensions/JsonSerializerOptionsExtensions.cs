@@ -6,7 +6,7 @@ namespace AspNetConventions.Extensions
     /// <summary>
     /// Provides extension methods for <see cref="JsonSerializerOptions"/> configuration and manipulation.
     /// </summary>
-    public static class JsonSerializerOptionsExtensions
+    internal static class JsonSerializerOptionsExtensions
     {
         /// <summary>
         /// Applies configuration settings from one <see cref="JsonSerializerOptions"/> instance to another.
@@ -18,7 +18,7 @@ namespace AspNetConventions.Extensions
         /// <remarks>
         /// This method performs a deep copy of all JSON serialization settings.
         /// </remarks>
-        public static JsonSerializerOptions ApplyFrom(
+        internal static JsonSerializerOptions ApplyFrom(
             this JsonSerializerOptions target,
             JsonSerializerOptions source)
         {

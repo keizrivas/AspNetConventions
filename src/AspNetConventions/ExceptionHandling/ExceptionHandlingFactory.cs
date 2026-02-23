@@ -22,21 +22,21 @@ namespace AspNetConventions.ExceptionHandling
     /// This class handles the complete exception processing pipeline, including exception mapping,
     /// logging, and response building.
     /// </remarks>
-    internal sealed class ExceptionHandlingManager(RequestDescriptor requestDescriptor, AspNetConventionOptions options, ILogger? logger = null)
+    internal sealed class ExceptionHandlingFactory(RequestDescriptor requestDescriptor, AspNetConventionOptions options, ILogger? logger = null)
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="ExceptionHandlingManager"/> class using an HttpContext.
+        /// Initializes a new instance of the <see cref="ExceptionHandlingFactory"/> class using an HttpContext.
         /// </summary>
         /// <param name="httpContext">The current HTTP context.</param>
         /// <param name="options">The AspNetConventions configuration options.</param>
         /// <param name="logger">Optional logger for diagnostic information.</param>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="httpContext"/> or <paramref name="options"/> is null.</exception>
-        public ExceptionHandlingManager(HttpContext httpContext, AspNetConventionOptions options, ILogger? logger = null)
+        public ExceptionHandlingFactory(HttpContext httpContext, AspNetConventionOptions options, ILogger? logger = null)
             : this(httpContext.GetRequestDescriptor(), options, logger)
         {
         }
 
-        private readonly ILogger _logger = logger ?? NullLogger<ExceptionHandlingManager>.Instance;
+        private readonly ILogger _logger = logger ?? NullLogger<ExceptionHandlingFactory>.Instance;
 
         private readonly AspNetConventionOptions _options = options ?? throw new ArgumentNullException(nameof(options));
 
@@ -145,10 +145,10 @@ namespace AspNetConventions.ExceptionHandling
                 .InvokeAsync(exception)
                 .ConfigureAwait(false);
 
-            var responseManager = new ResponseManager(options, requestDescriptor, _logger);
+            var responseFactory = new ResponseFactory(options, requestDescriptor, _logger);
 
             // Check if response is already wrapped
-            if (responseManager.IsWrappedResponse(content))
+            if (responseFactory.IsWrappedResponse(content))
             {
                 return (null, requestDescriptor.StatusCode);
             }
@@ -161,7 +161,7 @@ namespace AspNetConventions.ExceptionHandling
             }
 
             // Build the exception response
-            return await responseManager.BuildResponseAsync(content)
+            return await responseFactory.BuildResponseAsync(content)
                 .ConfigureAwait(false);
         }
     }

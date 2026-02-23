@@ -42,11 +42,11 @@ namespace AspNetConventions.Configuration.Options
         public ErrorResponseOptions ErrorResponse { get; set; } = new();
 
         /// <summary>
-        /// Gets or sets the collection of response collection adapters used to customize paginated responses.
+        /// Gets or sets collection result adapters used to customize paginated responses.
         /// </summary>
         /// <value>A set of adapters that can customize how different collection types are handled in paginated responses.</value>
         /// <remarks>Adapters allow you to customize how specific collection types are resolved and formatted.</remarks>
-        public HashSet<IResponseCollectionAdapter> ResponseCollectionAdapters { get; private set; } = [];
+        public HashSet<ICollectionResultAdapter> CollectionResultAdapters { get; private set; } = [];
 
         /// <summary>
         /// Gets or sets a custom response builder for successful responses.
@@ -78,7 +78,7 @@ namespace AspNetConventions.Configuration.Options
 
             cloned.Pagination = (PaginationOptions)Pagination.Clone();
             cloned.ErrorResponse = (ErrorResponseOptions)ErrorResponse.Clone();
-            cloned.ResponseCollectionAdapters = [.. ResponseCollectionAdapters];
+            cloned.CollectionResultAdapters = [.. CollectionResultAdapters];
             cloned.Hooks = (ResponseFormattingHooks)Hooks.Clone();
 
             return cloned;

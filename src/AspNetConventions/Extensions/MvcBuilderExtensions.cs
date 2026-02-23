@@ -4,10 +4,10 @@ using AspNetConventions.Core.Abstractions.Contracts;
 using AspNetConventions.ExceptionHandling.Abstractions;
 using AspNetConventions.ExceptionHandling.Filters;
 using AspNetConventions.ExceptionHandling.Handlers;
+using AspNetConventions.Responses.Filters;
 using AspNetConventions.Routing.Conventions;
 using AspNetConventions.Routing.Providers;
 using AspNetConventions.Routing.Transformation;
-using AspNetConventions.Serialization.Formatters;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
@@ -36,7 +36,6 @@ namespace AspNetConventions.Extensions
         {
             // Scoped filter
             builder.Services.AddScoped<ControllerExceptionFilter>();
-            builder.Services.AddSingleton<IInvalidModelStateFactory, ControllerInvalidModelStateFactory>();
 
             // Register convention
             builder.Services.AddSingleton<RouteControllerConvention>();
@@ -61,44 +60,25 @@ namespace AspNetConventions.Extensions
                     mvcOptions.Conventions.Add(controllerConvention);
                     mvcOptions.Conventions.Add(new RouteTokenTransformerConvention(routeTokenTransformer));
 
-                    // Register response collection adapters
-                    foreach (var adapters in options.Value.Response.ResponseCollectionAdapters)
+                    // Register collection result adapters
+                    foreach (var adapters in options.Value.Response.CollectionResultAdapters)
                     {
-                        builder.Services.AddSingleton<IResponseCollectionAdapter>(adapters);
+                        builder.Services.AddSingleton<ICollectionResultAdapter>(adapters);
                     }
 
-                    // Add response formatter
-                    mvcOptions.OutputFormatters.Insert(0,
-                        new ResponseJsonFormatter(
-                            options,
-                            jsonOptions.Value.JsonSerializerOptions
-                        )
-                    );
+                    // Add response formatter filter
+                    mvcOptions.Filters.Add<ResponseConventionFilter>();
 
                     // Add custom value provider
                     mvcOptions.ValueProviderFactories.Insert(0, valueProviderFactory);
 
                     // Add exception handling filter
                     mvcOptions.Filters.Add<ControllerExceptionFilter>();
-                    mvcOptions.Filters.Add<ExceptionStatusCodeResultFilter>();
 
                     // Add model metadata provider
                     // Note: This is added as a filter (not inserted) to ensure it runs after 
                     // the model metadata is created but before model binding occurs.
                     mvcOptions.ModelMetadataDetailsProviders.Add(metadataProvider);
-                });
-            });
-
-            // Configure invalid model state response factory
-            builder.Services.AddSingleton<IConfigureOptions<Microsoft.AspNetCore.Mvc.ApiBehaviorOptions>>(serviceProvider =>
-            {
-                var factory = serviceProvider.GetRequiredService<IInvalidModelStateFactory>();
-                return new ConfigureOptions<Microsoft.AspNetCore.Mvc.ApiBehaviorOptions>(apiOptions =>
-                {
-                    apiOptions.InvalidModelStateResponseFactory = context =>
-                    {
-                        return factory.Create(context);
-                    };
                 });
             });
 

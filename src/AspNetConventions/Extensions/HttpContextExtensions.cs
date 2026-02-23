@@ -20,15 +20,14 @@ namespace AspNetConventions.Extensions
         {
             ArgumentNullException.ThrowIfNull(httpContext);
 
-            if (httpContext.Items.TryGetValue(RequestDescriptorKey, out var existing) &&
-                existing is RequestDescriptor context)
+            if (httpContext.Items.TryGetValue(RequestDescriptorKey, out var descriptor))
             {
-                return context;
+                return (RequestDescriptor)descriptor!;
             }
 
-            var newContext = new RequestDescriptor(httpContext);
-            httpContext.Items[RequestDescriptorKey] = newContext;
-            return newContext;
+            var requestDescriptor = new RequestDescriptor(httpContext);
+            httpContext.Items[RequestDescriptorKey] = requestDescriptor;
+            return requestDescriptor;
         }
 
         /// <summary>

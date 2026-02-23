@@ -7,8 +7,7 @@ namespace AspNetConventions.ExceptionHandling.Models
     /// <summary>
     /// Encapsulates a standard exception structure for responses.
     /// </summary>
-    /// <remarks>Use this class to provide a consistent envelope for exception.</remarks>
-    public sealed class ExceptionDescriptor
+    public class ExceptionDescriptor
     {
         /// <summary>
         /// Gets or sets the default HTTP status code.
@@ -26,9 +25,9 @@ namespace AspNetConventions.ExceptionHandling.Models
         public string? Message { get; set; }
 
         /// <summary>
-        /// Gets or sets the response data.
+        /// Gets or sets the response value.
         /// </summary>
-        public object? Data { get; set; }
+        public object? Value { get; set; }
 
         /// <summary>
         /// Gets or sets whether this exception should be logged.
@@ -44,5 +43,17 @@ namespace AspNetConventions.ExceptionHandling.Models
         /// Gets or sets the original exception.
         /// </summary>
         public Exception? Exception { get; set; }
+    }
+
+    /// <summary>
+    /// Encapsulates a standard exception structure for responses.
+    /// </summary>
+    /// <typeparam name="TValue">The type of value included in the exception descriptor.</typeparam>
+    public class ExceptionDescriptor<TValue> : ExceptionDescriptor
+    {
+        /// <summary>
+        /// Gets or sets the response value.
+        /// </summary>
+        public new TValue? Value { get; set; }
     }
 }

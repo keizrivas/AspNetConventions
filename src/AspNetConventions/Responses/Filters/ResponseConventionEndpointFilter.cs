@@ -35,7 +35,7 @@ namespace AspNetConventions.Responses.Filters
             object? result;
 
             // Response manager
-            var responseManager = new ResponseManager(options, context.HttpContext);
+            var responseFactory = new ResponseFactory(options, context.HttpContext);
 
             result = await next(context).ConfigureAwait(false);
             if (context.HttpContext.Response.HasStarted)
@@ -50,13 +50,13 @@ namespace AspNetConventions.Responses.Filters
             }
 
             // Already wrapped
-            var apiResult = responseManager.GetRequestResultFromContent(result);
-            if (responseManager.IsWrappedResponse(apiResult))
+            var apiResult = responseFactory.GetRequestResultFromContent(result);
+            if (responseFactory.IsWrappedResponse(apiResult))
             {
                 return result;
             }
 
-            var (response, statusCode) = await responseManager
+            var (response, statusCode) = await responseFactory
                 .BuildResponseAsync(apiResult)
                 .ConfigureAwait(false);
 

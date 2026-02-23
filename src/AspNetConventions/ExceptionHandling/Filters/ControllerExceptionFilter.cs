@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 using AspNetConventions.Configuration.Options;
 using AspNetConventions.Core.Abstractions.Models;
@@ -26,10 +25,15 @@ namespace AspNetConventions.ExceptionHandling.Filters
         public async Task OnExceptionAsync(ExceptionContext context)
         {
             CreateOptionSnapshot();
-            var exceptionHandling = new ExceptionHandlingManager(context.HttpContext, Options, _logger);
+            if (!Options.ExceptionHandling.IsEnabled)
+            {
+                return;
+            }
 
-            var (response, statusCode) = await exceptionHandling
-                .BuildResponseFromExceptionAsync(context.Exception, context.Result?.GetContent())
+            var exceptionHandlingFactory = new ExceptionHandlingFactory(context.HttpContext, Options, _logger);
+
+            var (response, statusCode) = await exceptionHandlingFactory
+                .BuildResponseFromExceptionAsync(context.Exception, (context.Result as ObjectResult)?.Value)
                 .ConfigureAwait(false);
 
             // If response is null, don't handle the exception

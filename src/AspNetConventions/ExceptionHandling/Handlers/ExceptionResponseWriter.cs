@@ -43,10 +43,10 @@ namespace AspNetConventions.ExceptionHandling.Handlers
             }
 
             _JsonSerializerOptions ??= Options.Json.BuildSerializerOptions();
-            var exceptionHandling = new ExceptionHandlingManager(httpContext, options, _logger);
+            var exceptionHandlingFactory = new ExceptionHandlingFactory(httpContext, options, _logger);
 
             // Build the error response based on the exception and configured options
-            var (response, statusCode) = await exceptionHandling
+            var (response, statusCode) = await exceptionHandlingFactory
                 .BuildResponseFromExceptionAsync(exception, null)
                 .ConfigureAwait(false);
 

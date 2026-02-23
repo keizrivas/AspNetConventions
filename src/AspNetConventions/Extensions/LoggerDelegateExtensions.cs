@@ -88,7 +88,7 @@ namespace AspNetConventions.Extensions
         [LoggerMessage(
             Level = LogLevel.Debug,
             Message = $"{EventNamePrefix} Action={{action}}, Type={{type}}, Name={{name}}, Message={{message}}")]
-        public static partial void LogBindingMetadataDebug(
+        internal static partial void LogBindingMetadataDebug(
             this ILogger logger, string action, string type, string name, string? message = null);
 
         [LoggerMessage(
@@ -144,14 +144,13 @@ namespace AspNetConventions.Extensions
         [LoggerMessage(
             Level = LogLevel.Error,
             Message = $"{EventNamePrefix} Message={{message}}")]
-        public static partial void LogException(
+        internal static partial void LogException(
             this ILogger logger, string message, Exception exception);
 
         [LoggerMessage(
             Level = LogLevel.Warning,
             Message = $"{EventNamePrefix} Sensitive Information disclosure vulnerability, Message={{message}}")]
-        public static partial void LogDisclosureVulnerabilityWarning(
+        internal static partial void LogDisclosureVulnerabilityWarning(
             this ILogger logger, string message);
-
     }
 }

@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using AspNetConventions.Core.Abstractions.Contracts;
 
-namespace AspNetConventions.Responses.Models
+namespace AspNetConventions.Http.Models
 {
     /// <summary>
     /// Represents a read-only collection of response items with optional paging and total record count information.
@@ -11,7 +11,7 @@ namespace AspNetConventions.Responses.Models
     /// <remarks>Use this class to encapsulate a set of items returned from a data source, along with metadata
     /// such as total record count and optional paging details.</remarks>
     /// <typeparam name="T">The type of elements contained in the response collection.</typeparam>
-    public sealed class ResponseCollection<T> : IResponseCollection, IReadOnlyList<T>
+    public sealed class CollectionResult<T> : ICollectionResult, IReadOnlyList<T>
     {
         /// <summary>
         /// The underlying read-only list of items in the collection.
@@ -19,12 +19,12 @@ namespace AspNetConventions.Responses.Models
         private readonly IReadOnlyList<T> _items;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ResponseCollection{T}"/> class with total records count.
+        /// Initializes a new instance of the <see cref="CollectionResult{T}"/> class with total records count.
         /// </summary>
         /// <param name="items">The collection of items to include in the response.</param>
         /// <param name="totalRecords">The total number of records available across all pages.</param>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="items"/> is null.</exception>
-        public ResponseCollection(IEnumerable<T> items, int totalRecords)
+        public CollectionResult(IEnumerable<T> items, int totalRecords)
         {
             ArgumentNullException.ThrowIfNull(items);
             _items = items as IReadOnlyList<T> ?? [.. items];
@@ -32,14 +32,14 @@ namespace AspNetConventions.Responses.Models
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ResponseCollection{T}"/> class with pagination information.
+        /// Initializes a new instance of the <see cref="CollectionResult{T}"/> class with pagination information.
         /// </summary>
         /// <param name="items">The collection of items to include in the current page.</param>
         /// <param name="totalRecords">The total number of records available across all pages.</param>
         /// <param name="pageNumber">The current page number (1-based).</param>
         /// <param name="pageSize">The number of items per page.</param>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="items"/> is null.</exception>
-        public ResponseCollection(IEnumerable<T> items, int totalRecords, int pageNumber, int pageSize) : this(items, totalRecords)
+        public CollectionResult(IEnumerable<T> items, int totalRecords, int pageNumber, int pageSize) : this(items, totalRecords)
         {
             PageSize = Math.Max(pageSize, 0);
             PageNumber = Math.Max(pageNumber, 1);
@@ -96,8 +96,8 @@ namespace AspNetConventions.Responses.Models
         /// <summary>
         /// Gets an enumerable collection of the items contained in the current page of the response.
         /// </summary>
-        /// <value>An enumerable view of the current page's items for the IResponseCollection interface.</value>
-        IEnumerable IResponseCollection.Items => _items;
+        /// <value>An enumerable view of the current page's items for the <see cref="ICollectionResult"/> interface.</value>
+        IEnumerable ICollectionResult.Items => _items;
 
     }
 }
