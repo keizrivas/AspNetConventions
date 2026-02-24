@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using AspNetConventions.Configuration.Options;
 using AspNetConventions.Core.Abstractions.Contracts;
 using AspNetConventions.Routing.Models;
@@ -16,7 +15,7 @@ namespace AspNetConventions.Routing
     /// This static class handles route template extraction, case transformation, and parameter name transformation. 
     /// It serves as the central utility for applying naming conventions to route templates while preserving route functionality.
     /// </remarks>
-    internal static class RouteTemplateManager
+    internal static class RouteTransformer
     {
         /// <summary>
         /// Gets the route template from the route model context, handling both MVC and Razor Page routes.
@@ -27,25 +26,46 @@ namespace AspNetConventions.Routing
         {
             if (model.Identity.Kind == Core.Enums.RouteSourceKind.MinimalApi)
             {
-                return model.RouteEndpointBuilder!.RoutePattern?.RawText;
+                return model.RouteEndpointBuilder?.RoutePattern?.RawText;
             }
 
-            var baseRoute = (model.Identity.Kind == Core.Enums.RouteSourceKind.MvcAction
-                    ? model.Action!.Controller.Selectors
-                    : model.Page!.Selectors)
-                .Select(s => s.AttributeRouteModel)
-                .FirstOrDefault(r => r != null);
+            IList<SelectorModel>? selectors = null;
 
-            var actionRoute = model.Selector!.AttributeRouteModel;
+            switch (model.Identity.Kind)
+            {
+                case Core.Enums.RouteSourceKind.MvcAction:
+                    selectors = model.Action?.Controller?.Selectors;
+                    break;
 
-            if (baseRoute == null || actionRoute == null)
+                case Core.Enums.RouteSourceKind.RazorPage:
+                    selectors = model.Page?.Selectors;
+                    break;
+            }
+
+            if (selectors == null)
             {
                 return null;
             }
 
-            var combined = AttributeRouteModel.CombineAttributeRouteModel(
-                baseRoute,
-                actionRoute);
+            AttributeRouteModel? baseRoute = null;
+
+            for (int i = 0; i < selectors.Count; i++)
+            {
+                if (selectors[i].AttributeRouteModel != null)
+                {
+                    baseRoute = selectors[i].AttributeRouteModel;
+                    break;
+                }
+            }
+
+            var actionRoute = model.Selector?.AttributeRouteModel;
+            var template = baseRoute?.Template;
+            if (string.IsNullOrWhiteSpace(template) || actionRoute == null)
+            {
+                return template;
+            }
+
+            var combined = AttributeRouteModel.CombineAttributeRouteModel(baseRoute, actionRoute);
 
             return combined?.Template;
         }

@@ -48,7 +48,7 @@ namespace AspNetConventions.Routing.Conventions
                     }
 
                     var model = RouteModelContext.FromMvcAction(selector, action);
-                    var baseTemplate = RouteTemplateManager.GetRouteTemplate(model) ?? string.Empty;
+                    var baseTemplate = RouteTransformer.GetRouteTemplate(model) ?? string.Empty;
 
                     // Determine if route should be transformed
                     var shouldTransformRoute = Options.Route.Hooks.ShouldTransformRoute
@@ -65,7 +65,7 @@ namespace AspNetConventions.Routing.Conventions
                     ApplyConventionToController(controller);
                     ApplyConventionToAction(action);
 
-                    var newTemplate = RouteTemplateManager.GetRouteTemplate(model) ?? string.Empty;
+                    var newTemplate = RouteTransformer.GetRouteTemplate(model) ?? string.Empty;
                     Options.Route.Hooks.AfterRouteTransform?.Invoke(newTemplate, baseTemplate, model);
                 }
             }
@@ -87,7 +87,7 @@ namespace AspNetConventions.Routing.Conventions
                 }
 
                 selector.AttributeRouteModel.Template =
-                    RouteTemplateManager.TransformRouteTemplate(template, Options.Route.GetCaseConverter());
+                    RouteTransformer.TransformRouteTemplate(template, Options.Route.GetCaseConverter());
             }
         }
 
@@ -106,7 +106,7 @@ namespace AspNetConventions.Routing.Conventions
                 }
 
                 // Transform action route
-                template = RouteTemplateManager.TransformRouteTemplate(template, Options.Route.GetCaseConverter());
+                template = RouteTransformer.TransformRouteTemplate(template, Options.Route.GetCaseConverter());
 
                 var modelContext = RouteModelContext.FromMvcAction(selector, action);
                 if (Options.Route.Controllers.TransformParameterNames)
@@ -115,11 +115,7 @@ namespace AspNetConventions.Routing.Conventions
                     ApplyParameterBinding(modelContext);
 
                     // Transform parameters in route
-                    template = RouteTemplateManager.TransformRouteParameters(
-                        template,
-                        modelContext,
-                        Options,
-                        _parameterTransformCache);
+                    ApplyConventionToRouteParameters(modelContext, ref template);
                 }
 
                 selector.AttributeRouteModel.Template = template;
@@ -161,6 +157,29 @@ namespace AspNetConventions.Routing.Conventions
                 param.BindingInfo ??= new BindingInfo();
                 param.BindingInfo.BinderModelName = name;
             }
+        }
+
+        /// <summary>
+        /// Applies parameter name transformation to the route parameters in the specified route template.
+        /// </summary>
+        /// <param name="modelContext">Route model data</param>
+        /// <param name="template">The route model template</param>
+        private void ApplyConventionToRouteParameters(RouteModelContext modelContext, ref string template)
+        {
+            // Transform parameter names in the route template
+            template = RouteParameterPatterns.ForEachParam(template, (name, constraint) =>
+            {
+                // Create the route key
+                var paramName = RouteParameterPatterns.CleanParameterName(name);
+                var parameterContext = new RouteParameterContext(modelContext, paramName);
+
+                name = TransformParameterName(
+                    modelContext,
+                    name,
+                    _explicitNameCache.Contains(parameterContext));
+
+                return "{" + name + constraint + "}";
+            });
         }
 
         /// <summary>

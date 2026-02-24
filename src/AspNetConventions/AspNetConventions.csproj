@@ -84,4 +84,9 @@
       PrivateAssets="All" />
   </ItemGroup>
 
+  <!-- test access -->
+  <ItemGroup>
+    <InternalsVisibleTo Include="AspNetConventions.Tests" />
+  </ItemGroup>
+
 </Project>
