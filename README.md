@@ -24,7 +24,7 @@
 
 ## Why AspNetConventions?
 
-We believe API building should be intuitive. [AspNetConventions](https://github.com/keizrivas/AspNetConventions) transforms standard ASP.NET setups into a modern API solution by applying smart global behaviors automatically:
+We believe API building should be intuitive. AspNetConventions transforms standard ASP.NET setups into a modern API solution by applying smart global behaviors automatically:
 
 - **Universal Endpoint Support** - Consistent URL structure across MVC, Minimal APIs, and Razor Pages.
 - **Automatic Route standardization** - Route and parameter names are transformed and bound automatically follow your preferred casing style.

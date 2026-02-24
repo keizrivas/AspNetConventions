@@ -40,7 +40,7 @@ namespace AspNetConventions.Routing.Parsers
         /// Remove catch-all (*) and optional (?) markers from route parameter name.
         /// </summary>
         [GeneratedRegex(
-            @"^(?:\*{1,2})?(?<name>[A-Za-z_][A-Za-z0-9_-]*)\??$",
+            @"^(?:\*{0,2})?(?<name>[A-Za-z_][A-Za-z0-9_-]*)\??$",
             RegexOptions.Compiled | RegexOptions.CultureInvariant,
             matchTimeoutMilliseconds: 100)]
         public static partial Regex RemoveParameterNameMarkers();
@@ -48,14 +48,15 @@ namespace AspNetConventions.Routing.Parsers
         /// <summary>
         /// Cleans the parameter name by removing catch-all (*) and optional (?) markers.
         /// </summary>
-        public static string CleanParameterName(string parameterName)
+        /// <param name="parameter">The parameter template</param>
+        /// <returns>the parameter without markers</returns>
+        public static string CleanParameterName(string parameter)
         {
-            var match = RemoveParameterNameMarkers().Match(parameterName);
-            if (match.Success)
-            {
-                return match.Groups["name"].Value;
-            }
-            return parameterName;
+            var match = RemoveParameterNameMarkers().Match(parameter);
+
+            return match.Success
+                ? match.Groups["name"].Value
+                : parameter;
         }
 
         /// <summary>

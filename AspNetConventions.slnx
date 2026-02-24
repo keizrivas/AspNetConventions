@@ -3,5 +3,7 @@
     <Project Path="src/AspNetConventions/AspNetConventions.csproj"
       Id="ccb3efd3-dcd4-4478-ba14-7881d5251fdb" />
   </Folder>
-  <Folder Name="/tests/" />
+  <Folder Name="/tests/">
+    <Project Path="tests/AspNetConventions.Tests/AspNetConventions.Tests.csproj" />
+  </Folder>
 </Solution>

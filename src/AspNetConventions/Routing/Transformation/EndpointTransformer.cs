@@ -31,7 +31,7 @@ namespace AspNetConventions.Routing.Transformation
         public RoutePattern? TransformRoutePattern(RouteEndpointBuilder routeEndpointBuilder)
         {
             var modelContext = RouteModelContext.FromMinimalApi(routeEndpointBuilder);
-            var template = RouteTemplateManager.GetRouteTemplate(modelContext);
+            var template = RouteTransformer.GetRouteTemplate(modelContext);
 
             if (string.IsNullOrEmpty(template))
             {
@@ -47,12 +47,12 @@ namespace AspNetConventions.Routing.Transformation
                 return null;
             }
 
-            var newTemplate = RouteTemplateManager.TransformRouteTemplate(template, _caseConverter);
+            var newTemplate = RouteTransformer.TransformRouteTemplate(template, _caseConverter);
 
             // Transform parameters in route
             if (options.Route.MinimalApi.TransformRouteParameters)
             {
-                newTemplate = RouteTemplateManager.TransformRouteParameters(
+                newTemplate = RouteTransformer.TransformRouteParameters(
                     newTemplate,
                     modelContext,
                     options,
