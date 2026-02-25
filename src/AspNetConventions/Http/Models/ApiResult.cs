@@ -1,8 +1,6 @@
 using System.Net;
-using System.Threading.Tasks;
 using AspNetConventions.Core.Enums;
 using AspNetConventions.Extensions;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AspNetConventions.Http.Models
@@ -21,17 +19,17 @@ namespace AspNetConventions.Http.Models
         /// <summary>
         /// Gets or sets the HTTP status code.
         /// </summary>
-        public HttpStatusCode StatusCode { get; init; } = DefaultStatusCode;
+        public HttpStatusCode StatusCode { get; protected set; } = DefaultStatusCode;
 
         /// <summary>
         /// Gets or sets the response type.
         /// </summary>
-        public string Type { get; init; } = DefaultResponseType;
+        public string Type { get; protected set; } = DefaultResponseType;
 
         /// <summary>
         /// Gets or sets the response message.
         /// </summary>
-        public string? Message { get; init; }
+        public string? Message { get; protected set; }
 
         /// <summary>
         /// Gets or sets the response payload.
@@ -93,13 +91,25 @@ namespace AspNetConventions.Http.Models
         /// <returns>The current <see cref="ApiResult"/> instance with updated pagination.</returns>
         internal abstract ApiResult WithPagination(PaginationMetadata? pagination);
 
+        /// <summary>
+        /// Creates a new <see cref="ApiResult"/> instance by merging the current instance
+        /// with the specified <paramref name="other"/> instance.
+        /// </summary>
+        /// <param name="other">
+        /// The <see cref="ApiResult"/> whose non-null properties will be applied to the current instance.
+        /// </param>
+        /// <returns>
+        /// A new <see cref="ApiResult"/> containing the combined values of the current instance
+        /// and the specified <paramref name="other"/> instance.
+        /// </returns>
+        internal abstract ApiResult Merge(ApiResult other);
     }
 
     /// <summary>
     /// Encapsulates a standard execution result structure for http request.
     /// </summary>
     /// <typeparam name="TValue">The type of value included in the result.</typeparam>
-    public sealed class ApiResult<TValue> : ApiResult, IResult
+    public sealed class ApiResult<TValue> : ApiResult
     {
         /// <summary>
         /// Gets or sets the response value.
@@ -201,6 +211,64 @@ namespace AspNetConventions.Http.Models
             return this;
         }
 
+        internal override ApiResult Merge(ApiResult other)
+        {
+            if (other is null)
+            {
+                return this;
+            }
+
+            var value = other.GetValue();
+
+            // Clone instance with generic object type
+            var apiResult = new ApiResult<object>(this.GetValue())
+            {
+                StatusCode = this.StatusCode,
+                Type = this.Type,
+                Message = this.Message,
+                Payload = this.Payload,
+                Metadata = this.Metadata,
+                Pagination = this.Pagination
+            };
+
+            if (value is not null)
+            {
+                apiResult = (ApiResult<object>)apiResult.WithValue(value);
+            }
+
+            if (!string.IsNullOrWhiteSpace(other.Message))
+            {
+                apiResult.Message = other.Message;
+            }
+
+            if (!string.IsNullOrWhiteSpace(other.Type))
+            {
+                apiResult.Type = other.Type;
+            }
+
+            if (other.Payload is not null)
+            {
+                apiResult.Payload = other.Payload;
+            }
+
+            if (apiResult.StatusCode != other.StatusCode)
+            {
+                apiResult.StatusCode = other.StatusCode;
+            }
+
+            if (other.Metadata is not null)
+            {
+                apiResult.Metadata = other.Metadata;
+            }
+
+            if (other.Pagination is not null)
+            {
+                apiResult.Pagination = other.Pagination;
+            }
+
+            return apiResult;
+        }
+
         /// <summary>
         /// Determines the response type based on the HTTP status code.
         /// </summary>
@@ -221,18 +289,6 @@ namespace AspNetConventions.Http.Models
                 HttpStatusCodeType.ServerError => "SERVER_ERROR",
                 _ => DefaultResponseType
             };
-        }
-
-        /// <summary>
-        /// Executes the result operation of the current action synchronously.
-        /// </summary>
-        /// <param name="httpContext">The <see cref="HttpContext"/> for the current request.</param>
-        /// <returns>A <see cref="Task"/> representing the asynchronous operation.</returns>
-        public async Task ExecuteAsync(HttpContext httpContext)
-        {
-            await httpContext.Response
-                .WriteAsJsonAsync(this)
-                .ConfigureAwait(false);
         }
 
         /// <summary>
@@ -259,6 +315,25 @@ namespace AspNetConventions.Http.Models
             {
                 StatusCode = (int)result.StatusCode
             };
+        }
+
+        /// <summary>
+        /// Converts an <see cref="ApiResult{TValue}"/> to a <see cref="HttpApiResult{Tvalue}"/> implicitly.
+        /// </summary>
+        /// <param name="result">The <see cref="ApiResult{TValue}"/> to convert.</param>
+        /// <returns>An <see cref="HttpApiResult{Tvalue}"/>.</returns>
+        public static implicit operator HttpApiResult<TValue>(ApiResult<TValue> result)
+        {
+            return new(result);
+        }
+
+        /// <summary>
+        /// Converts an <see cref="ApiResult{TValue}"/> to a <see cref="HttpApiResult{Tvalue}"/>.
+        /// </summary>
+        /// <returns>An <see cref="HttpApiResult{Tvalue}"/>.</returns>
+        public HttpApiResult<TValue> ToHttpResult()
+        {
+            return new(this);
         }
     }
 }

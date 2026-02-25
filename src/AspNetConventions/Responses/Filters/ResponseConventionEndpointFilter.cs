@@ -1,6 +1,8 @@
 using System;
+using System.Net;
 using System.Threading.Tasks;
 using AspNetConventions.Configuration.Options;
+using AspNetConventions.Extensions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 
@@ -27,30 +29,36 @@ namespace AspNetConventions.Responses.Filters
             EndpointFilterInvocationContext context,
             EndpointFilterDelegate next)
         {
-
             ArgumentNullException.ThrowIfNull(next, nameof(next));
             ArgumentNullException.ThrowIfNull(context, nameof(context));
 
-            // Result
-            object? result;
-
-            // Response manager
-            var responseFactory = new ResponseFactory(options, context.HttpContext);
-
-            result = await next(context).ConfigureAwait(false);
-            if (context.HttpContext.Response.HasStarted)
+            var result = await next(context).ConfigureAwait(false);
+            if (context.HttpContext.Response.HasStarted
+                || result is not IResult iResult
+                || IsTerminalResult(iResult))
             {
                 return result;
             }
 
-            // Don't wrap terminal results
-            if (result is IResult iResult && IsTerminalResult(iResult))
+            // Unwrap nested results
+            if (iResult is INestedHttpResult nestedResult)
             {
-                return result;
+                iResult = nestedResult.Result;
             }
+
+            // Set status code from result if available
+            var requestDescriptor = context.HttpContext.GetRequestDescriptor();
+
+            requestDescriptor.SetStatusCode((HttpStatusCode)(
+                result is IStatusCodeHttpResult { StatusCode: int status }
+                    ? status
+                    : context.HttpContext.Response.StatusCode));
+
+            var responseFactory = new ResponseFactory(options, requestDescriptor);
+            var apiResult = responseFactory.GetRequestResultFromContent(
+                (iResult as IValueHttpResult)?.Value);
 
             // Already wrapped
-            var apiResult = responseFactory.GetRequestResultFromContent(result);
             if (responseFactory.IsWrappedResponse(apiResult))
             {
                 return result;
@@ -68,10 +76,6 @@ namespace AspNetConventions.Responses.Filters
         /// </summary>
         /// <param name="result">The result to check.</param>
         /// <returns>true if the result is terminal; otherwise, false.</returns>
-        /// <remarks>
-        /// Terminal results are those that directly modify the HTTP response or perform
-        /// special actions like authentication challenges, file downloads, or redirects.
-        /// </remarks>
         private static bool IsTerminalResult(IResult result)
         {
             return result is

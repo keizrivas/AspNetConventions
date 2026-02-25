@@ -9,10 +9,8 @@ using AspNetConventions.ExceptionHandling.Models;
 using AspNetConventions.Extensions;
 using AspNetConventions.Http.Models;
 using AspNetConventions.Http.Services;
-using AspNetConventions.Responses.Resolvers;
+using AspNetConventions.Responses.ContentConverter;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 
@@ -39,9 +37,15 @@ namespace AspNetConventions.Responses
             ArgumentNullException.ThrowIfNull(requestDescriptor, nameof(requestDescriptor));
 
             _requestDescriptor = requestDescriptor;
-            _responseCollectionResolver = new(options);
             _responseBuilder = options.Response.GetResponseBuilder(options, Logger);
             _errorResponseBuilder = options.Response.GetErrorResponseBuilder(options, Logger);
+            _converters =
+            [
+                new ExceptionDescriptorConverter(),
+                new ModelStateDictionaryConverter(options),
+                new ProblemDetailsConverter(options),
+                new CollectionResultConverter(options),
+            ];
         }
 
         /// <summary>
@@ -68,14 +72,14 @@ namespace AspNetConventions.Responses
         private readonly IErrorResponseBuilder _errorResponseBuilder;
 
         /// <summary>
+        /// Provides a read-only collection of converters used to transform content results into standardized formats.
+        /// </summary>
+        private readonly IReadOnlyList<IApiResultConverter> _converters;
+
+        /// <summary>
         /// The descriptor containing information about the current HTTP request.
         /// </summary>
         private readonly RequestDescriptor _requestDescriptor;
-
-        /// <summary>
-        /// The resolver used to convert data into response collections for pagination support.
-        /// </summary>
-        private readonly CollectionResultResolver _responseCollectionResolver;
 
         /// <summary>
         /// Determines if the specified data object is already a wrapped response.
@@ -139,15 +143,6 @@ namespace AspNetConventions.Responses
                 return (null, apiResult.StatusCode);
             }
 
-            // Handle pagination metadata and resolve collections
-            var collection = _responseCollectionResolver.TryResolve(apiResult.GetValue());
-            if (collection is not null)
-            {
-                var paginationMetadata = GetPaginationMetadata(collection);
-                apiResult.WithPagination(paginationMetadata);
-                apiResult.WithValue(collection);
-            }
-
             // Invoke hooks before wrapping
             await hooks.BeforeResponseWrapAsync.InvokeAsync(apiResult, _requestDescriptor)
                 .ConfigureAwait(false);
@@ -168,149 +163,59 @@ namespace AspNetConventions.Responses
         /// Converts various content types into a standardized <see cref="ApiResult"/>.
         /// </summary>
         /// <param name="content">The content to convert. Can be null.</param>
-        /// <param name="statusCode">The HTTP status code for the result.</param>
         /// <returns>A <see cref="ApiResult"/> containing the standardized response data.</returns>
-        public ApiResult GetRequestResultFromContent(object? content, HttpStatusCode? statusCode = null)
+        public ApiResult GetRequestResultFromContent(object? content)
         {
             object? payload = content;
-            statusCode ??= _requestDescriptor.StatusCode;
+            var statusCode = _requestDescriptor.StatusCode;
 
-            // Unwrap nested result
-            if (content is INestedHttpResult nestedResult)
+            // Handle null content
+            if (content is null)
             {
-                return GetRequestResultFromContent(nestedResult.Result);
+                return new ApiResult<object>(
+                    value: null,
+                    statusCode: statusCode);
             }
 
-            // Support IValueHttpResult
-            if (content is IResult result && content is not ApiResult)
-            {
-                statusCode =
-                    result is IStatusCodeHttpResult { StatusCode: int status }
-                        ? (HttpStatusCode)status
-                        : _requestDescriptor.StatusCode;
-
-                // Unwrap value
-                content = (result as IValueHttpResult)?.Value;
-            }
-
-            // Is already a request result
+            // Is already a api result
             if (content is ApiResult apiResult)
             {
-                // Unwrap api result value
-                var unwraped = GetRequestResultFromContent(
-                    apiResult.GetValue(),
-                    apiResult.StatusCode);
+                var value = apiResult.GetValue();
 
-                return unwraped
-                    .WithPayload(payload);
-            }
+                // Check for unprocessed content that can be converted to the expected value type
+                var normalized = GetRequestResultFromContent(value);
 
-            if (content is ExceptionDescriptor exceptionDescriptor)
-            {
-                // Check exception envelope status code
-                statusCode = exceptionDescriptor.StatusCode ?? _requestDescriptor.StatusCode;
-
-                if (statusCode != _requestDescriptor.StatusCode)
+                // Return the original api result if the normalized value is the same as the original value
+                if (ReferenceEquals(normalized.GetValue(), value))
                 {
-                    _requestDescriptor.SetStatusCode((HttpStatusCode)statusCode);
+                    return apiResult
+                        .WithPayload(payload);
                 }
 
-                // Parse to response result
-                return new ApiResult<object>(
-                    value: exceptionDescriptor.Value,
-                    type: exceptionDescriptor.Type,
-                    message: exceptionDescriptor.Message,
-                    statusCode: (HttpStatusCode)statusCode)
+                // Set new payload
+                payload = value;
+
+                return apiResult
+                    .Merge(normalized)
                     .WithPayload(payload);
             }
 
-            // Support ModelStateDictionary
-            if (content is ModelStateDictionary modelstate)
+            // Check converters for supported content types
+            foreach (var converter in _converters)
             {
-                content = new ValidationProblemDetails(modelstate);
-            }
-
-            // Support ProblemDetails
-            if (content is ProblemDetails problemDetails)
-            {
-                statusCode = problemDetails.Status.HasValue
-                    ? (HttpStatusCode)problemDetails.Status.Value
-                    : _requestDescriptor.StatusCode;
-
-                if (statusCode != _requestDescriptor.StatusCode)
+                if (converter.CanConvert(content))
                 {
-                    _requestDescriptor.SetStatusCode((HttpStatusCode)statusCode);
+                    return converter
+                        .Convert(content, _requestDescriptor)
+                        .WithPayload(payload);
                 }
-
-                return new ApiResult<object>(
-                    value: GetProblemData(problemDetails),
-                    message: ResolveMessage(problemDetails),
-                    statusCode: (HttpStatusCode)statusCode,
-                    type: content is HttpValidationProblemDetails
-                        ? Options.Response.ErrorResponse.DefaultValidationType
-                        : null)
-                    .WithPayload(payload);
             }
 
+            // Default fallback
             return new ApiResult<object>(
                 value: content,
-                statusCode: (HttpStatusCode)statusCode)
+                statusCode: statusCode)
                 .WithPayload(payload);
-        }
-
-        /// <summary>
-        /// Resolves the most appropriate message to use in the response based on the provided ProblemDetails instance and configuration options.
-        /// </summary>
-        /// <param name="problem">The ProblemDetails instance from which to resolve the message.</param>
-        /// <returns>A string message to be included in the response.</returns>
-        private string ResolveMessage(ProblemDetails problem)
-        {
-            if (problem is HttpValidationProblemDetails)
-            {
-                return Options.Response.ErrorResponse.DefaultValidationMessage;
-            }
-
-            if (!string.IsNullOrWhiteSpace(problem.Detail))
-            {
-                return problem.Detail;
-            }
-
-            if (!string.IsNullOrWhiteSpace(problem.Title))
-            {
-                return problem.Title;
-            }
-
-            return Options.Response.ErrorResponse.DefaultErrorMessage;
-        }
-
-        /// <summary>
-        /// Extracts relevant data from ProblemDetails extensions based on the allowed keys configured in ErrorResponseOptions.
-        /// </summary>
-        /// <param name="problem">The ProblemDetails instance from which to extract data.</param>
-        /// <returns>An object containing the extracted data, or null if no relevant data is found.</returns>
-        private object? GetProblemData(ProblemDetails problem)
-        {
-            if (problem is HttpValidationProblemDetails httpValidation)
-            {
-                return httpValidation.Errors;
-            }
-
-            Dictionary<string, object?>? result = null;
-            var allowedExtensions = Options.Response.ErrorResponse.AllowedProblemDetailsExtensions;
-
-            // Filter extensions based on allowed list
-            foreach (var extension in problem.Extensions)
-            {
-                if (!allowedExtensions.Contains(extension.Key))
-                {
-                    continue;
-                }
-
-                result ??= [];
-                result[extension.Key] = extension.Value;
-            }
-
-            return result;
         }
 
         /// <summary>
@@ -347,54 +252,6 @@ namespace AspNetConventions.Responses
             }
 
             return metadata;
-        }
-
-        /// <summary>
-        /// Generates pagination metadata for the response based on the provided response collection.
-        /// </summary>
-        /// <param name="collectionResult">The collection result containing pagination information.</param>
-        /// <returns>A <see cref="PaginationMetadata"/> object containing pagination details, or null if pagination metadata inclusion is disabled.</returns>
-        private PaginationMetadata? GetPaginationMetadata(ICollectionResult collectionResult)
-        {
-            ArgumentNullException.ThrowIfNull(collectionResult);
-
-            if (!Options.Response.Pagination.IncludeMetadata)
-            {
-                return null;
-            }
-
-            // Get pagination parameters names
-            var pageSizeName = Options.Response.Pagination.PageSizeParameterName;
-            var pageNumberName = Options.Response.Pagination.PageNumberParameterName;
-
-            // Determine page size
-            var pageSize = collectionResult.PageSize
-                ?? _requestDescriptor.HttpContext.GetNumericParameter(pageSizeName)
-                ?? Options.Response.Pagination.DefaultPageSize;
-
-            // Determine page number
-            var pageNumber = collectionResult.PageNumber
-                ?? _requestDescriptor.HttpContext.GetNumericParameter(pageNumberName, 1);
-
-            // Create pagination metadata
-            var paginationMetadata = new PaginationMetadata(
-                collectionResult.TotalRecords,
-                pageNumber,
-                pageSize
-            );
-
-            // Build pagination links
-            if (Options.Response.Pagination.IncludeLinks)
-            {
-                var caseConverter = Options.Route.GetCaseConverter();
-                paginationMetadata.BuildLinks(
-                    _requestDescriptor.HttpContext,
-                    caseConverter.Convert(pageSizeName),
-                    caseConverter.Convert(pageNumberName)
-                );
-            }
-
-            return paginationMetadata;
         }
     }
 }

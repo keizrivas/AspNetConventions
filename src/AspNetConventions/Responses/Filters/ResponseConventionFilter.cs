@@ -30,6 +30,7 @@ namespace AspNetConventions.Responses.Filters
 
             // Create http request context and attach to HttpContext items
             var requestDescriptor = context.HttpContext.GetRequestDescriptor();
+
             requestDescriptor.SetStatusCode(
                 (HttpStatusCode)(objectResult.StatusCode
                     ?? context.HttpContext.Response.StatusCode));
