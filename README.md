@@ -1,10 +1,10 @@
 # AspNetConventions
 
-[![License](https://img.shields.io/github/license/keizrivas/AspNetConventions)](https://github.com/keizrivas/AspNetConventions/blob/main/LICENSE)
+[![License](https://img.shields.io/github/license/keizrivas/AspNetConventions?label=License&labelColor=383f47)](https://github.com/keizrivas/AspNetConventions?tab=MIT-1-ov-file)
 [![Build Status](https://github.com/keizrivas/AspNetConventions/actions/workflows/build.yml/badge.svg)](https://github.com/keizrivas/AspNetConventions/actions/workflows/build.yml)
-[![NuGet Version](https://img.shields.io/nuget/v/AspNetConventions.svg)](https://www.nuget.org/packages/AspNetConventions)
-[![NuGet Downloads](https://img.shields.io/nuget/dt/AspNetConventions.svg)](https://www.nuget.org/packages/AspNetConventions)
-[![.NET](https://img.shields.io/badge/.NET-8.0+-512BD4.svg)](https://dotnet.microsoft.com/download)
+[![NuGet Version](https://img.shields.io/nuget/v/AspNetConventions.svg?color=00a6f4&logo=nuget&logoColor=959da5&label=NuGet&labelColor=383f47)](https://www.nuget.org/packages/AspNetConventions)
+[![NuGet Downloads](https://img.shields.io/nuget/dt/AspNetConventions.svg?color=155dfc&label=Downloads&labelColor=383f47)](https://www.nuget.org/packages/AspNetConventions)
+[![.NET](https://img.shields.io/badge/.NET-8.0+-512BD4.svg?labelColor=383f47)](https://dotnet.microsoft.com/download)
 
 <p align="center">
   <picture>
