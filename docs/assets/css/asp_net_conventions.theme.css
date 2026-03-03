@@ -1,0 +1,100 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+
+:root {
+  --primary-color: #ad46ff;
+  --link-color: #ad46ff !important;
+  --border-radius: 8px;
+  --font-family-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-family-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+}
+
+ /* Dark mode overrides */
+ :root[data-theme=dark] {
+  --primary-color: #9e5dec;
+  --link-color: #9e5dec !important;
+  color-scheme: dark;
+}
+
+::selection {
+  background-color: color-mix(in oklab, var(--primary-color) 25%, transparent);
+}
+
+/* For Firefox */
+::-moz-selection {
+  background-color: color-mix(in oklab, var(--primary-color) 25%, transparent);
+}
+
+/* For WebKit browsers */
+::-webkit-selection {
+  background-color: color-mix(in oklab, var(--primary-color) 25%, transparent);
+}
+
+&::selection {
+  background-color: color-mix(in srgb, #ec4899 30%, transparent);
+  @supports (color: color-mix(in lab, red, red)) {
+    background-color: color-mix(in oklab, #ec4899 30%, transparent);
+  }
+}
+
+.sidebar {
+  padding: .5em;
+}
+
+.sidebar nav li a.active {
+  font-weight: 500;
+  color: var(--primary-color);
+  border-color: color-mix(in oklab, var(--primary-color) 20%, transparent);
+  background-color: color-mix(in oklab, var(--primary-color) 10%, transparent);
+}
+
+.sidebar nav li a, 
+.sidebar nav li .nav-label{
+  padding: 10px 16px;
+  border-radius: var(--border-radius);
+  border: 1px solid transparent;
+}
+
+.sidebar-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.sidebar-nav{
+  position: relative;
+}
+
+.sidebar::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  translate: calc(calc(1 / 2 * 100%) * -1);
+  height: 100px;
+  width: 100%;
+  border-radius: 100px 100px 0 0;
+  background-color: color-mix(in oklab, var(--primary-color) 10%, transparent);
+  filter: blur(120px);
+}
+
+@media (max-width: 768px) {
+  .sidebar-header {
+    height: 4em;
+  }
+  .sidebar-menu-button {
+    margin-top: 0px;
+  }
+  .sidebar::before {
+    display: none;
+  }
+}
+
+.logo-link {
+  padding: 0.75rem;
+}
+
+:root[data-theme="dark"] {
+  .toc-link.active {
+    background-color: var(--sidebar-link-active-bg);
+  }
+}

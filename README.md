@@ -168,7 +168,7 @@ GET /user-profile/edit/{user-id}
   "metadata": {
     "requestType": "PUT",
     "timestamp": "0000-00-00T00:00:00.000000Z",
-    "trace_id": "00-8e5513ae9369648487c2323d9a3508aa-2a8f92c7d45d3f74-00",
+    "traceId": "00-8e5513ae9369648487c2323d9a3508aa-2a8f92c7d45d3f74-00",
     "path": "/api/users/{id}"
   }
 }

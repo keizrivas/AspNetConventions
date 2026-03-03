@@ -1,0 +1,104 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+@import "tailwindcss" source("../../pages/");
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+  
+  --color-brand-pink: #ef5ca8;
+  --color-brand-purple: #9e5dec;
+  --color-brand-gradient: linear-gradient(135deg, #ef5ca8 0%, #9e5dec 100%);
+
+  --color-dark-500: #040405;
+  --color-dark-400: #09090b;
+  --color-dark-300: #0B0E14;
+  --color-dark-200: #0D1117;
+  --color-dark-100: #161B22;
+
+  --animate-border: border 4s linear infinite;
+  @keyframes border {
+    to {
+      --border-angle: 360deg;
+    }
+  } 
+}
+
+@layer base {
+  body {
+    @apply bg-[#09090b] text-slate-300 antialiased;
+  }
+}
+
+@property --border-angle {
+  inherits: false;
+  initial-value: 0deg;
+  syntax: '<angle>';
+}
+
+.glass-dark {
+  @apply bg-[#161B22]/80 backdrop-blur-xl border border-white/5 shadow-2xl;
+}
+
+.text-gradient {
+  @apply bg-clip-text text-transparent bg-gradient-to-r from-brand-pink to-brand-purple;
+}
+
+.bg-gradient-brand {
+  @apply bg-gradient-to-r from-brand-pink to-brand-purple;
+}
+
+.border-gradient {
+  border-image: linear-gradient(to right, #ec4899, #8b5cf6) 1;
+}
+
+pre {
+  @apply font-mono text-sm bg-[#0D1117] p-4 rounded-xl border border-white/5 overflow-x-auto;
+}
+
+code {
+  @apply font-mono text-brand-pink bg-brand-pink/10 px-1.5 py-0.5 rounded;
+}
+
+.animate-gradient {
+  background-size: 300%;
+  -webkit-animation: animatedgradient 6s ease infinite alternate;
+  -moz-animation: animatedgradient 6s ease infinite alternate;
+  animation: animatedgradient 6s ease infinite alternate;
+}
+
+@keyframes animatedgradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.animate-box {
+  /* border-image: linear-gradient(to right, #ec4899, #8b5cf6) 1; */
+  /* background: linear-gradient(var(--color-slate-950), var(--color-slate-950)) padding-box,
+    conic-gradient(
+      from var(--border-angle), 
+      color-mix(in oklab, var(--color-brand-purple) 48%, transparent) 80%,
+      var(--color-brand-pink) 86%, 
+      var(--color-purple-300) 90%,
+      var(--color-brand-pink) 94%, 
+      color-mix(in oklab, var(--color-brand-purple) 48%, transparent)
+    ) border-box; */
+  background: linear-gradient(var(--color-dark-400), var(--color-dark-300)) padding-box,
+    conic-gradient(
+      from var(--border-angle), 
+      color-mix(in oklab, var(--color-brand-purple) 35%, transparent) 80%,
+      var(--color-brand-purple) 86%, 
+      var(--color-pink-300) 90%,
+      var(--color-brand-purple) 94%, 
+      color-mix(in oklab, var(--color-brand-purple) 48%, transparent)
+    ) border-box;
+  animation: var(--animate-border);
+  @apply animate-border border-2 border-transparent;
+  /* border-brand-purple/20 */
+}
