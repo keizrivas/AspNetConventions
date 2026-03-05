@@ -1,3 +1,4 @@
+using System.Text.Json;
 using System.Threading;
 using AspNetConventions.Configuration.Options;
 using AspNetConventions.Core.Abstractions.Contracts;
@@ -104,10 +105,6 @@ namespace AspNetConventions.Extensions
                     var writer = context.RequestServices
                         .GetRequiredService<IExceptionResponseWriter>();
 
-                    var serializerOptions = context.RequestServices
-                        .GetOptions<Microsoft.AspNetCore.Mvc.JsonOptions>()
-                        .Value.JsonSerializerOptions;
-
                     var exception = context.Features
                         .Get<IExceptionHandlerFeature>()?.Error;
 
@@ -121,7 +118,6 @@ namespace AspNetConventions.Extensions
                     }
 
                     await writer
-                        .WithSerializerOptions(serializerOptions)
                         .WriteResponseAsync(context, exception, CancellationToken.None)
                         .ConfigureAwait(false);
                 };
@@ -190,7 +186,7 @@ namespace AspNetConventions.Extensions
             // Configure MVC JSON options
             builder.Services.AddSingleton<IConfigureOptions<Microsoft.AspNetCore.Mvc.JsonOptions>>(serviceProvider =>
             {
-                var options = serviceProvider.GetAspNetConventionOptions();
+                var options = serviceProvider.GetOptionsValue<AspNetConventionOptions>();
 
                 return new ConfigureOptions<Microsoft.AspNetCore.Mvc.JsonOptions>(jsonOptions =>
                 {
@@ -201,8 +197,10 @@ namespace AspNetConventions.Extensions
                     }
 
                     // Set json serializer options
-                    var serializerOptions = options.Json.BuildSerializerOptions();
-                    jsonOptions.JsonSerializerOptions.ApplyFrom(serializerOptions);
+                    if(options.Json.GetSerializerOptions() is JsonSerializerOptions serializerOptions)
+                    {
+                        jsonOptions.JsonSerializerOptions.ApplyFrom(serializerOptions);
+                    }
                 });
             });
 
