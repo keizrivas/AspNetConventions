@@ -21,15 +21,7 @@ namespace AspNetConventions.ExceptionHandling.Handlers
         IOptions<AspNetConventionOptions> options,
         ILogger<GlobalExceptionHandler> logger) : ConventionOptions(options), IExceptionResponseWriter
     {
-        private JsonSerializerOptions? _JsonSerializerOptions;
-
         private readonly ILogger<GlobalExceptionHandler> _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-
-        public ExceptionResponseWriter WithSerializerOptions(JsonSerializerOptions jsonSerializerOptions)
-        {
-            _JsonSerializerOptions = jsonSerializerOptions ?? throw new ArgumentNullException(nameof(jsonSerializerOptions));
-            return this;
-        }
 
         public async ValueTask WriteResponseAsync(HttpContext httpContext, Exception exception, CancellationToken cancellationToken)
         {
@@ -42,7 +34,6 @@ namespace AspNetConventions.ExceptionHandling.Handlers
                 return;
             }
 
-            _JsonSerializerOptions ??= Options.Json.BuildSerializerOptions();
             var exceptionHandlingFactory = new ExceptionHandlingFactory(httpContext, options, _logger);
 
             // Build the error response based on the exception and configured options
@@ -54,11 +45,13 @@ namespace AspNetConventions.ExceptionHandling.Handlers
             httpContext.Response.StatusCode = (int)statusCode;
             httpContext.Response.ContentType = ContentTypes.JsonUtf8;
 
+            // Get the JSON serializer adapter
+            var serializerAdapter = options.Json.GetSerializerAdapter();
+
             // Serialize and write the response
-            await JsonSerializer.SerializeAsync(
+            await serializerAdapter.SerializeAsync(
                 httpContext.Response.Body,
                 response,
-                _JsonSerializerOptions,
                 cancellationToken).ConfigureAwait(false);
         }
     }

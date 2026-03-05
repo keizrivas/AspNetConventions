@@ -65,6 +65,7 @@ namespace AspNetConventions.Responses.ContentConverter
         /// Generates pagination metadata for the response based on the provided response collection.
         /// </summary>
         /// <param name="collectionResult">The collection result containing pagination information.</param>
+        /// <param name="requestDescriptor">The request descriptor providing context for the current request.</param>
         /// <returns>A <see cref="PaginationMetadata"/> object containing pagination details, or null if pagination metadata inclusion is disabled.</returns>
         private PaginationMetadata? GetPaginationMetadata(ICollectionResult collectionResult, RequestDescriptor requestDescriptor)
         {

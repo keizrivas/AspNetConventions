@@ -24,31 +24,15 @@ namespace AspNetConventions.Extensions
         internal static AspNetConventionOptions BuildAspNetConventionOptions(this IServiceProvider serviceProvider, Action<AspNetConventionOptions>? configure = null)
         {
             // Get the registered options
-            var globalOptions = serviceProvider.GetRequiredService<IOptions<AspNetConventionOptions>>().Value;
+            var options = serviceProvider.GetOptionsValue<AspNetConventionOptions>();
 
             // Clone the options to avoid mutating the original instance
-            var options = (AspNetConventionOptions)globalOptions.Clone();
+            var cloned = (AspNetConventionOptions)options.Clone();
 
             // Apply user configuration
-            configure?.Invoke(options);
+            configure?.Invoke(cloned);
 
-            return options;
-        }
-
-        /// <summary>
-        /// Retrieves the globally registered <see cref="AspNetConventionOptions"/> from the service provider.
-        /// </summary>
-        /// <param name="serviceProvider">The service provider containing the options.</param>
-        /// <returns>The registered <see cref="AspNetConventionOptions"/> instance.</returns>
-        /// <exception cref="ArgumentNullException">Thrown when <paramref name="serviceProvider"/> is null.</exception>
-        /// <exception cref="InvalidOperationException">Thrown when the options are not registered.</exception>
-        /// <remarks>
-        /// This method returns the original registered options instance. Any modifications will affect the global configuration.
-        /// Use <see cref="BuildAspNetConventionOptions"/> if you need a mutable copy.
-        /// </remarks>
-        internal static AspNetConventionOptions GetAspNetConventionOptions(this IServiceProvider serviceProvider)
-        {
-            return serviceProvider.GetRequiredService<IOptions<AspNetConventionOptions>>().Value;
+            return cloned;
         }
 
         /// <summary>
@@ -65,6 +49,17 @@ namespace AspNetConventions.Extensions
         internal static IOptions<TOption> GetOptions<TOption>(this IServiceProvider serviceProvider) where TOption : class
         {
             return serviceProvider.GetRequiredService<IOptions<TOption>>();
+        }
+
+        /// <summary>
+        /// Retrieves the configured options value of the specified type from the service provider.
+        /// </summary>
+        /// <typeparam name="TOption">The type of options to retrieve. Must be a reference type.</typeparam>
+        /// <param name="serviceProvider">The service provider from which to obtain the options instance.</param>
+        /// <returns>The options value of type TOption as configured in the service provider.</returns>
+        internal static TOption GetOptionsValue<TOption>(this IServiceProvider serviceProvider) where TOption : class
+        {
+            return serviceProvider.GetOptions<TOption>().Value;
         }
     }
 }
