@@ -1,5 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
-@import "tailwindcss" source("../../pages/");
+@import "tailwindcss";
+@source "../../pages/"; 
+@source "../../public/js/typed_animation.js";
 
 @theme {
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
@@ -79,16 +81,6 @@ code {
 }
 
 .animate-box {
-  /* border-image: linear-gradient(to right, #ec4899, #8b5cf6) 1; */
-  /* background: linear-gradient(var(--color-slate-950), var(--color-slate-950)) padding-box,
-    conic-gradient(
-      from var(--border-angle), 
-      color-mix(in oklab, var(--color-brand-purple) 48%, transparent) 80%,
-      var(--color-brand-pink) 86%, 
-      var(--color-purple-300) 90%,
-      var(--color-brand-pink) 94%, 
-      color-mix(in oklab, var(--color-brand-purple) 48%, transparent)
-    ) border-box; */
   background: linear-gradient(var(--color-dark-400), var(--color-dark-300)) padding-box,
     conic-gradient(
       from var(--border-angle), 
@@ -100,5 +92,8 @@ code {
     ) border-box;
   animation: var(--animate-border);
   @apply animate-border border-2 border-transparent;
-  /* border-brand-purple/20 */
+}
+
+.code-box {
+  @apply bg-dark-400 rounded-lg border border-white/5 p-1 px-2 m-1 mt-2.5;
 }

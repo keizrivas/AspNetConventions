@@ -148,7 +148,7 @@ customHead: |
     <section id="features" class="py-24 border-t border-white/5 bg-dark-200">
       <div class="mx-auto max-w-2xl px-6 lg:max-w-7xl lg:px-8">
         <h2 class="text-center text-base/7 font-semibold text-brand-purple">Core Principles</h2>
-        <p class="mx-auto mt-2 max-w-7xl text-center text-4xl font-semibold tracking-tight text-balance text-white sm:text-5xl">
+        <p class="mx-auto mt-2 max-w-7xl text-center sm:text-4xl font-semibold tracking-tight text-balance text-white">
           Beautifully Structured Asp.Net applications through Consistent Conventions
         </p>
         <div class="mt-10 grid gap-4 sm:mt-16 lg:grid-cols-3 lg:grid-rows-2">
@@ -156,13 +156,15 @@ customHead: |
             <div class="absolute inset-px rounded-lg bg-dark-100 lg:rounded-l-4xl"></div>
             <div class="relative flex h-full flex-col overflow-hidden rounded-[calc(var(--radius-lg)+1px)] lg:rounded-l-[calc(2rem+1px)]">
               <div class="px-8 pt-8 pb-3 sm:px-10 sm:pt-10 sm:pb-0">
-                <p class="mt-2 text-lg font-medium tracking-tight text-white max-lg:text-center">Route standardization</p>
-                <p class="mt-2 max-w-lg text-sm/6 text-gray-400 max-lg:text-center">Anim aute id magna aliqua ad ad non deserunt sunt. Qui irure qui lorem cupidatat commodo.</p>
+                <p class="mt-2 text-lg font-medium tracking-tight text-white max-lg:text-center">
+                  Route Transformation
+                </p>
+                <p class="mt-2 max-w-lg text-sm/6 text-gray-400 max-lg:text-center">
+                  Turn complex, inconsistent URLs into clean, SEO-friendly paths automatically.
+                </p>
               </div>
-              <div class="@container relative min-h-120 w-full grow max-lg:mx-auto max-lg:max-w-sm">
-                <div class="absolute inset-x-10 top-10 bottom-0 overflow-hidden rounded-t-[12cqw] border-x-[3cqw] border-t-[3cqw] border-gray-700 bg-gray-900 outline outline-white/20">
-                  <!-- <img src="./.png" alt="" class="size-full object-cover object-top" /> -->
-                </div>
+              <div class="bg-dark-500 rounded-2xl font-mono text-base whitespace-nowrap min-h-32 m-4 p-4">
+                <span id="typed"></span>
               </div>
             </div>
             <div class="pointer-events-none absolute inset-px rounded-lg shadow-sm outline outline-white/15 lg:rounded-l-4xl"></div>
@@ -175,7 +177,7 @@ customHead: |
                   Exception Handling
                 </p>
                 <p class="mt-2 max-w-lg text-sm/6 text-gray-400 max-lg:text-center">
-                  Standardized error responses and global exception management.
+                  A safety net that automatically intercepts and formats every failure.
                 </p>
               </div>
               <div class="flex flex-1 items-center justify-center px-8 max-lg:pt-10 max-lg:pb-12 sm:px-10 lg:pb-2">
@@ -188,8 +190,12 @@ customHead: |
             <div class="absolute inset-px rounded-lg bg-dark-100"></div>
             <div class="relative flex h-full flex-col overflow-hidden rounded-[calc(var(--radius-lg)+1px)]">
               <div class="px-8 pt-8 sm:px-10 sm:pt-10">
-                <p class="mt-2 text-lg font-medium tracking-tight text-white max-lg:text-center">Global JSON Config</p>
-                <p class="mt-2 max-w-lg text-sm/6 text-gray-400 max-lg:text-center">Morbi viverra dui mi arcu sed. Tellus semper adipiscing suspendisse semper morbi.</p>
+                <p class="mt-2 text-lg font-medium tracking-tight text-white max-lg:text-center">
+                  JSON Architecture
+                </p>
+                <p class="mt-2 max-w-lg text-sm/6 text-gray-400 max-lg:text-center">
+                  Global serialization control with zero external dependencies.
+                </p>
               </div>
               <div class="@container flex flex-1 items-center max-lg:py-6 lg:pb-2">
                 <!-- <img src="./.png" alt="" class="h-[min(152px,40cqw)] object-cover" /> -->
@@ -201,10 +207,14 @@ customHead: |
             <div class="absolute inset-px rounded-lg bg-dark-100 max-lg:rounded-b-4xl lg:rounded-r-4xl"></div>
             <div class="relative flex h-full flex-col overflow-hidden rounded-[calc(var(--radius-lg)+1px)] max-lg:rounded-b-[calc(2rem+1px)] lg:rounded-r-[calc(2rem+1px)]">
               <div class="px-8 pt-8 pb-3 sm:px-10 sm:pt-10 sm:pb-0">
-                <p class="mt-2 text-lg font-medium tracking-tight text-white max-lg:text-center">Response Formatting</p>
-                <p class="mt-2 max-w-lg text-sm/6 text-gray-400 max-lg:text-center">Sit quis amet rutrum tellus ullamcorper ultricies libero dolor eget sem sodales gravida.</p>
+                <p class="mt-2 text-lg font-medium tracking-tight text-white max-lg:text-center">
+                  Response Formatting
+                </p>
+                <p class="mt-2 max-w-lg text-sm/6 text-gray-400 max-lg:text-center">
+                  Elegant and uniform response models for every endpoint, automatically.
+                </p>
               </div>
-              <div class="relative min-h-120 w-full grow">
+              <!-- <div class="relative min-h-120 w-full grow">
                 <div class="absolute top-10 right-0 bottom-0 left-10 overflow-hidden rounded-tl-xl bg-gray-900/60 outline outline-white/10">
                   <div class="flex bg-gray-900 outline outline-white/5">
                     <div class="-mb-px flex text-sm/6 font-medium text-gray-400">
@@ -213,10 +223,9 @@ customHead: |
                     </div>
                   </div>
                   <div class="px-6 pt-6 pb-14">
-                    <!-- Your code example -->
                   </div>
                 </div>
-              </div>
+              </div> -->
             </div>
             <div class="pointer-events-none absolute inset-px rounded-lg shadow-sm outline outline-white/15 max-lg:rounded-b-4xl lg:rounded-r-4xl"></div>
           </div>

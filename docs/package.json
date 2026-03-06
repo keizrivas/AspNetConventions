@@ -6,10 +6,8 @@
     "docs:dev": "concurrently \"docmd dev\" \"yarn css:watch\" \"yarn js:watch\"",
     "docs:build": " docmd build && yarn css:build && yarn js:build",
     "docs:preview": "npx serve dist",
-
     "css:build": "tailwindcss -i public/css/main.css -o dist/assets/css/main.css --minify",
     "css:watch": "tailwindcss -i public/css/main.css -o dist/assets/css/main.css --watch",
-
     "js:build": "esbuild public/js/main.js --bundle --minify --outfile=dist/assets/js/main.js",
     "js:watch": "esbuild public/js/main.js --bundle --outfile=dist/assets/js/main.js --watch"
   },
@@ -18,7 +16,8 @@
     "@tailwindcss/cli": "^4.2.1",
     "alpinejs": "^3.15.8",
     "lucide": "^0.575.0",
-    "tailwindcss": "^4.2.1"
+    "tailwindcss": "^4.2.1",
+    "typed.js": "^3.0.0"
   },
   "devDependencies": {
     "concurrently": "^9.2.1",

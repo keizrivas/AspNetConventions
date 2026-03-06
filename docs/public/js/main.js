@@ -1,5 +1,6 @@
 import Alpine from 'alpinejs'
 import PackageMetadata from './package_metadata.js'
+import './typed_animation.js'
 import { 
     createIcons, 
     Github, 
