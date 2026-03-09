@@ -145,7 +145,7 @@ customHead: |
     </section>
 
     <!-- features Section -->
-    <section id="features" class="py-24 border-t border-white/5 bg-dark-200">
+    <section id="features" class="py-24 bg-dark-200">
       <div class="mx-auto max-w-2xl px-6 lg:max-w-7xl lg:px-8">
         <h2 class="text-center text-base/7 font-semibold text-brand-purple">Core Principles</h2>
         <p class="mx-auto mt-2 max-w-7xl text-center sm:text-4xl font-semibold tracking-tight text-balance text-white">
@@ -163,11 +163,11 @@ customHead: |
                   Turn complex, inconsistent URLs into clean, SEO-friendly paths automatically.
                 </p>
               </div>
-              <div class="bg-dark-500 rounded-2xl font-mono text-base whitespace-nowrap min-h-32 m-4 p-4">
+              <div class="bg-dark-300 rounded-2xl font-mono text-base whitespace-nowrap min-h-32 m-4 p-4">
                 <span id="typed"></span>
               </div>
             </div>
-            <div class="pointer-events-none absolute inset-px rounded-lg shadow-sm outline outline-white/15 lg:rounded-l-4xl"></div>
+            <div class="pointer-events-none absolute inset-px rounded-lg shadow-sm lg:rounded-l-4xl"></div>
           </div>
           <div class="relative max-lg:row-start-1">
             <div class="absolute inset-px rounded-lg bg-dark-100 max-lg:rounded-t-4xl"></div>
@@ -180,28 +180,29 @@ customHead: |
                   A safety net that automatically intercepts and formats every failure.
                 </p>
               </div>
-              <div class="flex flex-1 items-center justify-center px-8 max-lg:pt-10 max-lg:pb-12 sm:px-10 lg:pb-2">
-                <!-- <img src="./.png" alt="" class="w-full max-lg:max-w-xs" /> -->
+              <div class="flex flex-1 items-center justify-center p-5 opacity-25">
+                <img src="./assets/images/corrupted-file.png" alt="" class="h-40" />
               </div>
             </div>
-            <div class="pointer-events-none absolute inset-px rounded-lg shadow-sm outline outline-white/15 max-lg:rounded-t-4xl"></div>
+            <div class="pointer-events-none absolute inset-px rounded-lg shadow-sm max-lg:rounded-t-4xl"></div>
           </div>
           <div class="relative max-lg:row-start-3 lg:col-start-2 lg:row-start-2">
-            <div class="absolute inset-px rounded-lg bg-dark-100"></div>
-            <div class="relative flex h-full flex-col overflow-hidden rounded-[calc(var(--radius-lg)+1px)]">
+            <div class="absolute inset-px rounded-lg gradient-bg"></div>
+            <div class="bg-noise absolute inset-px rounded-lg opacity-75"></div>
+            <div class="relative flex h-full flex-col overflow-hidden rounded-[calc(var(--radius-lg)+1px)] min-h-72">
               <div class="px-8 pt-8 sm:px-10 sm:pt-10">
                 <p class="mt-2 text-lg font-medium tracking-tight text-white max-lg:text-center">
                   JSON Architecture
                 </p>
-                <p class="mt-2 max-w-lg text-sm/6 text-gray-400 max-lg:text-center">
-                  Global serialization control with zero external dependencies.
+                <p class="mt-2 max-w-lg text-sm/6 text-gray-200 max-lg:text-center">
+                  Global Json serialization control with zero external dependencies.
                 </p>
               </div>
-              <div class="@container flex flex-1 items-center max-lg:py-6 lg:pb-2">
-                <!-- <img src="./.png" alt="" class="h-[min(152px,40cqw)] object-cover" /> -->
+              <div class="flex-1 p-5 relative">
+                <img src="./assets/images/json.svg" alt="" class="absolute h-56 top-3 right-3 opacity-35" />
               </div>
             </div>
-            <div class="pointer-events-none absolute inset-px rounded-lg shadow-sm outline outline-white/15"></div>
+            <div class="pointer-events-none absolute inset-px rounded-lg shadow-sm"></div>
           </div>
           <div class="relative lg:row-span-2">
             <div class="absolute inset-px rounded-lg bg-dark-100 max-lg:rounded-b-4xl lg:rounded-r-4xl"></div>
@@ -214,42 +215,57 @@ customHead: |
                   Elegant and uniform response models for every endpoint, automatically.
                 </p>
               </div>
-              <!-- <div class="relative min-h-120 w-full grow">
-                <div class="absolute top-10 right-0 bottom-0 left-10 overflow-hidden rounded-tl-xl bg-gray-900/60 outline outline-white/10">
-                  <div class="flex bg-gray-900 outline outline-white/5">
-                    <div class="-mb-px flex text-sm/6 font-medium text-gray-400">
-                      <div class="border-r border-b border-r-white/10 border-b-white/20 bg-white/5 px-4 py-2 text-white">MinimalAPI.cs</div>
-                      <div class="border-r border-gray-600/10 px-4 py-2">UsersController.cs</div>
+              <div class="relative min-h-120 w-full grow">
+                <div class="absolute top-10 right-0 bottom-0 left-6 overflow-hidden rounded-tl-3xl outline outline-white/10 border-glass">
+                  <div class="absolute inset-px mt-2 ml-2 overflow-hidden rounded-tl-2xl bg-dark-300 outline outline-white/10">
+                    <div class="flex bg-dark-300 outline outline-white/5">
+                      <div class="-mb-px flex text-sm/6 font-medium w-full">
+                        <div class="w-full border-r border-b border-white/10 bg-white/5 px-4 py-2 text-white whitespace-nowrap flex items-center">
+                          <div class="flex items-center pr-2">
+                            <span class="font-bold text-emerald-400 pr-2">POST</span>
+                            <i data-lucide="chevron-down" class="w-5 h-5"></i>
+                          </div> 
+                          <div class="flex-1 whitespace-nowrap my-1 mx-1 bg-white/5 rounded-xl px-2 py-2 text-sm font-mono text-slate-200">
+                            <span class="rounded-lg bg-brand-purple px-1.5 py-0.5">_.base_url</span>
+                            /api/transactions
+                          </div>
+                          <button class="font-bold ml-2 my-1 flex items-center justify-center gap-2 rounded-xl px-2.5 py-1.5 bg-brand-purple">
+                            Send 
+                            <i data-lucide="chevron-down" class="w-5 h-5"></i>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="pt-4 pb-24 overflow-hidden" x-data="jsonViewer($store.jsonResponse)">
+                        <template x-for="(line, index) in lines" :key="index">
+                          <div class="flex">
+                            <div class="w-12 min-w-12 mr-4 text-center p-0.5 select-none text-slate-500"
+                              x-text="index + 1">
+                            </div>
+                            <pre class="bg-transparent! border-0! p-0! rounded-none!"><p x-html="line" class="overflow-hidden"></p></pre>
+                          </div>
+                      </template>
                     </div>
                   </div>
-                  <div class="px-6 pt-6 pb-14">
-                  </div>
                 </div>
-              </div> -->
+              </div>
             </div>
-            <div class="pointer-events-none absolute inset-px rounded-lg shadow-sm outline outline-white/15 max-lg:rounded-b-4xl lg:rounded-r-4xl"></div>
+            <div class="pointer-events-none absolute inset-px rounded-lg shadow-sm max-lg:rounded-b-4xl lg:rounded-r-4xl"></div>
           </div>
         </div>
       </div>
     </section>
 
     <!-- Footer -->
-    <footer class="py-20 border-t border-white/5">
+    <footer class="py-20">
       <div class="max-w-7xl mx-auto px-6">
         <div class="flex flex-col md:flex-row items-center justify-between gap-8">
-          <div class="flex items-center gap-3">
-            <div class="w-8 h-8 bg-gradient-brand rounded-lg flex items-center justify-center">
-              <i data-lucide="code-2" class="text-white w-4.5 h-4.5"></i>
-            </div>
-            <span class="text-lg font-bold text-white">AspNetConventions</span>
-          </div>
+          <img src="./assets/images/logo.svg" alt="" class="w-32" />
           
-          <div class="flex gap-8 text-sm font-medium text-slate-500">
+          <!-- <div class="flex gap-8 text-sm font-medium text-slate-500">
             <a href="#" class="hover:text-white transition-colors">GitHub</a>
             <a href="#" class="hover:text-white transition-colors">NuGet</a>
-            <a href="#" class="hover:text-white transition-colors">Twitter</a>
-            <a href="#" class="hover:text-white transition-colors">Discord</a>
-          </div>
+          </div> -->
 
           <div x-data="{ year: new Date().getFullYear() }" class="text-xs text-slate-600">
             Open Source under MIT License | © <span x-text="year"></span> AspNetConventions.
