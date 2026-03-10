@@ -22,7 +22,7 @@ export default (json) => ({
             )
             // numbers
             .replace(
-                /:\s(\d+)/g,
+                /:\s(-?\d+(?:\.\d+)?)/g,
                 ': <span class="text-amber-300">$1</span>'
             )
             // booleans

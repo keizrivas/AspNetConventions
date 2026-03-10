@@ -19,10 +19,14 @@ var strings = outputs.map(output => {
   return output.endpoint + ' ^1000\n <br>' + output.result;
 });
 
-new Typed('#typed', {
-  strings,
-  typeSpeed: 40,
-  backSpeed: 0,
-  backDelay: 3500,
-  loop: true
-});
+(function() {
+
+  new Typed('#typed', {
+    strings,
+    typeSpeed: 40,
+    backSpeed: 0,
+    backDelay: 3500,
+    loop: true
+  });
+
+})();
