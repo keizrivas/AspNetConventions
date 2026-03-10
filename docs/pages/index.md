@@ -152,9 +152,9 @@ customHead: |
           Beautifully Structured Asp.Net applications through Consistent Conventions
         </p>
         <div class="mt-10 grid gap-4 sm:mt-16 lg:grid-cols-3 lg:grid-rows-2">
-          <div class="relative lg:row-span-2">
-            <div class="absolute inset-px rounded-lg bg-dark-100 lg:rounded-l-4xl"></div>
-            <div class="relative flex h-full flex-col overflow-hidden rounded-[calc(var(--radius-lg)+1px)] lg:rounded-l-[calc(2rem+1px)]">
+          <div class="card relative lg:row-span-2  before:lg:rounded-l-4xl! after:lg:rounded-l-4xl!">
+            <div class="glow"></div>
+            <div class="relative flex h-full flex-col lg:rounded-l-4xl">
               <div class="px-8 pt-8 pb-3 sm:px-10 sm:pt-10 sm:pb-0">
                 <p class="mt-2 text-lg font-medium tracking-tight text-white max-lg:text-center">
                   Route Transformation
@@ -167,11 +167,10 @@ customHead: |
                 <span id="typed"></span>
               </div>
             </div>
-            <div class="pointer-events-none absolute inset-px rounded-lg shadow-sm lg:rounded-l-4xl"></div>
           </div>
-          <div class="relative max-lg:row-start-1">
-            <div class="absolute inset-px rounded-lg bg-dark-100 max-lg:rounded-t-4xl"></div>
-            <div class="relative flex h-full flex-col overflow-hidden rounded-[calc(var(--radius-lg)+1px)] max-lg:rounded-t-[calc(2rem+1px)]">
+          <div class="card max-lg:row-start-1 before:max-lg:rounded-t-4xl! after:max-lg:rounded-t-4xl!">
+            <div class="glow"></div>
+            <div class="relative flex h-full flex-col rounded-2xl max-lg:rounded-t-4xl min-h-72 overflow-hidden">
               <div class="px-8 pt-8 sm:px-10 sm:pt-10">
                 <p class="mt-2 text-lg font-medium tracking-tight text-white max-lg:text-center">
                   Exception Handling
@@ -180,16 +179,16 @@ customHead: |
                   A safety net that automatically intercepts and formats every failure.
                 </p>
               </div>
-              <div class="flex flex-1 items-center justify-center p-5 opacity-25">
-                <img src="./assets/images/corrupted-file.png" alt="" class="h-40" />
+              <div class="flex-1p-5 relative">
+                <img src="./assets/images/error.svg" alt="" class="absolute mix-blend-overlay2 h-42 top-4 right-4 opacity-50" />
               </div>
             </div>
-            <div class="pointer-events-none absolute inset-px rounded-lg shadow-sm max-lg:rounded-t-4xl"></div>
           </div>
-          <div class="relative max-lg:row-start-3 lg:col-start-2 lg:row-start-2">
-            <div class="absolute inset-px rounded-lg gradient-bg"></div>
-            <div class="bg-noise absolute inset-px rounded-lg opacity-75"></div>
-            <div class="relative flex h-full flex-col overflow-hidden rounded-[calc(var(--radius-lg)+1px)] min-h-72">
+          <div class="card card-gradient relative max-lg:row-start-3 lg:col-start-2 lg:row-start-2">
+            <div class="glow"></div>
+            <!-- <div class="absolute inset-px rounded-lg gradient-bg"></div> -->
+            <div class="bg-noise absolute inset-px rounded-2xl opacity-75 bg-dark-500/50"></div>
+            <div class="relative flex flex-col h-full min-h-72 overflow-hidden">
               <div class="px-8 pt-8 sm:px-10 sm:pt-10">
                 <p class="mt-2 text-lg font-medium tracking-tight text-white max-lg:text-center">
                   JSON Architecture
@@ -199,58 +198,58 @@ customHead: |
                 </p>
               </div>
               <div class="flex-1 p-5 relative">
-                <img src="./assets/images/json.svg" alt="" class="absolute h-56 top-3 right-3 opacity-35" />
+                <img src="./assets/images/json.svg" alt="" class="absolute mix-blend-overlay h-56 top-3 right-3 opacity-50" />
               </div>
             </div>
-            <div class="pointer-events-none absolute inset-px rounded-lg shadow-sm"></div>
           </div>
-          <div class="relative lg:row-span-2">
-            <div class="absolute inset-px rounded-lg bg-dark-100 max-lg:rounded-b-4xl lg:rounded-r-4xl"></div>
-            <div class="relative flex h-full flex-col overflow-hidden rounded-[calc(var(--radius-lg)+1px)] max-lg:rounded-b-[calc(2rem+1px)] lg:rounded-r-[calc(2rem+1px)]">
-              <div class="px-8 pt-8 pb-3 sm:px-10 sm:pt-10 sm:pb-0">
-                <p class="mt-2 text-lg font-medium tracking-tight text-white max-lg:text-center">
-                  Response Formatting
-                </p>
-                <p class="mt-2 max-w-lg text-sm/6 text-gray-400 max-lg:text-center">
-                  Elegant and uniform response models for every endpoint, automatically.
-                </p>
-              </div>
-              <div class="relative min-h-120 w-full grow">
-                <div class="absolute top-10 right-0 bottom-0 left-6 overflow-hidden rounded-tl-3xl outline outline-white/10 border-glass">
-                  <div class="absolute inset-px mt-2 ml-2 overflow-hidden rounded-tl-2xl bg-dark-300 outline outline-white/10">
-                    <div class="flex bg-dark-300 outline outline-white/5">
-                      <div class="-mb-px flex text-sm/6 font-medium w-full">
-                        <div class="w-full border-r border-b border-white/10 bg-white/5 px-4 py-2 text-white whitespace-nowrap flex items-center">
-                          <div class="flex items-center pr-2">
-                            <span class="font-bold text-emerald-400 pr-2">POST</span>
-                            <i data-lucide="chevron-down" class="w-5 h-5"></i>
-                          </div> 
-                          <div class="flex-1 whitespace-nowrap my-1 mx-1 bg-white/5 rounded-xl px-2 py-2 text-sm font-mono text-slate-200">
-                            <span class="rounded-lg bg-brand-purple px-1.5 py-0.5">_.base_url</span>
-                            /api/transactions
+          <div class="card card-editor relative lg:row-span-2 p-0.5 before:max-lg:rounded-b-4xl! before:lg:rounded-r-4xl! after:max-lg:rounded-b-4xl! after:lg:rounded-r-4xl!">
+            <div class="glow"></div>
+            <div class="h-full w-full rounded-2xl max-lg:rounded-b-4xl lg:rounded-r-4xl overflow-hidden">
+              <div class="relative flex h-full flex-col">
+                <div class="px-8 pt-8 pb-3 sm:px-10 sm:pt-10 sm:pb-0">
+                  <p class="mt-2 text-lg font-medium tracking-tight text-white max-lg:text-center">
+                    Response Formatting
+                  </p>
+                  <p class="mt-2 max-w-lg text-sm/6 text-gray-400 max-lg:text-center">
+                    Elegant and uniform response models for every endpoint, automatically.
+                  </p>
+                </div>
+                <div class="relative min-h-135 w-full grow">
+                  <div class="absolute top-10 right-0 bottom-0 left-6 rounded-tl-3xl outline outline-white/10 border-glass -mb-0.5 -mr-0.5">
+                    <div class="absolute inset-px mt-2 ml-2 rounded-tl-2xl bg-dark-300 outline outline-white/10 overflow-hidden">
+                      <div class="flex bg-dark-300 outline outline-white/5 -mb-1">
+                        <div class="-mb-px flex text-sm/6 font-medium w-full">
+                          <div class="w-full border-r border-b border-white/10 bg-white/5 px-4 py-2 text-white whitespace-nowrap flex items-center">
+                            <div class="flex items-center pr-2">
+                              <span class="font-bold text-emerald-400 pr-2">POST</span>
+                              <i data-lucide="chevron-down" class="w-5 h-5"></i>
+                            </div> 
+                            <div class="flex-1 whitespace-nowrap my-1 mx-1 bg-white/5 rounded-xl px-2 py-2 text-sm font-mono text-slate-200">
+                              <span class="rounded-lg bg-brand-purple px-1.5 py-0.5">_.base_url</span>
+                              /api/transactions
+                            </div>
+                            <button class="font-bold ml-2 my-1 flex items-center justify-center gap-2 rounded-xl px-2.5 py-1.5 bg-brand-purple">
+                              Send 
+                              <i data-lucide="chevron-down" class="w-5 h-5"></i>
+                            </button>
                           </div>
-                          <button class="font-bold ml-2 my-1 flex items-center justify-center gap-2 rounded-xl px-2.5 py-1.5 bg-brand-purple">
-                            Send 
-                            <i data-lucide="chevron-down" class="w-5 h-5"></i>
-                          </button>
                         </div>
                       </div>
-                    </div>
-                    <div class="pt-4 pb-24 overflow-hidden" x-data="jsonViewer($store.jsonResponse)">
-                        <template x-for="(line, index) in lines" :key="index">
-                          <div class="flex">
-                            <div class="w-12 min-w-12 mr-4 text-center p-0.5 select-none text-slate-500"
-                              x-text="index + 1">
+                      <div class="pt-4 pb-24 overflow-hidden" x-data="jsonViewer($store.jsonResponse)">
+                          <template x-for="(line, index) in lines" :key="index">
+                            <div class="flex">
+                              <div class="w-12 min-w-12 mr-4 text-center p-0.5 select-none text-slate-500"
+                                x-text="index + 1">
+                              </div>
+                              <pre class="bg-transparent! border-0! p-0! rounded-none!"><p x-html="line" class="overflow-hidden"></p></pre>
                             </div>
-                            <pre class="bg-transparent! border-0! p-0! rounded-none!"><p x-html="line" class="overflow-hidden"></p></pre>
-                          </div>
-                      </template>
+                        </template>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
-            <div class="pointer-events-none absolute inset-px rounded-lg shadow-sm max-lg:rounded-b-4xl lg:rounded-r-4xl"></div>
           </div>
         </div>
       </div>
