@@ -19,6 +19,9 @@ import {
     Moon,
     X,
     ChevronDown,
+    ShieldAlert,
+    Bug,
+    Info,
 } from 'lucide';
 
 (function() {
@@ -64,6 +67,9 @@ import {
             Moon,
             X,
             ChevronDown,
+            ShieldAlert,
+            Bug,
+            Info,
         }
     });
 

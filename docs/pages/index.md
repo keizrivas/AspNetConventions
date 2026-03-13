@@ -92,13 +92,9 @@ customHead: |
           For ASP.NET
         </h1>
         <p class="text-2xl text-slate-400 mb-10 max-w-3xl mx-auto leading-relaxed">
-          <!-- Automatically turn complex boilerplate into elegant, maintainable code.  -->
           A powerful and zero boilerplate solution for consistent standardization in modern ASP.NET apps.
         </p>
         <div class="flex flex-wrap justify-center items-center gap-4">
-          <!-- <a href="#docs" class="px-8 py-4 bg-gradient-brand text-white font-bold rounded-2xl hover:opacity-90 transition-all shadow-xl shadow-brand-pink/25 flex items-center gap-2">
-            Start Reading <i data-lucide="arrow-right" class="w-4.5 h-4.5"></i>
-          </a> -->
           <button class="group relative inline-flex h-12 items-center justify-center overflow-hidden rounded-full bg-white px-6 font-medium text-neutral-900 duration-500">
             <div class="relative inline-flex translate-x-0 items-center transition group-hover:-translate-x-6">
               <div class="absolute translate-x-0 opacity-100 transition group-hover:-translate-x-6 group-hover:opacity-0">
@@ -111,7 +107,7 @@ customHead: |
             </div>
           </button>
           <div class="relative group">
-            <button @click="copyToClipboard('dotnet add package AspNetConventions')" class="px-8 py-4 bg-[#161B22] text-white font-mono text-sm rounded-full border border-white/10 hover:border-brand-purple/50 transition-all flex items-center gap-3 cursor-pointer">
+            <button @click="copyToClipboard('dotnet add package AspNetConventions')" class="px-8 py-4 bg-dark-100 text-white font-mono text-sm rounded-full border border-white/10 hover:border-brand-purple/50 transition-all flex items-center gap-3 cursor-pointer">
               <i data-lucide="terminal" class="text-brand-purple w-4.5 h-4.5"></i>
               dotnet add package AspNetConventions
               <div x-show="copied">
@@ -152,9 +148,9 @@ customHead: |
           Beautifully Structured Asp.Net applications through Consistent Conventions
         </p>
         <div class="mt-10 grid gap-4 sm:mt-16 lg:grid-cols-3 lg:grid-rows-2">
-          <div class="card relative lg:row-span-2  before:lg:rounded-l-4xl! after:lg:rounded-l-4xl!">
+          <div class="card relative lg:row-span-2 before:lg:rounded-l-4xl! after:lg:rounded-l-4xl!">
             <div class="glow"></div>
-            <div class="relative flex h-full flex-col lg:rounded-l-4xl">
+            <div class="relative flex h-full flex-col lg:rounded-l-4xl overflow-hidden">
               <div class="px-8 pt-8 pb-3 sm:px-10 sm:pt-10 sm:pb-0">
                 <p class="mt-2 text-lg font-medium tracking-tight text-white max-lg:text-center">
                   Route Transformation
@@ -163,8 +159,37 @@ customHead: |
                   Turn complex, inconsistent URLs into clean, SEO-friendly paths automatically.
                 </p>
               </div>
-              <div class="bg-dark-300 rounded-2xl font-mono text-base whitespace-nowrap min-h-32 m-4 p-4">
-                <span id="typed"></span>
+              <div class="flex flex-col gap-4 px-8 pt-4 sm:px-6 pb-8 mt-4 h-full">
+                <div class="relative z-10">
+                  <div class="flex flex-col gap-y-3 bg-dark-200/50 backdrop-blur-sm border border-white/10 shadow-xl rounded-3xl p-3">
+                    <div class="flex gap-x-1.5 ml-1.5 my-1">
+                      <div class="rounded-full bg-dark-50 w-2 h-2"></div>
+                      <div class="rounded-full bg-dark-50 w-2 h-2"></div>
+                      <div class="rounded-full bg-dark-50 w-2 h-2"></div>
+                    </div>
+                    <div class="flex font-medium text-sm max-w-52 text-slate-400 border border-white/5 bg-dark-50/80 backdrop-blur-sm px-4 py-2.5 rounded-xl">
+                      <span class="font-bold text-emerald-400 pr-2">C#</span>
+                      UsersController.cs
+                      <i data-lucide="x" class="w-5 h-5 ml-2.5"></i>
+                    </div>
+                    <div class="bg-dark-300 border border-white/5 rounded-xl font-mono text-sm whitespace-nowrap min-h-40 p-4">
+                      <p class="text-slate-500 pb-2">// UsersController.cs </p>
+                      <span id="typed"></span>
+                    </div>
+                    <div class="flex ml-1.5 gap-x-2">
+                      <div class="bg-blue-400/80 rounded-2xl w-5 p-1.5"></div>
+                      <div class="bg-dark-50 rounded-2xl w-24 p-1.5"></div>
+                    </div>
+                  </div>
+                </div>
+                <div class="absolute flex justify-center left-1/2 -translate-x-1/2 -bottom-24">
+                  <div class="gradient-ring">
+                    <div class="inner-content-ring flex justify-center items-center">
+                      <div class="wave-ring"></div>
+                      <img src="./assets/images/performance.svg" alt="" class="h-42 opacity-25" />
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -176,17 +201,27 @@ customHead: |
                   Exception Handling
                 </p>
                 <p class="mt-2 max-w-lg text-sm/6 text-gray-400 max-lg:text-center">
-                  A safety net that automatically intercepts and formats every failure.
+                  A safety net that intercepts, map and formats every failure.
                 </p>
               </div>
-              <div class="flex-1p-5 relative">
-                <img src="./assets/images/error.svg" alt="" class="absolute mix-blend-overlay2 h-42 top-4 right-4 opacity-50" />
+              <div class="flex-1 px-8 sm:px-10 py-5 relative">
+                <div class="relative flex flex-col gap-2.5 z-10 pr-24 lg:pr-2 xl:pr-18">
+                  <div class="flex gap-2 font-mono text-sm bg-dark-200/50 backdrop-blur-sm border border-white/5 shadow-lg rounded-xl px-4 py-2">
+                    <i data-lucide="info" class="text-pink-500 w-5 min-w-5 h-5"></i> ValidationException
+                  </div>
+                  <div class="flex gap-2 font-mono text-sm bg-dark-200/50 backdrop-blur-sm border border-white/5 shadow-lg rounded-xl px-4 py-2 ml-4 -mr-4">
+                    <i data-lucide="bug" class="text-pink-500 w-5 min-w-5 h-5"></i> ArgumentNullException
+                  </div>
+                  <div class="flex gap-2 font-mono text-sm bg-dark-200/50 backdrop-blur-sm border border-white/5 shadow-lg rounded-xl px-4 py-2">
+                    <i data-lucide="shield-alert" class="text-pink-500 w-5 min-w-5 h-5"></i> SecurityException
+                  </div>
+                </div>
+                <img src="./assets/images/error.svg" alt="" class="absolute h-42 top-4 right-4 opacity-75" />
               </div>
             </div>
           </div>
           <div class="card card-gradient relative max-lg:row-start-3 lg:col-start-2 lg:row-start-2">
             <div class="glow"></div>
-            <!-- <div class="absolute inset-px rounded-lg gradient-bg"></div> -->
             <div class="bg-noise absolute inset-px rounded-2xl opacity-75 bg-dark-500/50"></div>
             <div class="relative flex flex-col h-full min-h-72 overflow-hidden">
               <div class="px-8 pt-8 sm:px-10 sm:pt-10">
@@ -197,8 +232,32 @@ customHead: |
                   Global Json serialization control with zero external dependencies.
                 </p>
               </div>
-              <div class="flex-1 p-5 relative">
-                <img src="./assets/images/json.svg" alt="" class="absolute mix-blend-overlay h-56 top-3 right-3 opacity-50" />
+              <div class="flex-1 py-5 px-8 sm:px-10 relative">
+                <div class="relative flex flex-col gap-2.5 z-10 pr-24 lg:pr-2 xl:pr-18">
+                  <div class="ml-3.5">
+                    <ol class="list-disc font-mono space-y-1.5 text-sm">
+                      <li class="opacity-100"> 
+                        WriteIndented
+                      </li>
+                      <li class="opacity-80"> 
+                        AllowTrailingCommas
+                      </li>
+                      <li class="opacity-60"> 
+                        NumberHandling
+                      </li>
+                      <li class="opacity-40"> 
+                        Converters
+                      </li>
+                      <li class="opacity-20"> 
+                        SerializerOptions
+                      </li>
+                      <li class="opacity-5"> 
+                        MaxDepth
+                      </li>
+                    </ol>
+                  </div>
+                </div>
+                <img src="./assets/images/json.svg" alt="" class="absolute mix-blend-overlay h-56 top-3 right-3 opacity-75" />
               </div>
             </div>
           </div>
@@ -211,10 +270,10 @@ customHead: |
                     Response Formatting
                   </p>
                   <p class="mt-2 max-w-lg text-sm/6 text-gray-400 max-lg:text-center">
-                    Elegant and uniform response models for every endpoint, automatically.
+                    Elegant and customizable response models for every endpoint across your API.
                   </p>
                 </div>
-                <div class="relative min-h-135 w-full grow">
+                <div class="relative min-h-120 w-full grow">
                   <div class="absolute top-10 right-0 bottom-0 left-6 rounded-tl-3xl outline outline-white/10 border-glass -mb-0.5 -mr-0.5">
                     <div class="absolute inset-px mt-2 ml-2 rounded-tl-2xl bg-dark-300 outline outline-white/10 overflow-hidden">
                       <div class="flex bg-dark-300 outline outline-white/5 -mb-1">
@@ -224,7 +283,7 @@ customHead: |
                               <span class="font-bold text-emerald-400 pr-2">POST</span>
                               <i data-lucide="chevron-down" class="w-5 h-5"></i>
                             </div> 
-                            <div class="flex-1 whitespace-nowrap my-1 mx-1 bg-white/5 rounded-xl px-2 py-2 text-sm font-mono text-slate-200">
+                            <div class="flex-1 whitespace-nowrap my-1 mx-1 bg-white/5 rounded-xl px-2 py-2 font-mono text-slate-200">
                               <span class="rounded-lg bg-brand-purple px-1.5 py-0.5">_.base_url</span>
                               /api/transactions
                             </div>
@@ -235,10 +294,10 @@ customHead: |
                           </div>
                         </div>
                       </div>
-                      <div class="pt-4 pb-24 overflow-hidden" x-data="jsonViewer($store.jsonResponse)">
+                      <div class="text-sm pt-4 pb-24 overflow-hidden" x-data="jsonViewer($store.jsonResponse)">
                           <template x-for="(line, index) in lines" :key="index">
                             <div class="flex">
-                              <div class="w-12 min-w-12 mr-4 text-center p-0.5 select-none text-slate-500"
+                              <div class="w-12 min-w-12 text-center p-0.5 select-none text-slate-500"
                                 x-text="index + 1">
                               </div>
                               <pre class="bg-transparent! border-0! p-0! rounded-none!"><p x-html="line" class="overflow-hidden"></p></pre>

@@ -17,6 +17,7 @@
   --color-dark-300: #0B0E14;
   --color-dark-200: #0D1117;
   --color-dark-100: #161B22;
+  --color-dark-50: #21262d;
 
   --animate-border: border 4s linear infinite;
   @keyframes border {
@@ -126,6 +127,7 @@ code {
   height:100%;
   left: 50%;
   top: 50%;
+  pointer-events: none;
   transform: translate(-50%, -50%);
   border-radius: var(--radius-2xl);
   border: 2px solid transparent;
@@ -152,6 +154,7 @@ code {
   height: 100%;
   top: 0;
   left: 0;
+  pointer-events: none;
   z-index: -1;
   @apply bg-dark-100 rounded-2xl inset-px;
 }
@@ -240,4 +243,94 @@ code {
     #8342fa1a 40%,
     transparent 100%
   );
+}
+
+.gradient-ring {
+  position: relative;
+  width: 300px;
+  height: 300px;
+  
+  &::before {
+    content: "";
+    position: absolute;
+    inset: -20px;
+    border-radius: 50%;
+    
+    background: conic-gradient(
+      from 180deg,
+      transparent, 
+      var(--color-brand-purple),
+      var(--color-brand-pink),
+      transparent
+    );
+    
+    filter: blur(20px);
+    opacity: 0.25;
+  }
+  
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    padding: 2px; 
+    background: conic-gradient(
+      from 180deg,
+      transparent, 
+      var(--color-brand-purple),
+      var(--color-brand-pink),
+      transparent
+    );
+
+    -webkit-mask: 
+       linear-gradient(#fff 0 0) content-box, 
+       linear-gradient(#fff 0 0);
+    -webkit-mask-composite: destination-out;
+    mask-composite: exclude;
+  }
+}
+
+.inner-content-ring {
+  width: 300px;
+  height: 300px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--color-dark-100);
+  position: relative;
+}
+
+.wave-ring {
+  width: 400px;
+  height: 400px;
+  border-radius: 50%;
+  @apply absolute border border-slate-400 top-1/2 left-1/2 -translate-1/2 opacity-25;
+
+  &::before {
+    content: "";
+    position: absolute;
+    width: 525px;
+    height: 525px;
+    border-radius: 50%;
+    @apply absolute border border-slate-400 top-1/2 left-1/2 -translate-1/2 opacity-50;
+  }
+  
+  &::after {
+    content: "";
+    position: absolute;
+    width: 650px;
+    height: 650px;
+    border-radius: 50%;
+    @apply absolute border border-slate-400 top-1/2 left-1/2 -translate-1/2 opacity-25;
+  }
+}
+
+.gloss-box {
+  width: 100%;
+  height: 100%;
+  user-select: none;
+  background: radial-gradient(75% 75% at 50% 91.9%, var(--color-dark-50) 0, var(--color-dark-200) 100%);
+  box-shadow: 0 1.5px .5px 2.5px rgba(0, 0, 0, .15), 0 0 .5px 1px rgb(0, 0, 0, .50), inset 0 2px 1px 1px rgba(0,0,0,.25), inset 0 1px 1px 1px rgba(255,255,255,.1), inset 0 0 0 0 rgba(0,0,0,0);
+  transition: opacity .4s cubic-bezier(.23,1,.32,1),box-shadow .2s cubic-bezier(.23,1,.32,1),transform .2s cubic-bezier(.23,1,.32,1),color .2s cubic-bezier(.23,1,.32,1),--key-bg-start-color .4s cubic-bezier(.23,1,.32,1),--key-bg-end-color .4s cubic-bezier(.23,1,.32,1)
 }
