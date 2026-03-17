@@ -1,5 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
 @import "tailwindcss";
+@custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
+
 @source "../../pages/"; 
 @source "../../public/js/json_viewer.js";
 @source "../../public/js/typed_animation.js";
@@ -28,8 +30,10 @@
 }
 
 @layer base {
-  body {
-    @apply bg-dark-400 text-slate-300 antialiased;
+  body,
+  html {
+    @apply h-full m-0 bg-white text-slate-950 dark:bg-dark-400 dark:text-white antialiased 
+      min-h-screen selection:bg-brand-pink/30 transition-colors;
   }
 }
 
@@ -48,8 +52,14 @@
   );
 }
 
-.glass-dark {
-  @apply bg-dark-100/80 backdrop-blur-xl border border-white/5 shadow-2xl;
+.glass-nav {
+  @apply bg-white/80 dark:bg-dark-100/80 backdrop-blur-xl border 
+    border-dark-100/5 dark:border-white/5 shadow-xl;
+}
+
+.bg-glass {
+  @apply bg-slate-300/50 dark:bg-dark-200/50 backdrop-blur-sm border 
+  border-dark-100/10 dark:border-white/10 shadow-xl;
 }
 
 .text-gradient-brand {
@@ -64,12 +74,13 @@
   border-image: linear-gradient(to right, var(--color-brand-pink), var(--color-brand-purple)) 1;
 }
 
-pre {
-  @apply font-mono text-sm bg-dark-200 p-4 rounded-xl border border-white/5 overflow-x-auto;
+.navbar-dropdown {
+  @apply max-md:absolute max-md:top-16 max-md:mt-4 left-0 max-md:block! max-md:rounded-2xl max-md:bg-white max-md:dark:bg-dark-400 
+    max-md:border border-black/15 dark:border-white/10 max-md:shadow-xl;
 }
 
-code {
-  @apply font-mono text-brand-pink bg-brand-pink/10 px-1.5 py-0.5 rounded;
+.navbar-dropdown-item {
+  @apply max-md:hover:bg-slate-100 max-md:hover:dark:bg-dark-200 transition-colors text-slate-700 dark:text-slate-400 hover:text-slate-950 dark:hover:text-white block rounded-lg py-2 px-3 md:px-4 md:py-1;
 }
 
 .animate-gradient {
@@ -91,8 +102,10 @@ code {
   }
 }
 
-.animate-box {
-  background: linear-gradient(var(--color-dark-400), var(--color-dark-300)) padding-box,
+.package-box {
+  --box-gradient-start: var(--color-slate-100);
+  --box-gradient-end: var(--color-slate-50);
+  background: linear-gradient(var(--box-gradient-start), var(--box-gradient-end)) padding-box,
     conic-gradient(
       from var(--border-angle), 
       color-mix(in oklab, var(--color-brand-purple) 35%, transparent) 80%,
@@ -102,11 +115,13 @@ code {
       color-mix(in oklab, var(--color-brand-purple) 48%, transparent)
     ) border-box;
   animation: var(--animate-border);
-  @apply animate-border border-2 border-transparent;
+  @apply animate-border border-2 border-transparent inline-flex 
+    items-center rounded-full text-slate-950 dark:text-slate-300 dark:hover:text-white 
+    text-xs font-medium uppercase tracking-wider gap-2 px-4 py-2;
 }
 
 .code-box {
-  @apply bg-dark-400 rounded-lg border border-white/5 p-1 px-2 m-1 mt-2.5;
+  @apply bg-white border-black/10 dark:bg-dark-400 rounded-lg border dark:border-white/5 py-1.5 px-2 m-1 my-2.5;
 }
 
 .bg-noise {
@@ -125,10 +140,8 @@ code {
   content: "";
   width:100%;
   height:100%;
-  left: 50%;
-  top: 50%;
+  inset: 0px;
   pointer-events: none;
-  transform: translate(-50%, -50%);
   border-radius: var(--radius-2xl);
   border: 2px solid transparent;
   background: var(--border-glow);
@@ -149,14 +162,9 @@ code {
 
 .card::after {
   content: "";
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  top: 0;
-  left: 0;
-  pointer-events: none;
   z-index: -1;
-  @apply bg-dark-100 rounded-2xl inset-px;
+  @apply bg-slate-50 absolute w-full h-full 
+    pointer-events-none rounded-2xl inset-0 border border-slate-300;
 }
 
 .card-editor {
@@ -175,7 +183,6 @@ code {
       150% 150% at var(--mouse-g-x) var(--mouse-g-y),
       rgba(239, 92, 168, 0.30) 0%,
       rgba(131, 66, 250, 0.10) 20%,
-      /* #8342fa1a 20%, */
       transparent 100%
     ),
     radial-gradient(circle at 90% 10%, #317de7 0%, transparent 40%),
@@ -247,8 +254,8 @@ code {
 
 .gradient-ring {
   position: relative;
-  width: 300px;
-  height: 300px;
+  width: 325px;
+  height: 325px;
   
   &::before {
     content: "";
@@ -291,46 +298,68 @@ code {
 }
 
 .inner-content-ring {
-  width: 300px;
-  height: 300px;
+  --inner-ring-bg: #ffffff;
+  width: 325px;
+  height: 325px;
   display: flex;
   align-items: center;
   justify-content: center;
   border-radius: 50%;
-  background: var(--color-dark-100);
+  background: var(--inner-ring-bg);
   position: relative;
 }
 
 .wave-ring {
-  width: 400px;
-  height: 400px;
+  width: 425px;
+  height: 425px;
   border-radius: 50%;
-  @apply absolute border border-slate-400 top-1/2 left-1/2 -translate-1/2 opacity-25;
+  @apply absolute border border-slate-600 top-1/2 left-1/2 -translate-1/2 opacity-25;
 
   &::before {
     content: "";
     position: absolute;
-    width: 525px;
-    height: 525px;
+    width: 550px;
+    height: 550px;
     border-radius: 50%;
-    @apply absolute border border-slate-400 top-1/2 left-1/2 -translate-1/2 opacity-50;
+    @apply absolute border border-slate-600 top-1/2 left-1/2 -translate-1/2 opacity-48;
   }
   
   &::after {
     content: "";
     position: absolute;
-    width: 650px;
-    height: 650px;
+    width: 675px;
+    height: 675px;
     border-radius: 50%;
-    @apply absolute border border-slate-400 top-1/2 left-1/2 -translate-1/2 opacity-25;
+    @apply absolute border border-slate-600 top-1/2 left-1/2 -translate-1/2 opacity-24;
   }
 }
 
-.gloss-box {
-  width: 100%;
-  height: 100%;
-  user-select: none;
-  background: radial-gradient(75% 75% at 50% 91.9%, var(--color-dark-50) 0, var(--color-dark-200) 100%);
-  box-shadow: 0 1.5px .5px 2.5px rgba(0, 0, 0, .15), 0 0 .5px 1px rgb(0, 0, 0, .50), inset 0 2px 1px 1px rgba(0,0,0,.25), inset 0 1px 1px 1px rgba(255,255,255,.1), inset 0 0 0 0 rgba(0,0,0,0);
-  transition: opacity .4s cubic-bezier(.23,1,.32,1),box-shadow .2s cubic-bezier(.23,1,.32,1),transform .2s cubic-bezier(.23,1,.32,1),color .2s cubic-bezier(.23,1,.32,1),--key-bg-start-color .4s cubic-bezier(.23,1,.32,1),--key-bg-end-color .4s cubic-bezier(.23,1,.32,1)
+
+
+[data-theme="dark"] {
+
+  .package-box {
+    --box-gradient-start: var(--color-dark-400);
+    --box-gradient-end: var(--color-dark-300);
+  }
+
+  .card::after {
+    @apply bg-dark-100 border-white/4
+  }
+
+  .inner-content-ring {
+    --inner-ring-bg: var(--color-dark-100);
+  }
+
+  .wave-ring {
+    @apply border-slate-400;
+
+    &::before {
+      @apply border-slate-400;
+    }
+    
+    &::after {
+      @apply border-slate-400;
+    }
+  }
 }

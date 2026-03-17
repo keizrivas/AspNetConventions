@@ -1,5 +1,6 @@
 import Alpine from 'alpinejs'
 import PackageMetadata from './package_metadata.js'
+import Appearance from './appearance.js'
 import JsonViewer from './json_viewer.js'
 import './typed_animation.js'
 import './glowing_animation.js'
@@ -22,6 +23,7 @@ import {
     ShieldAlert,
     Bug,
     Info,
+    SquareArrowOutUpRight
 } from 'lucide';
 
 (function() {
@@ -37,6 +39,9 @@ import {
 
     // Register the packageMetadata component
     Alpine.store('packageMetadata', PackageMetadata);
+
+    // Page dark/light appearance
+    Alpine.store('Appearance', Appearance);
 
     // Register the jsonViewer component
     Alpine.data('jsonViewer', JsonViewer);
@@ -70,6 +75,7 @@ import {
             ShieldAlert,
             Bug,
             Info,
+            SquareArrowOutUpRight
         }
     });
 

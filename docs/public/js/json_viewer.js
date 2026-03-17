@@ -13,27 +13,27 @@ export default (json) => ({
             // keys
             .replace(
                 /\"(.*?)\":/g,
-                '<span class="text-blue-400">"$1"</span>:'
+                '<span class="text-blue-600 dark:text-blue-400">"$1"</span>:'
             )
             // strings
             .replace(
                 /:\s\"(.*?)\"/g,
-                ': <span class="text-emerald-300">"$1"</span>'
+                ': <span class="text-emerald-600 dark:text-emerald-300">"$1"</span>'
             )
             // numbers
             .replace(
                 /:\s(-?\d+(?:\.\d+)?)/g,
-                ': <span class="text-amber-300">$1</span>'
+                ': <span class="text-amber-600 dark:text-amber-300">$1</span>'
             )
             // booleans
             .replace(
                 /:\s(true|false)/g,
-                ': <span class="text-purple-400">$1</span>'
+                ': <span class="text-purple-600 dark:text-purple-400">$1</span>'
             )
             // null
             .replace(
                 /:\s(null)/g,
-                ': <span class="text-zinc-400">$1</span>'
+                ': <span class="text-zinc-600 dark:text-zinc-400">$1</span>'
             )
     }
 

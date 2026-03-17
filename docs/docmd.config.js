@@ -27,9 +27,8 @@ module.exports = {
       collapsible: true,
       defaultCollapsed: false,
     },
-    // Centralized Options Menu (Search, Theme, Sponsor)
     optionsMenu: {
-      position: 'sidebar-top',
+      position: 'header', //sidebar-top
       components: {
         search: true,
         themeSwitch: true,
@@ -47,6 +46,7 @@ module.exports = {
   theme: {
     name: 'default',
     defaultMode: 'system',
+    appearance: 'system',
     codeHighlight: true, 
     customCss: [ 
       '/assets/css/asp_net_conventions.theme.css',
@@ -65,16 +65,67 @@ module.exports = {
 
   // --- Navigation (Sidebar) ---
   navigation: [
-    { title: 'Introduction', path: 'docs/getting-started', icon: 'home' },
-    // {
-    //   title: 'Guide',
-    //   icon: 'book-open',
-    //   collapsible: true,
-    //   children: [
-    //     { title: 'Getting Started', path: 'https://docs.docmd.io/getting-started/installation', icon: 'rocket', external: true },
-    //     { title: 'Configuration', path: 'https://docs.docmd.io/configuration', icon: 'settings', external: true },
-    //   ],
-    // },
+    { 
+      title: 'Overview', 
+      path: 'docs/', 
+      icon: 'home' 
+    },
+    {
+      title: 'Getting Started',
+      icon: 'rocket',
+      collapsible: true,
+      children: [
+        { 
+          title: 'Installation', 
+          path: 'docs/', 
+          icon: 'terminal', 
+        },
+        { 
+          title: 'Configuration', 
+          path: 'docs/', 
+          icon: 'settings', 
+        },
+        { 
+          title: 'Basic Usage', 
+          path: 'docs/', 
+          icon: 'braces', 
+        },
+      ],
+    },
+    {
+      title: 'Route Standarization',
+      icon: 'rocket',
+      collapsible: true,
+      children: [
+      ],
+    },
+    {
+      title: 'Response Formatting',
+      icon: 'rocket',
+      collapsible: true,
+      children: [
+      ],
+    },
+    {
+      title: 'Exception Handling',
+      icon: 'rocket',
+      collapsible: true,
+      children: [
+      ],
+    },
+    {
+      title: 'JSON Serialization',
+      icon: 'rocket',
+      collapsible: true,
+      children: [
+      ],
+    },
+    { 
+      title: 'NuGet', 
+      path: 'https://www.nuget.org/packages/AspNetConventions', 
+      icon: 'box', 
+      external: true 
+    },
     { 
       title: 'GitHub', 
       path: 'https://github.com/keizrivas/AspNetConventions', 

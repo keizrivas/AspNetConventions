@@ -7,7 +7,6 @@ export default {
     watchersCount: 0,
     totalDownloads: 0,
     stargazersCount: 0, 
-
     async init() {
 
         const CACHE_KEY = "aspnet_conventions_data";
@@ -48,7 +47,6 @@ export default {
             console.error('Fetch failed:', error);
         }
     },
-    
     applyData(github, nuget) {
         // Set Github info
         this.name = github.name;
