@@ -164,7 +164,7 @@ customHead: |
 
   <!-- features Section -->
   <section id="features" class="py-24 w-full bg-slate-100 dark:bg-dark-200">
-    <div class="mx-full max-w-2xl px-1 min-[400px]:px-2.5 md:px-6 lg:max-w-7xl lg:px-8">
+    <div class="mx-auto max-w-2xl px-1 min-[400px]:px-2.5 md:px-6 lg:max-w-7xl lg:px-8">
       <h2 class="text-center text-base/7 font-semibold text-brand-purple">
         Core Principles
       </h2>

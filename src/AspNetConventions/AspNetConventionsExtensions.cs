@@ -61,7 +61,7 @@ namespace AspNetConventions
         /// Configures the application to use AspNetConventions for Minimal APIs.
         /// </summary>
         /// <param name="app">The <see cref="WebApplication"/> to configure.</param>
-        /// <param name="prefix">The pattern that prefixes all routes in the API group.</param>
+        /// <param name="prefix">The pattern that prefixes all endpoints in the API group.</param>
         /// <param name="configure">An optional action to configure conventions. If null, default settings are used.</param>
         /// <returns>A <see cref="RouteGroupBuilder"/> for the configured API group, enabling endpoint chaining.</returns>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="app"/> or <paramref name="prefix"/> is null.</exception>

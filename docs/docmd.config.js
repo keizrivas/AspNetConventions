@@ -66,56 +66,78 @@ module.exports = {
   // --- Navigation (Sidebar) ---
   navigation: [
     { 
-      title: 'Overview', 
+      title: 'Introduction', 
       path: 'docs/', 
       icon: 'home' 
     },
     {
       title: 'Getting Started',
       icon: 'rocket',
-      collapsible: true,
+      collapsible: false,
       children: [
-        { 
-          title: 'Installation', 
-          path: 'docs/', 
-          icon: 'terminal', 
+        {
+          title: 'Overview',
+          path: 'docs/getting-started/', 
         },
         { 
-          title: 'Configuration', 
-          path: 'docs/', 
-          icon: 'settings', 
+          title: 'Quick Start', 
+          path: 'docs/getting-started/quick-start', 
         },
         { 
           title: 'Basic Usage', 
-          path: 'docs/', 
-          icon: 'braces', 
+          path: 'docs/getting-started/basic-usage', 
         },
       ],
     },
+    { 
+      title: 'Configuration Reference', 
+      path: 'docs/configuration-reference', 
+      icon: 'settings', 
+    },
     {
       title: 'Route Standarization',
-      icon: 'rocket',
+      icon: 'link',
       collapsible: true,
       children: [
+        { 
+          title: 'How It Works', 
+          path: 'docs/route-standardization', 
+        },
+        { 
+          title: 'Options ', 
+          path: 'docs/route-standardization/route-convention-options', 
+        },
+        { 
+          title: 'Examples', 
+          path: 'docs/route-standardization/', 
+        },
+        { 
+          title: 'Parameter Binding', 
+          path: 'docs/route-standardization/', 
+        },
+        { 
+          title: 'Advanced', 
+          path: 'docs/route-standardization/', 
+        },
       ],
     },
     {
       title: 'Response Formatting',
-      icon: 'rocket',
+      icon: 'file-braces-corner',
       collapsible: true,
       children: [
       ],
     },
     {
       title: 'Exception Handling',
-      icon: 'rocket',
+      icon: 'shield-alert',
       collapsible: true,
       children: [
       ],
     },
     {
       title: 'JSON Serialization',
-      icon: 'rocket',
+      icon: 'braces',
       collapsible: true,
       children: [
       ],
@@ -123,13 +145,13 @@ module.exports = {
     { 
       title: 'NuGet', 
       path: 'https://www.nuget.org/packages/AspNetConventions', 
-      icon: 'box', 
+      // icon: 'box', 
       external: true 
     },
     { 
       title: 'GitHub', 
       path: 'https://github.com/keizrivas/AspNetConventions', 
-      icon: 'github', 
+      // icon: 'github', 
       external: true 
     },
   ],

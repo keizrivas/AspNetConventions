@@ -98,3 +98,56 @@
     background-color: var(--sidebar-link-active-bg);
   }
 }
+
+.text-color {
+  color: var(--text-color) !important;
+}
+
+.link {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  font-weight: 500;
+  text-decoration: none;
+  padding: 0.25rem 1rem;
+  border-radius: 6px;
+  transition: background-color .2s;
+  width: fit-content;
+  max-width: fit-content;
+  margin-bottom: 0.25rem;
+
+  &:hover {
+    background-color: #0000000d;
+  }
+
+  svg {
+    width: 20px;
+    height: 20px;
+    min-width: 20px;
+    min-height: 20px;
+    margin-right: 0.5rem;
+    color: var(--text-color);
+  }
+
+  &._blank{
+    min-width: 250px;
+    &::after {
+      content: "";
+      display: inline-block;
+      background-color: var(--text-color);
+      width: 14px;
+      height: 14px;
+      min-width: 14px;
+      min-height: 14px;
+      margin-left: auto;
+      mask-size: contain;
+      mask-repeat: no-repeat;
+      opacity: 0.5;
+      mask-image:  url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23ffffff' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M21 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h6'/%3E%3Cpath d='m21 3-9 9'/%3E%3Cpath d='M15 3h6v6'/%3E%3C/svg%3E");
+    }
+  }
+}
+
+:root[data-theme="dark"] .link:hover {
+  background-color: #ffffff0d;
+}

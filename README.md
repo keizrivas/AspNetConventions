@@ -45,6 +45,7 @@ dotnet add package AspNetConventions
 
 ```csharp
 // Program.cs
+using AspNetConventions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -55,10 +56,10 @@ builder.Services
 
 var app = builder.Build();
 
-// Apply conventions to Minimal APIs
-var api = app.UseAspNetConventions("/");
+app.MapGet("/GetUser/{UserId}", (int UserId) => new { userId = UserId });
 
-api.MapGet("/GetUser/{UserId}", (int UserId) => new { userId = UserId });
+// Apply conventions to Minimal APIs
+app.UseAspNetConventions();
 
 app.Run();
 ```
@@ -95,10 +96,11 @@ GET /api/users/public-profile/{id}
 
 **Your Code:**
 ```csharp
-var api = app.UseAspNetConventions("/Api");
 
-api.MapGet("/WeatherForecasts/City/{name}", (string name) => 
+app.MapGet("/WeatherForecasts/City/{name}", (string name) => 
     Results.Ok(new { CityName = name, Temperature = 72 }));
+
+app.UseAspNetConventions();
 ```
 
 **Standardized Route:**
