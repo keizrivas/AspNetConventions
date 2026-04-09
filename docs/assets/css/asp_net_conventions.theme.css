@@ -2,8 +2,9 @@
 
 
 :root {
-  --primary-color: #ad46ff;
+  --primary-color: #ad46ff !important;
   --link-color: #ad46ff !important;
+  --accent-color: #ad46ff !important;
   --border-radius: 8px;
   --font-family-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
   --font-family-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
@@ -11,8 +12,9 @@
 
  /* Dark mode overrides */
  :root[data-theme=dark] {
-  --primary-color: #9e5dec;
+  --primary-color: #9e5dec !important;
   --link-color: #9e5dec !important;
+  --accent-color: #9e5dec !important;
   color-scheme: dark;
 }
 
@@ -73,7 +75,7 @@
   height: 100px;
   width: 100%;
   border-radius: 100px 100px 0 0;
-  background-color: color-mix(in oklab, var(--primary-color) 10%, transparent);
+  background-color: color-mix(in oklab, var(--primary-color) 20%, transparent);
   filter: blur(120px);
 }
 
@@ -150,4 +152,180 @@
 
 :root[data-theme="dark"] .link:hover {
   background-color: #ffffff0d;
+}
+
+code {
+  border-radius: 7px;
+  padding: 0.20em .5em;
+}
+
+.code-left {
+  padding-right: 0px;
+  border-top-right-radius: 0px;
+  border-bottom-right-radius: 0px;
+}
+
+.code-right {
+  padding-left: 0px;
+  border-top-left-radius: 0px;
+  border-bottom-left-radius: 0px;
+}
+
+.pointer-events {
+  pointer-events: none;
+}
+
+.text-red {
+  color: oklch(57.7% 0.245 27.325);
+}
+.text-orange {
+  color: oklch(64.6% 0.222 41.116);
+}
+.text-amber {
+  color: oklch(76.9% 0.188 70.08);
+}
+.text-yellow {
+  color: oklch(68.1% 0.162 75.834);
+}
+.text-lime {
+  color: oklch(64.8% 0.2 131.684);
+}
+.text-green {
+  color: oklch(62.7% 0.194 149.214);
+}
+.text-emerald {
+  color: oklch(59.6% 0.145 163.225);
+}
+.text-teal {
+  color: oklch(60% 0.118 184.704);
+}
+.text-cyan {
+  color: oklch(60.9% 0.126 221.723);
+}
+.text-sky {
+  color: oklch(58.8% 0.158 241.966);
+}
+.text-blue {
+  color: oklch(54.6% 0.245 262.881);
+}
+.text-indigo {
+  color: oklch(51.1% 0.262 276.966);
+}
+.text-purple {
+  color: oklch(55.8% 0.288 302.321);
+}
+.text-violet {
+  color: oklch(54.1% 0.281 293.009);
+}
+.text-fuchsia {
+  color: oklch(59.1% 0.293 322.896);
+}
+.text-pink {
+  color: oklch(59.2% 0.249 0.584);
+}
+.text-rose {
+  color: oklch(58.6% 0.253 17.585);
+}
+
+:root[data-theme="dark"]{
+  .text-red {
+    color: oklch(70.4% 0.191 22.216);
+  }
+  .text-orange {
+    color: oklch(83.7% 0.128 66.29);
+  }
+  .text-amber {
+    color: oklch(87.9% 0.169 91.605);
+  }
+  .text-yellow {
+    color: oklch(90.5% 0.182 98.111);
+  }
+  .text-lime {
+    color: oklch(89.7% 0.196 126.665);
+  }
+  .text-green {
+    color: oklch(87.1% 0.15 154.449);
+  }
+  .text-emerald {
+    color: oklch(84.5% 0.143 164.978);
+  }
+  .text-teal {
+    color: oklch(85.5% 0.138 181.071);
+  }
+  .text-cyan {
+    color: oklch(78.9% 0.154 211.53);
+  }
+  .text-sky {
+    color: oklch(74.6% 0.16 232.661);
+  }
+  .text-blue {
+    color: oklch(70.7% 0.165 254.624);
+  }
+  .text-indigo {
+    color:  oklch(67.3% 0.182 276.935)
+  }
+  .text-purple {
+    color: oklch(71.4% 0.203 305.504);
+  }
+  .text-violet {
+    color: oklch(70.2% 0.183 293.541);
+  }
+  .text-fuchsia {
+    color:  oklch(74% 0.238 322.16)
+  }
+  .text-pink {
+    color: oklch(71.8% 0.202 349.761);
+  }
+  .text-rose {
+    color: oklch(71.2% 0.194 13.428);
+  }
+}
+
+.callout-info {
+    border-top-color: #3498db12;
+    border-right-color: #3498db12;
+    border-bottom-color: #3498db12;
+}
+
+.callout-warning {
+    border-top-color: #f39c1212;
+    border-right-color: #f39c1212;
+    border-bottom-color: #f39c1212;
+}
+
+.callout-success,
+.callout-tip {
+    border-top-color: #2ecc7112;
+    border-right-color: #2ecc7112;
+    border-bottom-color: #2ecc7112;
+}
+
+.callout-danger {
+    border-top-color: #e74c3c12;
+    border-right-color: #e74c3c12;
+    border-bottom-color: #e74c3c12;
+}
+
+.callout-info code:where(:not(.code-wrapper code, pre code)) {
+  background-color: rgba(52, 152, 219, 0.12);
+}
+
+.callout-warning code:where(:not(.code-wrapper code, pre code)) {
+  background-color: rgba(243, 156, 18, 0.12);
+}
+
+.callout-success code:where(:not(.code-wrapper code, pre code)) {
+  background-color: rgba(46, 204, 113, 0.12);
+}
+
+.callout-tip code:where(:not(.code-wrapper code, pre code)) {
+  background-color: rgba(46, 204, 113, 0.12);
+}
+
+.callout-danger code:where(:not(.code-wrapper code, pre code)) {
+  background-color: rgba(231, 76, 60, 0.12);
+}
+
+.hljs {
+  border: 1px solid rgba(0, 0, 0, 0.15);
 }

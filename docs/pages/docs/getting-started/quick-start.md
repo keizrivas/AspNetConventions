@@ -5,6 +5,7 @@ This guide covers installation and basic setup for each supported endpoint type.
 ---
 
 ## Installation
+Install the package via your preferred package manager.
 
 ::: tabs
 
@@ -28,7 +29,7 @@ Install-Package AspNetConventions
 
 ### MVC Controllers
 
-Call `.AddAspNetConventions()` on the `IMvcBuilder` returned by `.AddControllers()` or `.AddControllersWithViews()`:
+Call [`.AddAspNetConventions()`](/docs/getting-started/#addaspnetconventions) on the `IMvcBuilder` returned by `.AddControllers()` or `.AddControllersWithViews()`:
 
 ```csharp
 // Program.cs
@@ -49,7 +50,7 @@ app.Run();
 
 ### Minimal APIs
 
-Call `.UseAspNetConventions()` on the `WebApplication` after endpoints declaration to apply conventions.
+Call [.UseAspNetConventions()](/docs/getting-started/#useaspnetconventions) on the `WebApplication` after endpoints declaration to apply conventions.
 
 ```csharp
 // Program.cs
@@ -60,7 +61,7 @@ var builder = WebApplication.CreateBuilder(args);
 var app = builder.Build();
 
 app.MapGet("/WeatherForecast/{City}", (string City) =>
-    Results.Ok(new { City, ZipCode = null }));
+    Results.Ok(new { City, ZipCode = 000 }));
 
 app.UseAspNetConventions();   // ← Here
 
@@ -71,7 +72,7 @@ app.Run();
 
 ### Razor Pages
 
-Call `.AddAspNetConventions()` on the `IMvcBuilder` returned by `.AddRazorPages()` or `.AddControllersWithViews()`:
+Call [`.AddAspNetConventions()`](/docs/getting-started/#addaspnetconventions) on the `IMvcBuilder` returned by `.AddRazorPages()` or `.AddControllersWithViews()`:
 
 ```csharp
 // Program.cs
@@ -88,10 +89,26 @@ var app = builder.Build();
 app.MapRazorPages();
 app.Run();
 ```
-Enable Tag Helpers conventions by adding `AspNetConventions` directives:
+
+#### Enable Tag Helpers
+
+To support standardized routing and property binding within your views, add the `AspNetConventions` directive to your `_ViewImports.cshtml` file. 
+This ensures that helper attributes like `asp-for` correctly map your C# properties to the transformed HTML name attributes:
 
 ```less
 // _ViewImports.cshtml
-
 @addTagHelper *, AspNetConventions
 ```
+
+**How it works:**
+The Tag Helper automatically aligns your HTML forms with your selected casing style:
+
+```html
+<!-- Input Source -->
+<input asp-for="CityName" />
+
+<!-- Generated Output (e.g., kebab-case) -->
+<input name="city-name" id="CityName" type="text" value="" />
+```
+
+See [Disabling Property Transformation](/docs/getting-started/basic-usage/#disabling-property-transformation) If you need to maintain the original C# property names.

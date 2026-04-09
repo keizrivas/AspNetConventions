@@ -95,29 +95,29 @@ module.exports = {
       icon: 'settings', 
     },
     {
-      title: 'Route Standarization',
+      title: 'Route Standardization',
       icon: 'link',
       collapsible: true,
       children: [
-        { 
-          title: 'How It Works', 
-          path: 'docs/route-standardization', 
+        {
+          title: 'Overview',
+          path: 'docs/route-standardization',
         },
-        { 
-          title: 'Options ', 
-          path: 'docs/route-standardization/route-convention-options', 
+        {
+          title: 'Configuration',
+          path: 'docs/route-standardization/configuration',
         },
-        { 
-          title: 'Examples', 
-          path: 'docs/route-standardization/', 
+        {
+          title: 'Parameter Binding',
+          path: 'docs/route-standardization/parameter-binding',
         },
-        { 
-          title: 'Parameter Binding', 
-          path: 'docs/route-standardization/', 
+        {
+          title: 'Examples',
+          path: 'docs/route-standardization/examples',
         },
-        { 
-          title: 'Advanced', 
-          path: 'docs/route-standardization/', 
+        {
+          title: 'Troubleshooting',
+          path: 'docs/route-standardization/troubleshooting',
         },
       ],
     },
@@ -126,6 +126,34 @@ module.exports = {
       icon: 'file-braces-corner',
       collapsible: true,
       children: [
+        {
+          title: 'Overview',
+          path: 'docs/response-formatting',
+        },
+        {
+          title: 'Configuration',
+          path: 'docs/response-formatting/configuration',
+        },
+        {
+          title: 'ApiResults',
+          path: 'docs/response-formatting/api-results',
+        },
+        {
+          title: 'Custom Response Builders',
+          path: 'docs/response-formatting/custom-response-builders',
+        },
+        {
+          title: 'Metadata',
+          path: 'docs/response-formatting/metadata',
+        },
+        {
+          title: 'Examples',
+          path: 'docs/response-formatting/examples',
+        },
+        {
+          title: 'Troubleshooting',
+          path: 'docs/response-formatting/troubleshooting',
+        },
       ],
     },
     {
@@ -133,14 +161,43 @@ module.exports = {
       icon: 'shield-alert',
       collapsible: true,
       children: [
+        {
+          title: 'Overview',
+          path: 'docs/exception-handling',
+        },
+        {
+          title: 'How It Works',
+          path: 'docs/exception-handling/how-it-works',
+        },
+        {
+          title: 'Configuration',
+          path: 'docs/exception-handling/configuration',
+        },
+        {
+          title: 'Exception Mappers',
+          path: 'docs/exception-handling/exception-mappers',
+        },
+        {
+          title: 'Examples',
+          path: 'docs/exception-handling/examples',
+        },
+        {
+          title: 'Troubleshooting',
+          path: 'docs/exception-handling/troubleshooting',
+        },
       ],
     },
     {
       title: 'JSON Serialization',
+      path: 'docs/json-serialization', 
       icon: 'braces',
-      collapsible: true,
-      children: [
-      ],
+      // collapsible: true,
+      // children: [
+      //   {
+      //     title: 'Overview',
+      //     path: 'docs/json-serialization',
+      //   },
+      // ],
     },
     { 
       title: 'NuGet', 

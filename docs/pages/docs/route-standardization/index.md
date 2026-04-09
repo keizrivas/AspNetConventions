@@ -1,159 +1,90 @@
 # Route Standardization
 
-AspNetConventions automatically transforms route paths and route parameters across your entire ASP.NET Core application at startup — with zero runtime overhead and no per-controller or per-endpoint attributes required.
+**AspNetConventions** automatically transforms and standardizes your ASP.NET Core routes across **MVC Controllers**, **Minimal APIs**, and **Razor Pages**. It eliminates the inconsistency of manually maintaining route naming conventions across your entire application.
 
 ---
 
-## Table of Contents
+## Why Route Standardization?
 
-- [How It Works](#how-it-works)
-- [Supported Endpoint Types](#supported-endpoint-types)
-- [Casing Styles](#casing-styles)
-- [Configuration](#configuration)
-- [Examples](#examples)
-  - [MVC Controllers](#mvc-controllers)
-  - [Minimal APIs](#minimal-apis)
-  - [Razor Pages](#razor-pages)
-- [Parameter Binding](#parameter-binding)
-- [Advanced Examples](#advanced-examples)
-- [API Reference](#api-reference)
-- [Architecture / How It Works Internally](#architecture--how-it-works-internally)
-- [FAQ & Troubleshooting](#faq--troubleshooting)
-
----
-
-## How It Works
-
-Route standardization is applied at application startup using ASP.NET Core's built-in convention system. No middleware intercepts requests at runtime — routes are rewritten once when the application starts, which means there is no performance cost per request.
-
-Both the **route path segments** and **route parameter names** (e.g. `{UserId}`) are transformed. The original parameter names are preserved internally so model binding continues to work without any changes to your action method signatures.
-
----
-
-## Supported Endpoint Types
-
-| Endpoint Type | Supported |
-|---|---|
-| MVC Controllers (`ControllerBase`) | ✅ |
-| Minimal APIs (`app.MapGet`, etc.) | ✅ |
-| Razor Pages | ✅ |
-
----
-
-## Casing Styles
-
-| Style | Example route | Example parameter |
-|---|---|---|
-| `KebabCase` *(default)* | `/get-user-by-id` | `{user-id}` |
-| `SnakeCase` | `/get_user_by_id` | `{user_id}` |
-| `CamelCase` | `/getUserById` | `{userId}` |
-| `PascalCase` | `/GetUserById` | `{UserId}` |
-
-> **Note:** `PascalCase` is effectively a no-op since ASP.NET Core routes are already PascalCase by convention. It is included for completeness when you need to be explicit about the convention.
-
----
-
-## Configuration
-
-### MVC Controllers & Razor Pages
-
-Call `.AddAspNetConventions()` on your `IMvcBuilder`:
+REST APIs follow conventions where URLs use lowercase words separated by hyphens (kebab-case), but C# uses PascalCase for class and method names. This creates a mismatch:
 
 ```csharp
-// Default (kebab-case)
-builder.Services
-    .AddControllers()
-    .AddAspNetConventions();
-
-// Custom casing style
-builder.Services
-    .AddControllersWithViews()
-    .AddAspNetConventions(options =>
-    {
-        options.Routes.CaseStyle = CasingStyle.SnakeCase;
-    });
+[ApiController]
+[Route("/api/[controller]")]
+public class UserProfileController : ControllerBase
+{
+    [HttpGet("[action]/{userId}")]
+    public ActionResult GetById(int userId) => Ok(userId);
+}
 ```
 
-### Minimal APIs
-
-Call `app.UseAspNetConventions()` after `app.Build()`:
-
-```csharp
-var app = builder.Build();
-
-app.UseAspNetConventions();
-
-app.MapGet("/WeatherForecast/{CityName}", (string CityName) =>
-    Results.Ok(new { city = CityName }));
-// ✅ Result: GET /weather-forecast/{city-name}
-
-app.Run();
+**Without AspNetConventions:**
+```
+GET /api/UserProfile/GetById/{userId}
 ```
 
-### Combining Both
-
-```csharp
-builder.Services
-    .AddControllers()
-    .AddAspNetConventions(options =>
-    {
-        options.Routes.CaseStyle = CasingStyle.SnakeCase;
-    });
-
-var app = builder.Build();
-
-app.UseAspNetConventions();  // applies the same casing to Minimal APIs
+**With AspNetConventions:**
+```
+GET /api/user-profile/get-by-id/{user-id}
 ```
 
 ---
 
-## Examples
+## Features
 
-### MVC Controllers
+- **Automatic route transformation** — Converts route segments to your preferred casing style
+- **Parameter name transformation** — Ensures route parameters follow consistent naming (`{UserId}` → `{user-id}`)
+- **Transparent model binding** — Parameters bind correctly without code changes
+- **Per-endpoint-type configuration** — Customize behavior for MVC Controllers, Minimal APIs, and Razor Pages separately
+- **Exclusion support** — Exclude specific routes, controllers, or pages from transformation
+- **Custom hooks** — Extend the transformation behavior with custom logic
 
-**Before:**
+---
+
+## Before & After
+
+::: tabs
+
+== tab "MVC Controllers"
+
 ```csharp
 [ApiController]
 [Route("api/[controller]")]
 public class UserProfileController : ControllerBase
 {
-    [HttpGet("GetById/{UserId}")]
-    public IActionResult GetById(int UserId) => Ok(UserId);
+    [HttpGet("GetById/{userId}")]
+    public ActionResult GetById(int userId) => Ok(userId);
 
-    [HttpPost("CreateUserAccount")]
-    public IActionResult CreateUserAccount([FromBody] CreateUserRequest request) => Ok();
+    [HttpPost("CreateAccount")]
+    public ActionResult CreateAccount([FromBody] CreateUserRequest request) => Ok();
 }
 ```
 
-**After (kebab-case):**
+**Routes generated:**
 ```
 GET  /api/user-profile/get-by-id/{user-id}
-POST /api/user-profile/create-user-account
+POST /api/user-profile/create-account
 ```
 
-The `UserId` parameter binding still works — you don't rename anything in your method signature.
-
----
-
-### Minimal APIs
+== tab "Minimal APIs"
 
 ```csharp
 app.UseAspNetConventions();
 
-app.MapGet("/WeatherForecast/{CityName}", (string CityName) =>
-    Results.Ok(new { city = CityName }));
-// ✅ GET /weather-forecast/{city-name}
+app.MapGet("Inventory/GetOrder/{orderId}", (int orderId) =>
+    Results.Ok(new { order = orderId }));
 
-app.MapPost("/CreateOrder/{StoreId}", (int StoreId, CreateOrderRequest body) =>
-    Results.Created($"/orders/{StoreId}", body));
-// ✅ POST /create-order/{store-id}
+app.MapPost("Inventory/CreateOrder/{storeId}", (int storeId) =>
+    Results.Created());
 ```
 
----
+**Routes generated:**
+```
+GET  /inventory/get-order/{orderId}
+POST /inventory/create-order/{storeId}
+```
 
-### Razor Pages
-
-Route transformation applies to page paths and any route parameters defined via `@page` directives or `OnGet` / `OnPost` parameters.
+== tab "Razor Pages"
 
 ```csharp
 // Pages/UserProfile/EditAddress.cshtml.cs
@@ -161,139 +92,198 @@ public class EditAddressModel : PageModel
 {
     public void OnGet(int UserId, int AddressId) { }
 }
-// ✅ Result: /user-profile/edit-address/{user-id}/{address-id}
+```
+```csharp
+// Pages/UserProfile/EditAddress.cshtml
+@page "{UserId:int}/{AddressId:int}"
+@model EditAddressModel
+
+<h2>Edit Address</h2>
+```
+
+**Route generated:**
+```
+GET /user-profile/edit-address/{user-id}/{address-id}
+```
+
+:::
+
+---
+
+## The Transformation Flow
+
+When your application starts, **AspNetConventions** processes all registered endpoints and applies transformations in this order:
+
+```
+1. Discover endpoints (Controllers, Minimal APIs, Razor Pages)
+        ↓
+2. Transform route templates (segments and tokens)
+        ↓
+3. Transform parameter names in route templates
+        ↓
+4. Register binding aliases for model binding
+        ↓
+5. Application starts with transformed routes
+```
+
+All transformations happen **once at startup** — there's no runtime overhead during request processing.
+
+---
+
+## Route Template Transformation
+
+Route templates are broken into segments, and each segment is transformed according to your configured casing style.
+
+**Original route template:**
+```
+api/[controller]/GetUserById/{UserId}
+```
+
+**Transformation steps:**
+1. Split into segments: `api`, `[controller]`, `GetUserById`, `{UserId}`
+2. Transform each segment:
+   - `api` → `api` (already lowercase)
+   - `[controller]` → resolves to `UserProfile` → `user-profile`
+   - `GetUserById` → `get-user-by-id`
+   - `{UserId}` → `{user-id}`
+
+**Result:**
+```
+api/user-profile/get-user-by-id/{user-id}
 ```
 
 ---
 
 ## Parameter Binding
 
-Route parameter names are transformed in the URL, but **model binding is not broken**. AspNetConventions registers a binding alias under the hood so ASP.NET Core maps the incoming `{user-id}` parameter back to the `UserId` argument on your action method without any extra work on your part.
+When a parameter name is transformed in the URL, you might wonder: how does ASP.NET Core still bind the value to your C# parameter?
+
+**AspNetConventions** registers **binding aliases** that map the transformed name back to your original parameter name.
 
 ```csharp
-// Route exposed as: GET /api/orders/get-by-user/{user-id}
-[HttpGet("GetByUser/{UserId}")]
-public IActionResult GetByUser(int UserId)  // ← still binds correctly
+[HttpGet("GetOrder/{OrderId}")]
+public ActionResult GetOrder(int OrderId)
 {
-    return Ok(UserId);
+    return Ok(OrderId);
 }
+```
+
+**What happens:**
+1. Route becomes `/get-order/{order-id}`
+2. A binding alias is registered: `order-id` → `OrderId`
+3. When a request arrives at `/get-order/123`:
+   - ASP.NET Core extracts `123` from `{order-id}`
+   - The alias maps it to the `OrderId` parameter
+   - Your method receives `OrderId = 123`
+
+This works seamlessly for all binding sources, see [Supported Binding Sources](/docs/route-standardization/parameter-binding/#supported-binding-sources) for more information. 
+
+---
+
+## URL Generation
+
+AspNetConventions also handles **outbound URL generation**. When you generate URLs using ASP.NET Core's built-in helpers, the transformed routes are used automatically.
+
+```csharp
+// In a controller
+var url = Url.Action("GetOrder", "Orders", new { OrderId = 123 });
+// Result: /api/orders/get-order/123
+
+// In Razor
+<a asp-page="/Orders/GetOrder" asp-route-order-id="123">View Order</a>
+// Result: /orders/get-order/123
+
+```
+
+The route values you pass (`OrderId`) are automatically matched to the transformed parameter names (`order-id`) in the generated URL.
+
+---
+
+## Transformation Hooks
+
+Hooks provide fine-grained control over the transformation pipeline. They allow you to conditionally skip transformation for specific routes, parameters, or tokens based on custom logic.
+
+### When to Use Hooks
+
+- **Versioned routes** — Preserve `/v1/`, `/v2/` segments as-is
+- **Internal endpoints** — Skip transformation for admin or debug routes
+- **Specific parameters** — Keep `{id}` unchanged while transforming others
+- **Logging/Debugging** — Track all transformations at startup
+
+### Quick Example
+
+```csharp
+// Skip transformation for routes containing "/internal"
+options.Route.Hooks.ShouldTransformRoute = (template, model) =>
+    !template.Contains("/internal");
+
+// Preserve version tokens (v1, v2, v3...)
+options.Route.Hooks.ShouldTransformToken = token =>
+    !Regex.IsMatch(token, @"^v\d+$");
+
+// Log all transformations
+options.Route.Hooks.AfterRouteTransform = (newRoute, originalRoute, model) =>
+    Console.WriteLine($"Transformed: {originalRoute} → {newRoute}");
+```
+
+For the complete list of available hooks and their signatures, see [`RouteConventionHooks`](/docs/route-standardization/configuration/#routeconventionhooks).
+
+### Debugging Transformations
+
+Use the `AfterRouteTransform` hook to log all transformations at startup:
+
+```csharp
+options.Route.Hooks.AfterRouteTransform = (newRoute, originalRoute, model) =>
+{
+    var type = model.Identity.Kind;
+    
+    _logger.LogDebug(
+        "Route Transform: [{type}] {originalRoute} → {newRoute}",
+        model.Identity.Kind,
+        originalRoute,
+        newRoute);
+};
+```
+
+**Output:**
+```
+[MvcAction] api/UserProfile/GetById/{UserId} → api/user-profile/get-by-id/{user-id}
+[MvcAction] api/UserProfile/CreateAccount → api/user-profile/create-account
+[MinimalApi] /WeatherForecast/{CityName} → /weather-forecast/{city-name}
+[RazorPage] UserProfile/EditAddress/{UserId} → user-profile/edit-address/{user-id}
 ```
 
 ---
 
-## Advanced Examples
+## Custom Case Converter
 
-### Snake case across the board
+If the built-in case styles don't fit your needs, implement `ICaseConverter`:
 
 ```csharp
-builder.Services
-    .AddControllersWithViews()
-    .AddAspNetConventions(options =>
+using AspNetConventions.Core.Abstractions.Contracts;
+
+public class UpperSnakeCaseConverter : ICaseConverter
+{
+    public string Convert(string value)
     {
-        options.Routes.CaseStyle = CasingStyle.SnakeCase;
-    });
-```
-
-```
-GET  /api/user_profile/get_by_id/{user_id}
-POST /api/user_profile/create_user_account
-```
-
-### Multiple controllers with mixed depth
-
-```csharp
-[ApiController]
-[Route("api/v1/[controller]")]
-public class OrderManagementController : ControllerBase
-{
-    [HttpGet("GetPendingOrders/{CustomerId}/{StoreId}")]
-    public IActionResult GetPendingOrders(int CustomerId, int StoreId) => Ok();
-}
-// ✅ GET /api/v1/order-management/get-pending-orders/{customer-id}/{store-id}
-```
-
-Segments that are already lowercase (like `api`, `v1`) are left unchanged.
-
----
-
-## API Reference
-
-### `CasingStyle` enum
-
-```csharp
-namespace AspNetConventions.Core.Enums;
-
-public enum CasingStyle
-{
-    KebabCase,   // default
-    SnakeCase,
-    CamelCase,
-    PascalCase,
+        // GetUserById → GET_USER_BY_ID
+        return string.Concat(
+            value.Select((c, i) =>
+                i > 0 && char.IsUpper(c) ? "_" + c : c.ToString())
+        ).ToUpperInvariant();
+    }
 }
 ```
 
-### `RouteConventionOptions`
-
-| Property | Type | Default | Description |
-|---|---|---|---|
-| `CaseStyle` | `CasingStyle` | `KebabCase` | The casing style applied to all route segments and parameters |
-
-### Extension methods
-
-| Method | Description |
-|---|---|
-| `IMvcBuilder.AddAspNetConventions()` | Enables conventions for MVC Controllers and Razor Pages |
-| `IMvcBuilder.AddAspNetConventions(Action<AspNetConventionsOptions>)` | Same, with configuration callback |
-| `WebApplication.UseAspNetConventions()` | Enables conventions for Minimal APIs |
-
----
-
-## Architecture / How It Works Internally
-
-Route standardization hooks into ASP.NET Core's **application model** for MVC/Razor Pages and the **endpoint data source** for Minimal APIs.
-
-For MVC Controllers, AspNetConventions registers an `IApplicationModelConvention` that iterates over all `ControllerModel`, `ActionModel`, and `ParameterModel` objects at startup and rewrites their route templates. For Minimal APIs, it wraps the endpoint data source and rewrites the route patterns before the routing middleware processes them.
-
-Because all transformation happens before the first request is served, there is **no per-request overhead**.
-
-```
-Startup
-  │
-  ├─ MVC: IApplicationModelConvention
-  │     └─ Rewrites ControllerModel / ActionModel / ParameterModel routes
-  │
-  └─ Minimal APIs: Endpoint data source wrapper
-        └─ Rewrites RoutePattern segments and parameter names
+**Usage:**
+```csharp
+options.Route.CaseConverter = new UpperSnakeCaseConverter();
+// Note: CaseStyle is ignored when CaseConverter is set
 ```
 
----
-
-## FAQ & Troubleshooting
-
-**Q: My custom route attribute (`[Route("my-custom/path")]`) is being transformed — I don't want that.**
-
-Route transformation applies to all route templates by default. If you have a segment that should remain unchanged, use all-lowercase for that segment already — the transformer does not touch segments that are already in the target casing.
-
----
-
-**Q: Does this work with versioned APIs (e.g. `Asp.Versioning`)?**
-
-Yes. Version segments like `v1`, `v2` are already lowercase and are left untouched by the transformer.
-
----
-
-**Q: Route parameters with numbers (e.g. `{Address1}`) — what happens?**
-
-Alphanumeric segments are handled correctly: `{Address1}` → `{address-1}` in kebab-case, `{address_1}` in snake_case.
-
----
-
-**Q: I'm using Razor Pages with area routing. Does it work?**
-
-Yes. Area prefixes are transformed the same way as page path segments.
-
----
-
-**Q: Does transformation apply to `[HttpGet]` constraint strings like `{id:int}`?**
-
-Yes. Parameter name constraints (e.g. `{UserId:int}`) are preserved — only the parameter name portion is transformed: `{UserId:int}` → `{user-id:int}`.
+**Result:**
+```
+GetUserById     → GET_USER_BY_ID
+CreateOrder     → CREATE_ORDER
+UserProfile     → USER_PROFILE
+```
