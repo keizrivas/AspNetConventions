@@ -166,10 +166,6 @@ module.exports = {
           path: 'docs/exception-handling',
         },
         {
-          title: 'How It Works',
-          path: 'docs/exception-handling/how-it-works',
-        },
-        {
           title: 'Configuration',
           path: 'docs/exception-handling/configuration',
         },

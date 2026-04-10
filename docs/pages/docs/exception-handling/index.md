@@ -55,7 +55,68 @@ public ActionResult GetUser(int id)
 
 ---
 
-## Default Behavior
+## How It Works
+
+AspNetConventions hooks into ASP.NET Core at the framework level so every unhandled exception — regardless of where it originates — flows through the same pipeline. You get a single place to define mappers, configure logging, and attach hooks, without wiring anything per-controller or per-endpoint.
+
+The integration point differs slightly by hosting model, but the pipeline that runs after interception is identical in all cases:
+
+```text
+Exception thrown (Controller / Minimal API / Razor Page)
+      ↓
+Intercepted by AspNetConventions
+  • MVC Controllers  → global IExceptionFilter (runs before the default error handler)
+  • Minimal APIs     → IExceptionHandler middleware (wraps the full request pipeline)
+  • Razor Pages      → same IExceptionFilter as MVC (Razor Pages share the MVC filter pipeline)
+      ↓
+ShouldHandleAsync hook — optionally skip handling for this exception
+      ↓
+Mapper resolution (first match wins)
+  1. Custom mappers registered in options.Exceptions.Mappers, in insertion order
+  2. Built-in DefaultExceptionMapper (covers common .NET exceptions)
+  3. Fallback — 500 Internal Server Error
+      ↓
+TryHandleAsync hook — global observer for logging, telemetry, alerting
+      ↓
+BeforeMappingAsync hook — optionally swap the resolved mapper
+      ↓
+Mapper.MapException() → produces an ExceptionDescriptor
+      ↓
+AfterMappingAsync hook — optionally modify the descriptor
+      ↓
+IErrorResponseBuilder formats the descriptor into a JSON response
+      ↓
+Response written to the client
+```
+
+Because the pipeline is shared, a mapper or hook registered once covers all three hosting models transparently.
+
+---
+
+## Built-in Exception Mappers
+
+The following exceptions are handled automatically:
+
+| Exception Type | Status Code | Error Type |
+|----------------|-------------|------------|
+| `ArgumentNullException` | **400** Bad Request | `ARGUMENT_NULL` |
+| `ArgumentOutOfRangeException` | **400** Bad Request | `ARGUMENT_OUT_OF_RANGE` |
+| `ArgumentException` | **400** Bad Request | `INVALID_ARGUMENT` |
+| `ValidationException` | **400** Bad Request | `VALIDATION_ERROR` |
+| `UnauthorizedAccessException` | **401** Unauthorized | `UNAUTHORIZED` |
+| `SecurityException` | **403** Forbidden | `FORBIDDEN` |
+| `KeyNotFoundException` | **404** Not Found | `NOT_FOUND` |
+| `FileNotFoundException` | **404** Not Found | `FILE_NOT_FOUND` |
+| `DirectoryNotFoundException` | **404** Not Found | `DIRECTORY_NOT_FOUND` |
+| `InvalidOperationException` | **409** Conflict | `INVALID_OPERATION` |
+| `ObjectDisposedException` | **410** Gone | `OBJECT_DISPOSED` |
+| `NotImplementedException` | **501** Not Implemented | `NOT_IMPLEMENTED` |
+| `TimeoutException` | **408** Request Timeout | `TIMEOUT` |
+| `TaskCanceledException` | **408** Request Timeout | `REQUEST_CANCELLED` |
+| `OperationCanceledException` | **408** Request Timeout | `OPERATION_CANCELLED` |
+| Any other exception | **500** Internal Server Error | `UNEXPECTED_ERROR` |
+
+### Default Behavior
 
 Without any configuration, all unhandled exceptions return a `500 Internal Server Error`:
 
@@ -63,7 +124,7 @@ Without any configuration, all unhandled exceptions return a `500 Internal Serve
 {
   "status": "failure",
   "statusCode": 500,
-  "type": "INTERNAL_SERVER_ERROR",
+  "type": "UNEXPECTED_ERROR",
   "message": "An unexpected error occurred.",
   "errors": null,
   "metadata": {
@@ -75,19 +136,13 @@ Without any configuration, all unhandled exceptions return a `500 Internal Serve
 }
 ```
 
----
+Customize default error fallbacks with [`ErrorResponseOptions`](/docs/response-formatting/configuration/#errorresponseoptions):
 
-## Built-in Exception Mappers
-
-The following exceptions are handled automatically:
-
-| Exception Type | Status Code | Response Type | Logged |
-|----------------|-------------|---------------|--------|
-| `ArgumentNullException` | 400 Bad Request | `ARGUMENT_NULL` | Warning |
-| `ArgumentException` | 400 Bad Request | `ARGUMENT_INVALID` | Warning |
-| `ValidationException` | 400 Bad Request | `VALIDATION_ERROR` | No |
-| Any other exception | 500 Internal Server Error | `INTERNAL_SERVER_ERROR` | Error |
-
+```csharp
+options.Response.ErrorResponse.DefaultStatusCode = HttpStatusCode.BadRequest;
+options.Response.ErrorResponse.DefaultErrorType = "INTERNAL_ERROR";
+options.Response.ErrorResponse.DefaultErrorMessage = "An error occurred. If this issue persists please contact us through our help center at help.";
+```
 ---
 
 ## Custom Exception Mappers
@@ -143,6 +198,30 @@ builder.Services.AddControllers()
 }
 ```
 
+
+### Mapper Resolution
+
+When an exception is thrown, **AspNetConventions** resolves the mapper in this order:
+
+1. **Custom mappers** — Checked in registration order, first match wins
+2. **Built-in mappers** — `ArgumentNullException`, `ArgumentException`, `ValidationException`, etc.
+3. **Default fallback** — Returns **500** Internal Server Error
+
+### Type Matching
+
+Mappers use the `CanMapException` method to determine if they can handle an exception:
+
+```csharp
+public class HttpExceptionMapper : ExceptionMapper<HttpRequestException>
+{
+    public override bool CanMapException(Exception exception, RequestDescriptor request)
+    {
+        // Also handle derived types
+        return exception is HttpRequestException;
+    }
+}
+```
+
 See [Exception Mappers](/docs/exception-handling/exception-mappers) for complete documentation.
 
 ---
@@ -171,18 +250,4 @@ options.Exceptions.Hooks.AfterMappingAsync = async (descriptor, mapper, request)
 };
 ```
 
----
-
-## ExceptionDescriptor Reference
-
-The `ExceptionDescriptor` controls how an exception is transformed into a response:
-
-| Property | Type | Default | Description |
-|----------|------|---------|-------------|
-| `Type` | `string` | — | Machine-readable error code (e.g., `"ORDER_NOT_FOUND"`) |
-| `StatusCode` | `HttpStatusCode` | — | HTTP status code for the response |
-| `Message` | `string` | — | Human-readable error message |
-| `Value` | `object?` | `null` | Structured error data (appears in `errors` field) |
-| `ShouldLog` | `bool` | `true` | Whether to log this exception |
-| `LogLevel` | `LogLevel` | `Error` | Log level when logging is enabled |
-| `Exception` | `Exception?` | — | Original exception (set automatically) |
+See [`ExceptionHandlingHooks`](/docs/exception-handling/configuration/#exceptionhandlinghooks) for more information.

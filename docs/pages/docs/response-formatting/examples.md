@@ -1,6 +1,6 @@
 # Examples
 
-Complete working examples demonstrating Response Formatting across MVC Controllers and Minimal APIs.
+Complete working examples demonstrating Response Formatting across **MVC Controllers** and **Minimal APIs**.
 
 ---
 
@@ -84,7 +84,10 @@ public class ProductsController : ControllerBase
 
 ### Response Examples
 
-**GET /api/products (paginated):**
+::: tabs
+
+== tab "GET /api/products (paginated):"
+
 ```json
 {
   "status": "success",
@@ -94,29 +97,28 @@ public class ProductsController : ControllerBase
     { "id": 2, "name": "Widget B", "price": 39.99 }
   ],
   "pagination": {
-    "currentPage": 1,
-    "pageSize": 10,
-    "totalPages": 5,
-    "totalRecords": 42,
-    "hasNextPage": true,
-    "hasPreviousPage": false
-  },
-  "links": {
-    "first": "/api/products?page=1&pageSize=10",
-    "last": "/api/products?page=5&pageSize=10",
-    "next": "/api/products?page=2&pageSize=10",
-    "prev": null
+    "pageNumber": 1,
+    "pageSize": 25,
+    "totalPages": 4,
+    "totalRecords": 100,
+    "links": {
+      "firstPageUrl": "/api/products?page-number=1&page-size=25",
+      "lastPageUrl": "/api/products?page-number=3&page-size=25",
+      "nextPageUrl": "/api/products?page-number=2&page-size=25",
+      "previousPageUrl": null
+    }
   },
   "metadata": {
     "requestType": "GET",
-    "timestamp": "2024-01-15T10:30:00.000000Z",
+    "timestamp": "0000-00-00T00:00:00.000Z",
     "traceId": "00-abc123...",
     "path": "/api/products"
   }
 }
 ```
 
-**POST /api/products (created):**
+== tab "POST /api/products (created):"
+
 ```json
 {
   "status": "success",
@@ -131,7 +133,8 @@ public class ProductsController : ControllerBase
 }
 ```
 
-**POST /api/products (validation error):**
+== tab "POST /api/products (validation error):"
+
 ```json
 {
   "status": "failure",
@@ -145,6 +148,8 @@ public class ProductsController : ControllerBase
   "metadata": { ... }
 }
 ```
+
+:::
 
 ---
 
@@ -363,58 +368,9 @@ public ActionResult GetProducts([FromQuery] string? cursor, [FromQuery] int limi
 
 ---
 
-## Custom Response Shapes
-
-### Disabling Metadata
-
-```csharp
-builder.Services.AddControllers()
-    .AddAspNetConventions(options =>
-    {
-        options.Response.IncludeMetadata = false;
-    });
-```
-
-**Response without metadata:**
-```json
-{
-  "status": "success",
-  "statusCode": 200,
-  "data": { "id": 1, "name": "Product" }
-}
-```
-
-### Custom Pagination Parameters
-
-```csharp
-builder.Services.AddControllers()
-    .AddAspNetConventions(options =>
-    {
-        options.Response.Pagination.PageNumberParameterName = "p";
-        options.Response.Pagination.PageSizeParameterName = "limit";
-        options.Response.Pagination.DefaultPageSize = 25;
-    });
-```
-
-**Response with custom parameters:**
-```json
-{
-  "status": "success",
-  "statusCode": 200,
-  "data": [...],
-  "pagination": { ... },
-  "links": {
-    "first": "/api/products?p=1&limit=25",
-    "next": "/api/products?p=2&limit=25"
-  }
-}
-```
-
----
-
 ## Integration with Exception Handling
 
-Combine with exception mappers for consistent error responses:
+Combine with [exception mappers](/docs/exception-handling/exception-mappers/#creating-a-custom-mapper) for consistent error responses:
 
 ```csharp
 // Custom exception

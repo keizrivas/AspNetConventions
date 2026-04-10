@@ -238,7 +238,7 @@ The `type` field in your error responses can be customized to reflect your busin
 The `type` field is only visible in **validation failure** and **exception** responses. See [`DefaultApiResponseBuilder`](/docs/response-formatting/custom-response-builders/#iresponsebuilder) and [`DefaultApiErrorResponseBuilder`](/docs/response-formatting/custom-response-builders/#ierrorresponsebuilder) for more information about response formats.
 :::
 
-See [Custom Exception Mapping](/docs/exception-handling/exception-mappers/#creating-a-custom-mapper) to learn how to implement custom exception types and business-specific error codes.
+To return custom `type` codes directly from your endpoints, use [`ApiResults.Custom()`](/docs/response-formatting/api-results/#custom)—it works for both **success** and **error** responses. For automatic exception handling with custom `type` codes, see [Custom Exception Mapping](/docs/exception-handling/exception-mappers/#creating-a-custom-mapper).
 
 ---
 

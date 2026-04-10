@@ -359,7 +359,7 @@ public class ConditionalResponseBuilder : IResponseBuilder
 
 ---
 
-## Using Dependency Injection
+### Using Dependency Injection
 
 For builders that need dependencies, register them with DI:
 

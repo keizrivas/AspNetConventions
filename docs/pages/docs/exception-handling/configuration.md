@@ -114,7 +114,7 @@ Hooks provide fine-grained control over the exception handling pipeline. All hoo
 
 | Property | Delegate Signature | Description |
 |---|---|---|
-| `TryHandleAsync` | `(Exception) → Task` | Completely override exception handling. When set, bypasses normal pipeline |
+| `TryHandleAsync` | `(Exception) → Task` | Global exception observer. Runs for every exception across Minimal APIs, MVC Controllers, and Razor Pages — without affecting the normal handling pipeline |
 | `ShouldHandleAsync` | `(Exception, RequestDescriptor) → Task<bool>` | Return `false` to skip handling for a specific exception |
 | `BeforeMappingAsync` | `(IExceptionMapper, RequestDescriptor) → Task<IExceptionMapper>` | Called before mapping. Can replace the mapper |
 | `AfterMappingAsync` | `(ExceptionDescriptor, IExceptionMapper, RequestDescriptor) → Task<ExceptionDescriptor>` | Called after mapping. Can modify the descriptor |
@@ -186,23 +186,28 @@ options.Exceptions.Hooks.AfterMappingAsync = async (descriptor, mapper, request)
 
 ### TryHandleAsync
 
-Completely override the exception handling pipeline:
+A global exception observer that runs for every unhandled exception across Minimal APIs, MVC Controllers, and Razor Pages. It does **not** override the pipeline — mapper resolution, logging, and response building all continue normally.
+
+Use it as a central place for cross-cutting concerns like structured logging, alerting, or telemetry:
 
 ```csharp
 options.Exceptions.Hooks.TryHandleAsync = async (exception) =>
 {
-    // Custom handling — bypasses normal mapper resolution
-    await _customErrorHandler.HandleAsync(exception);
+    // Centralized logging for all unhandled exceptions
+    _logger.LogError(exception, "Unhandled exception: {Message}", exception.Message);
+
+    // Send to external observability platform
+    await _telemetry.TrackExceptionAsync(exception);
 };
 ```
 
-::: callout warning Override Behavior
-When `TryHandleAsync` is set, it bypasses the entire normal pipeline including mapper resolution, logging, and response building. You are responsible for writing the response.
+::: callout info Observer Only
+`TryHandleAsync` is a side-effect hook. It does not replace the mapper, modify the response, or short-circuit the pipeline. The normal exception handling flow always continues after it runs.
 :::
 
 ---
 
-## ExceptionDescriptor Reference
+## ExceptionDescriptor
 
 The `ExceptionDescriptor` is produced by mappers and controls the error response:
 
@@ -234,41 +239,6 @@ public override ExceptionDescriptor MapException(
         {
             OrderId = exception.OrderId,
             Reason = "Order does not exist"
-        }
-    };
-}
-```
-
----
-
-## RequestDescriptor Reference
-
-Passed to mappers and hooks, provides request context:
-
-| Property | Type | Description |
-|----------|------|-------------|
-| `HttpContext` | `HttpContext` | The current ASP.NET Core HttpContext |
-| `Path` | `string` | Request URL path |
-| `Method` | `string` | HTTP method (GET, POST, etc.) |
-| `QueryString` | `string` | Query string portion of URL |
-| `TraceId` | `string?` | Distributed tracing ID |
-
-**Example usage in a mapper:**
-```csharp
-public override ExceptionDescriptor MapException(
-    MyException exception,
-    RequestDescriptor request)
-{
-    return new ExceptionDescriptor
-    {
-        StatusCode = HttpStatusCode.BadRequest,
-        Type = "BAD_REQUEST",
-        Message = $"Error processing {request.Method} {request.Path}",
-        Value = new
-        {
-            Path = request.Path,
-            Method = request.Method,
-            TraceId = request.TraceId
         }
     };
 }

@@ -124,6 +124,14 @@ public class EditModel : PageModel
 }
 ```
 
+```razor
+// Pages/UserProfile/Edit.cshtml
+@page "{UserId:int}"
+@model EditModel
+
+<h2>Edit User</h2>
+```
+
 **Standardized Route:**
 ```
 GET /user-profile/edit/{user-id}

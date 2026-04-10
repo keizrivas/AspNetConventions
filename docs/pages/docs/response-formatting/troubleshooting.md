@@ -20,10 +20,12 @@ options.Response.IsEnabled = true;  // default
 ```csharp
 var app = builder.Build();
 
-// Make sure this is called
-app.UseAspNetConventions();
 
 app.MapGet("/api/test", () => Results.Ok("test"));
+
+// Make sure this is called after endpoints declaration
+app.UseAspNetConventions();
+
 app.Run();
 ```
 
@@ -89,10 +91,12 @@ return ApiResults.Ok(user);
 ```csharp
 var app = builder.Build();
 
-// Must be called before MapGet, MapPost, etc.
-app.UseAspNetConventions();
 
 app.MapGet("/api/test", () => Results.Ok("test"));
+
+// Must be called after MapGet, MapPost, etc.
+app.UseAspNetConventions();
+
 app.Run();
 ```
 
@@ -166,18 +170,10 @@ public ActionResult Create([FromBody] CreateRequest request)
     if (!ModelState.IsValid)
         return ApiResults.BadRequest(ModelState);  // Use this
 
-    // Don't use: return BadRequest(ModelState);
+    // Don't use: return ApiResults.Ok(ModelState); / Ok(ModelState);
 
     return ApiResults.Created(result);
 }
-```
-
-Or disable the automatic validation filter:
-```csharp
-builder.Services.Configure<ApiBehaviorOptions>(options =>
-{
-    options.SuppressModelStateInvalidFilter = true;
-});
 ```
 
 ---
