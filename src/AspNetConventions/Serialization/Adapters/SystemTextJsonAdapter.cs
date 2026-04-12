@@ -12,6 +12,7 @@ using AspNetConventions.Core.Enums;
 using AspNetConventions.Core.Enums.Json;
 using AspNetConventions.Http.Models;
 using AspNetConventions.Responses.Models;
+using AspNetConventions.Serialization.Converters;
 using AspNetConventions.Serialization.Policies;
 using AspNetConventions.Serialization.Resolvers;
 
@@ -68,8 +69,10 @@ namespace AspNetConventions.Serialization.Adapters
 
             // Default ignore rules
             ignoreRules.IgnoreProperty<ApiResponse>(e => e.Metadata, JsonIgnoreCondition.WhenWritingNull);
-            ignoreRules.IgnoreProperty<Metadata>(e => e.Exception, JsonIgnoreCondition.WhenWritingNull);
             ignoreRules.IgnoreProperty<DefaultApiResponse>(e => e.Pagination, JsonIgnoreCondition.WhenWritingNull);
+            ignoreRules.IgnoreProperty<PaginationMetadata>(e => e.Links, JsonIgnoreCondition.WhenWritingNull);
+            ignoreRules.IgnoreProperty<PaginationMetadata>(e => e.HasNextPage, JsonIgnoreCondition.WhenWritingNull);
+            ignoreRules.IgnoreProperty<PaginationMetadata>(e => e.HasPreviousPage, JsonIgnoreCondition.WhenWritingNull);
 
             // Allow user to configure additional ignore rules
             _options.ConfigureIgnoreRules?.Invoke(ignoreRules);
@@ -78,7 +81,7 @@ namespace AspNetConventions.Serialization.Adapters
             var options = new JsonSerializerOptions
             {
                 PropertyNamingPolicy = namingPolicy,
-                //DictionaryKeyPolicy = namingPolicy,
+                DictionaryKeyPolicy  = namingPolicy,
                 PropertyNameCaseInsensitive = _options.CaseInsensitive,
                 AllowTrailingCommas = _options.AllowTrailingCommas,
                 DefaultIgnoreCondition = MapIgnoreCondition(),
@@ -87,6 +90,10 @@ namespace AspNetConventions.Serialization.Adapters
                 MaxDepth = Math.Max(_options.MaxDepth, 0),
                 TypeInfoResolver = new JsonTypeInfoResolver(ignoreRules.CreateSnapshot())
             };
+
+            // Add metadata converter to ensure Metadata keys always follow PropertyNamingPolicy,
+            // regardless of how DictionaryKeyPolicy is configured for other types.
+            options.Converters.Add(new MetadataJsonConverter(options.PropertyNamingPolicy));
 
             // Add string enum converter with naming policy if enabled
             if (_options.UseStringEnumConverter)

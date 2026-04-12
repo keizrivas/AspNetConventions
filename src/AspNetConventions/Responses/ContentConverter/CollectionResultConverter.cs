@@ -105,6 +105,13 @@ namespace AspNetConventions.Responses.ContentConverter
                 );
             }
 
+            // Set navigation flags
+            if (_options.Response.Pagination.IncludeNavigationFlags)
+            {
+                paginationMetadata.HasNextPage     = paginationMetadata.PageNumber < paginationMetadata.TotalPages;
+                paginationMetadata.HasPreviousPage = paginationMetadata.PageNumber > 1;
+            }
+
             return paginationMetadata;
         }
     }

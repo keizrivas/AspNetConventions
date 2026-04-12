@@ -44,6 +44,18 @@ namespace AspNetConventions.Http.Models
         public int TotalRecords { get; set; } = totalRecords;
 
         /// <summary>
+        /// Gets or sets a value indicating whether there is a next page available.
+        /// </summary>
+        /// <value><see langword="null"/> when navigation flags are disabled; otherwise <see langword="true"/> if a next page exists.</value>
+        public bool? HasNextPage { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether there is a previous page available.
+        /// </summary>
+        /// <value><see langword="null"/> when navigation flags are disabled; otherwise <see langword="true"/> if a previous page exists.</value>
+        public bool? HasPreviousPage { get; set; }
+
+        /// <summary>
         /// Gets or sets pagination navigation links.
         /// </summary>
         /// <value>Contains links to first, last, next, and previous pages when link generation is enabled.</value>
