@@ -4,11 +4,11 @@
 
 ---
 
-## Response Metadata
+## Response Metadata {#response-metadata}
 
 Every response includes a `metadata` block that provides essential request context and observability information. This helps with debugging, logging, and correlating requests across distributed systems.
 
-### Metadata Fields
+### Metadata Fields {#metadata-fields}
 
 | Field | Source | Description |
 |-------|--------|-------------|
@@ -17,7 +17,7 @@ Every response includes a `metadata` block that provides essential request conte
 | `timestamp` | `DateTime.UtcNow` | **ISO 8601 UTC** timestamp of response generation |
 | `traceId` | `Activity.Current?.Id` or `HttpContext.TraceIdentifier` | Unique identifier for end-to-end request tracing across services |
 
-### Example Metadata Block
+### Example Metadata Block {#example-metadata-block}
 
 ```json
 {
@@ -28,16 +28,16 @@ Every response includes a `metadata` block that provides essential request conte
 }
 ```
 
-### Configuration
+### Configuration {#configuration}
 
 You can disable metadata entirely or customize specific fields:
 
 ```csharp
 options.Response.IncludeMetadata = false;
 ```
-See [`ResponseFormattingOptions`](/docs/response-formatting/configuration/#responseformattingoptions) for more configuration options.
+See [`ResponseFormattingOptions`](./configuration.md#responseformattingoptions) for more configuration options.
 
-#### When Metadata is Omitted
+#### When Metadata is Omitted {#when-metadata-is-omitted}
 
 When `IncludeMetadata = false`, the response will omit the entire `metadata` field:
 
@@ -50,9 +50,9 @@ When `IncludeMetadata = false`, the response will omit the entire `metadata` fie
 }
 ```
 
-See [`DefaultApiResponseBuilder`](/docs/response-formatting/custom-response-builders/#iresponsebuilder) and [`DefaultApiErrorResponseBuilder`](/docs/response-formatting/custom-response-builders/#ierrorresponsebuilder) for more information about response formats.
+See [`DefaultApiResponseBuilder`](./custom-response-builders.md#iresponsebuilder) and [`DefaultApiErrorResponseBuilder`](./custom-response-builders.md#ierrorresponsebuilder) for more information about response formats.
 
-### Observability Benefits
+### Observability Benefits {#observability-benefits}
 
 The `traceId` is particularly valuable for:
 
@@ -65,11 +65,11 @@ The `traceId` is particularly valuable for:
 
 ---
 
-## Pagination Metadata
+## Pagination Metadata {#pagination-metadata}
 
-When returning paginated results using [`ApiResults.Paginate()`](/docs/response-formatting/api-results/#pagination-methods) or [`CollectionResult<T>`](#collectionresult), the response includes a `pagination` block with navigation links and page information.
+When returning paginated results using [`ApiResults.Paginate()`](./api-results.md#pagination-methods) or [`CollectionResult<T>`](#collectionresult), the response includes a `pagination` block with navigation links and page information.
 
-### PaginationMetadata
+### PaginationMetadata {#paginationmetadata}
 
 | Field | Source | Description |
 | --- | --- | --- |
@@ -79,7 +79,7 @@ When returning paginated results using [`ApiResults.Paginate()`](/docs/response-
 | `totalRecords` | `totalRecords` parameter | Total count of items across all pages |
 | `links` | [`PaginationLinks`](#paginationlinks) object | Navigation URLs for pagination traversal |
 
-### PaginationLinks
+### PaginationLinks {#paginationlinks}
 
 The `links` object contains URIs for navigating between pages:
 
@@ -90,9 +90,9 @@ The `links` object contains URIs for navigating between pages:
 | `nextPageUrl` | URI to the next page, or null if current page is the last page |
 | `previousPageUrl` | URI to the previous page, or null if current page is the first page |
 
-### CollectionResult
+### CollectionResult {#collectionresult}
 
-The `CollectionResult<T>` is a wrapper class that combines a collection of items with pagination metadata. It's used internally by [`ApiResults.Paginate()`](/docs/response-formatting/api-results/#pagination-methods) to structure paginated responses.
+The `CollectionResult<T>` is a wrapper class that combines a collection of items with pagination metadata. It's used internally by [`ApiResults.Paginate()`](./api-results.md#pagination-methods) to structure paginated responses.
 
 | Property | Type | Description |
 | --- | --- | --- |
@@ -101,9 +101,9 @@ The `CollectionResult<T>` is a wrapper class that combines a collection of items
 | `PageNumber` | `int` | Current page number (1-indexed) |
 | `PageSize` | `int` | Number of items per page |
 
-**When to use:** Typically you won't need to create `CollectionResult<T>` manually—[`ApiResults.Paginate()`](/docs/response-formatting/api-results/#pagination-methods) handles this for you. Use it directly when you need more control over the pagination structure or when integrating with existing pagination logic. See [Using Pagination in Your Endpoints](#using-pagination-in-your-endpoints).
+**When to use:** Typically you won't need to create `CollectionResult<T>` manually—[`ApiResults.Paginate()`](./api-results.md#pagination-methods) handles this for you. Use it directly when you need more control over the pagination structure or when integrating with existing pagination logic. See [Using Pagination in Your Endpoints](#using-pagination-in-your-endpoints).
 
-### Example Pagination Block
+### Example Pagination Block {#example-pagination-block}
 
 ```json
 {
@@ -121,7 +121,7 @@ The `CollectionResult<T>` is a wrapper class that combines a collection of items
 
 ```
 
-### Configuration
+### Configuration {#configuration}
 
 Customize pagination behavior in your configuration:
 
@@ -132,9 +132,9 @@ options.Response.Pagination.PageNumberParameterName = "p";
 options.Response.Pagination.PageSizeParameterName = "limit";
 ```
 
-See [`PaginationOptions`](/docs/response-formatting/configuration/#paginationoptions) for more information.
+See [`PaginationOptions`](./configuration.md#paginationoptions) for more information.
 
-#### When Pagination Metadata is Omitted
+#### When Pagination Metadata is Omitted {#when-pagination-metadata-is-omitted}
 
 When `Pagination.IncludeMetadata = false`, the response will omit the entire `pagination` field:
 
@@ -147,7 +147,7 @@ When `Pagination.IncludeMetadata = false`, the response will omit the entire `pa
   // No "pagination" field
 }
 ```
-#### When Pagination Links are Omitted
+#### When Pagination Links are Omitted {#when-pagination-links-are-omitted}
 
 When `Pagination.IncludeLinks = false`, the response will omit the entire `pagination.links` fields:
 
@@ -168,10 +168,10 @@ When `Pagination.IncludeLinks = false`, the response will omit the entire `pagin
 ```
 
 
-### Using Pagination in Your Endpoints
+### Using Pagination in Your Endpoints {#using-pagination-in-your-endpoints}
 
 Return paginated results from your controllers or minimal APIs. 
-When your endpoint returns a [`ApiResults.Paginate()`](/docs/response-formatting/api-results/#pagination-methods) or [`CollectionResult<T>`](#collectionresult), **AspNetConventions** automatically adds pagination metadata:
+When your endpoint returns a [`ApiResults.Paginate()`](./api-results.md#pagination-methods) or [`CollectionResult<T>`](#collectionresult), **AspNetConventions** automatically adds pagination metadata:
 
 **Example:**
 
@@ -195,7 +195,7 @@ return ApiResults.Paginate(items, totalRecords, pageNumber, pageSize, HttpStatus
 return ApiResults.Paginate(items, totalRecords, pageNumber, pageSize, "Records retrieved successfully");
 ```
 
-### How Link Generation Works
+### How Link Generation Works {#how-link-generation-works}
 
 The library automatically builds navigation links by:
 
@@ -222,7 +222,7 @@ GET /api/transactions?category=electronics&sort=desc&page-number=3&page-size=20
 
 ---
 
-## Summary
+## Summary {#summary}
 
 | Feature | Purpose | Key Fields |
 | --- | --- | --- |

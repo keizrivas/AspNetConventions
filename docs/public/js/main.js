@@ -23,7 +23,8 @@ import {
     ShieldAlert,
     Bug,
     Info,
-    SquareArrowOutUpRight
+    SquareArrowOutUpRight,
+    Link
 } from 'lucide';
 
 (function() {
@@ -75,7 +76,8 @@ import {
             ShieldAlert,
             Bug,
             Info,
-            SquareArrowOutUpRight
+            SquareArrowOutUpRight,
+            Link
         }
     });
 

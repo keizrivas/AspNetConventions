@@ -125,6 +125,16 @@ namespace AspNetConventions.Http.Models
             _value = value;
         }
 
+
+        /// <summary>
+        /// Initializes a new instance of the ApiResult class with the specified HTTP status code.
+        /// </summary>
+        /// <param name="statusCode">The HTTP status code to associate with the result.</param>
+        public ApiResult(HttpStatusCode statusCode)
+            : this(null, statusCode)
+        {
+        }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="ApiResult{T}"/> class with value and message.
         /// </summary>
@@ -136,18 +146,7 @@ namespace AspNetConventions.Http.Models
             Message = message;
         }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ApiResult{T}"/> class with value, message, and status code.
-        /// </summary>
-        /// <param name="value">The value to include in the result.</param>
-        /// <param name="message">The message to include in the result.</param>
-        /// <param name="statusCode">The HTTP status code for the result.</param>
-        public ApiResult(TValue? value, string? message, HttpStatusCode statusCode)
-            : this(value, message)
-        {
-            StatusCode = statusCode;
-            Type = GetResponseType();
-        }
+
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ApiResult{T}"/> class with value and status code.
@@ -164,9 +163,22 @@ namespace AspNetConventions.Http.Models
         /// </summary>
         /// <param name="message">The message to include in the result.</param>
         /// <param name="statusCode">The HTTP status code for the result.</param>
-        public ApiResult(string message, HttpStatusCode statusCode)
+        public ApiResult(string? message, HttpStatusCode statusCode)
             : this(default, message, statusCode)
         {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ApiResult{T}"/> class with value, message, and status code.
+        /// </summary>
+        /// <param name="value">The value to include in the result.</param>
+        /// <param name="message">The message to include in the result.</param>
+        /// <param name="statusCode">The HTTP status code for the result.</param>
+        public ApiResult(TValue? value, string? message, HttpStatusCode statusCode)
+            : this(value, message)
+        {
+            StatusCode = statusCode;
+            Type = GetResponseType();
         }
 
         /// <summary>

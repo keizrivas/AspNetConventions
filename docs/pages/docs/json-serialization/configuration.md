@@ -1,12 +1,12 @@
 
-## JsonSerializationOptions
+## JsonSerializationOptions {#jsonserializationoptions}
 
 **Namespace:** `AspNetConventions.Configuration.Options`
 **Accessed via:** `options.Json`
 
 Controls JSON serialization behaviour application-wide, covering both API response output and model serialization. The default underlying serializer is `System.Text.Json`.
 
-### Core properties
+### Core properties {#core-properties}
 
 | Property | Type | Default | Description |
 |---|---|---|---|
@@ -14,7 +14,7 @@ Controls JSON serialization behaviour application-wide, covering both API respon
 | `CaseStyle` | `CasingStyle` | `CamelCase` | JSON property naming style applied globally |
 | `CaseConverter` | `ICaseConverter?` | `null` | Custom case converter for property names. Takes precedence over `CaseStyle` when set |
 
-### Serializer behaviour properties
+### Serializer behaviour properties {#serializer-behaviour-properties}
 
 | Property | Type | Default | Description |
 |---|---|---|---|
@@ -26,7 +26,7 @@ Controls JSON serialization behaviour application-wide, covering both API respon
 | `NumberHandling` | `NumberHandling` | `Strict` | Controls how numbers are read and written. See [NumberHandling values](#numberhandling-values) |
 | `IgnoreCondition` | `IgnoreCondition` | `Never` | Global default ignore condition applied to all properties. See [IgnoreCondition values](#ignorecondition-values) |
 
-### Advanced properties
+### Advanced properties {#advanced-properties}
 
 | Property | Type | Default | Description |
 |---|---|---|---|
@@ -34,7 +34,7 @@ Controls JSON serialization behaviour application-wide, covering both API respon
 | `Converters` | `IReadOnlyList<object>` | `[]` | Custom `JsonConverter` instances added to the serializer |
 | `Hooks` | `JsonSerializationHooks` | `new()` | Hooks for intercepting the serialization pipeline |
 
-### NumberHandling values
+### NumberHandling values {#numberhandling-values}
 
 | Value | Description |
 |---|---|
@@ -43,7 +43,7 @@ Controls JSON serialization behaviour application-wide, covering both API respon
 | `WriteAsString` | Numbers are written as quoted JSON strings |
 | `AllowNamedFloatingPointLiterals` | Allows `NaN`, `Infinity`, and `-Infinity` as named floating-point values |
 
-### IgnoreCondition values
+### IgnoreCondition values {#ignorecondition-values}
 
 | Value | Description |
 |---|---|
@@ -52,7 +52,7 @@ Controls JSON serialization behaviour application-wide, covering both API respon
 | `WhenWritingNull` | Properties with `null` values are omitted from output |
 | `WhenWritingDefault` | Properties with default values (`null`, `0`, `false`, etc.) are omitted |
 
-### ConfigureAdapter
+### ConfigureAdapter {#configureadapter}
 
 By default, AspNetConventions uses `SystemTextJsonAdapter` backed by `System.Text.Json`. Use `ConfigureAdapter<TAdapter, TOptions>()` to swap in a different serializer adapter:
 
@@ -79,7 +79,7 @@ options.Json.ConfigureAdapter<SystemTextJsonAdapter, JsonSerializerOptions>(seri
 
 > `ConfigureAdapter` is an escape hatch for serializer-specific settings that fall outside the AspNetConventions abstraction. Prefer the typed properties above for settings that are available through the standard API.
 
-### Examples
+### Examples {#examples}
 
 ```csharp
 // Snake case JSON, pretty-printed, enums as strings, nulls omitted

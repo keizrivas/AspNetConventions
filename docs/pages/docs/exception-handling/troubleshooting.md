@@ -4,7 +4,7 @@ Common issues and solutions when using Exception Handling.
 
 ---
 
-## Custom Mapper Not Being Used
+## Custom Mapper Not Being Used {#custom-mapper-not-being-used}
 
 **Problem:** You registered a custom mapper but the fallback 500 response is still returned.
 
@@ -49,7 +49,7 @@ public override bool CanMapException(Exception exception, RequestDescriptor requ
 
 ---
 
-## Exception Details Showing in Production
+## Exception Details Showing in Production {#exception-details-showing-in-production}
 
 **Problem:** Stack traces and exception details are visible in production responses.
 
@@ -73,7 +73,7 @@ if (builder.Environment.IsProduction())
 
 ---
 
-## Exceptions Not Being Caught
+## Exceptions Not Being Caught {#exceptions-not-being-caught}
 
 **Problem:** Exceptions propagate without being handled by **AspNetConventions**.
 
@@ -93,7 +93,7 @@ Exceptions in `ConfigureServices` or early middleware won't be caught.
 
 ---
 
-## Logging Not Working
+## Logging Not Working {#logging-not-working}
 
 **Problem:** Exceptions aren't being logged even though `ShouldLog = true`.
 
@@ -124,7 +124,7 @@ builder.Logging.SetMinimumLevel(LogLevel.Warning);
 
 ---
 
-## Multiple Mappers Matching
+## Multiple Mappers Matching {#multiple-mappers-matching}
 
 **Problem:** The wrong mapper is handling your exception.
 
@@ -140,7 +140,7 @@ options.ExceptionHandling.Mappers.Add(new DomainExceptionMapper());          // 
 
 ---
 
-## Value Not Appearing in Response
+## Value Not Appearing in Response {#value-not-appearing-in-response}
 
 **Problem:** The `Value` property from your mapper isn't showing up in the error response.
 
@@ -180,7 +180,7 @@ return new ExceptionDescriptor
 
 ---
 
-## Minimal API Exceptions Not Handled
+## Minimal API Exceptions Not Handled {#minimal-api-exceptions-not-handled}
 
 **Problem:** MVC Controller exceptions are handled, but Minimal API exceptions aren't.
 
@@ -200,7 +200,7 @@ app.Run();
 
 ---
 
-## Hooks Not Being Called
+## Hooks Not Being Called {#hooks-not-being-called}
 
 **Problem:** Your exception hooks aren't executing.
 
@@ -229,7 +229,7 @@ options.ExceptionHandling.Hooks.ShouldHandleAsync = async (ex, req) => true;
 
 ---
 
-## HTTP Status Code Not Set Correctly
+## HTTP Status Code Not Set Correctly {#http-status-code-not-set-correctly}
 
 **Problem:** The response has the wrong HTTP status code.
 
@@ -248,7 +248,7 @@ If `StatusCode` is null, it defaults to 500 Internal Server Error.
 
 ---
 
-## Mapper Resolution Issues
+## Mapper Resolution Issues {#mapper-resolution-issues}
 
 **Problem:** You're not sure which mapper is being selected.
 
@@ -272,7 +272,7 @@ Or check the resolution order:
 
 ---
 
-## Debugging Exception Handling
+## Debugging Exception Handling {#debugging-exception-handling}
 
 Enable detailed logging to troubleshoot issues:
 
@@ -306,7 +306,7 @@ builder.Services.AddControllers()
 
 ---
 
-## Conflict with Other Exception Middleware
+## Conflict with Other Exception Middleware {#conflict-with-other-exception-middleware}
 
 **Problem:** AspNetConventions conflicts with another exception handling middleware.
 

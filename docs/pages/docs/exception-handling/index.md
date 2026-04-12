@@ -4,7 +4,7 @@
 
 ---
 
-## Why Centralized Exception Handling?
+## Why Centralized Exception Handling? {#why-centralized-exception-handling}
 
 Without centralized handling, exceptions lead to inconsistent error responses, duplicated error handling code, and missed logging opportunities.
 
@@ -43,7 +43,7 @@ public ActionResult GetUser(int id)
 
 ---
 
-## Features
+## Features {#features}
 
 - **Automatic exception catching** — Intercepts all unhandled exceptions from controllers and Minimal APIs
 - **Consistent error responses** — All errors follow the same JSON structure
@@ -55,7 +55,7 @@ public ActionResult GetUser(int id)
 
 ---
 
-## How It Works
+## How It Works {#how-it-works}
 
 **AspNetConventions** hooks into ASP.NET Core at the framework level so every unhandled exception — regardless of where it originates — flows through the same pipeline. You get a single place to define mappers, configure logging, and attach hooks, without wiring anything per-controller or per-endpoint.
 
@@ -87,7 +87,7 @@ Because the pipeline is shared, a mapper or hook registered once covers all thre
 
 ---
 
-## Built-in Exception Mappers
+## Built-in Exception Mappers {#built-in-exception-mappers}
 
 The following exceptions are handled automatically:
 
@@ -110,7 +110,7 @@ The following exceptions are handled automatically:
 | `OperationCanceledException` | **408** Request Timeout | `OPERATION_CANCELLED` |
 | Any other exception | **500** Internal Server Error | `UNEXPECTED_ERROR` |
 
-### Default Behavior
+### Default Behavior {#default-behavior}
 
 Without any configuration, all unhandled exceptions return a `500 Internal Server Error`:
 
@@ -130,7 +130,7 @@ Without any configuration, all unhandled exceptions return a `500 Internal Serve
 }
 ```
 
-Customize default error fallbacks with [`ErrorResponseOptions`](/docs/response-formatting/configuration/#errorresponseoptions):
+Customize default error fallbacks with [`ErrorResponseOptions`](../response-formatting/configuration.md#errorresponseoptions):
 
 ```csharp
 options.Response.ErrorResponse.DefaultStatusCode = HttpStatusCode.BadRequest;
@@ -139,7 +139,7 @@ options.Response.ErrorResponse.DefaultErrorMessage = "An error occurred. If this
 ```
 ---
 
-## Custom Exception Mappers
+## Custom Exception Mappers {#custom-exception-mappers}
 
 Create mappers for your domain exceptions to return meaningful error responses:
 
@@ -193,7 +193,7 @@ builder.Services.AddControllers()
 ```
 
 
-### Mapper Resolution
+### Mapper Resolution {#mapper-resolution}
 
 When an exception is thrown, **AspNetConventions** resolves the mapper in this order:
 
@@ -201,7 +201,7 @@ When an exception is thrown, **AspNetConventions** resolves the mapper in this o
 2. **Built-in mappers** — `ArgumentNullException`, `ArgumentException`, `ValidationException`, etc.
 3. **Default fallback** — Returns **500** Internal Server Error
 
-### Type Matching
+### Type Matching {#type-matching}
 
 Mappers use the `CanMapException` method to determine if they can handle an exception:
 
@@ -216,11 +216,11 @@ public class HttpExceptionMapper : ExceptionMapper<HttpRequestException>
 }
 ```
 
-See [Exception Mappers](/docs/exception-handling/exception-mappers) for complete documentation.
+See [Exception Mappers](./exception-mappers.md) for complete documentation.
 
 ---
 
-## Exception Hooks
+## Exception Hooks {#exception-hooks}
 
 Intercept exceptions globally for alerting, telemetry, or custom processing:
 
@@ -244,4 +244,4 @@ options.Exceptions.Hooks.AfterMappingAsync = async (descriptor, mapper, request)
 };
 ```
 
-See [`ExceptionHandlingHooks`](/docs/exception-handling/configuration/#exceptionhandlinghooks) for more information.
+See [`ExceptionHandlingHooks`](./configuration.md#exceptionhandlinghooks) for more information.

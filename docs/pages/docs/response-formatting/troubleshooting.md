@@ -4,7 +4,7 @@ Common issues and solutions when using Response Formatting.
 
 ---
 
-## Responses Not Being Wrapped
+## Responses Not Being Wrapped {#responses-not-being-wrapped}
 
 **Problem:** API responses are returned without the envelope wrapper.
 
@@ -44,7 +44,7 @@ Response formatting only wraps `ObjectResult` types. File downloads, redirects, 
 
 ---
 
-## Double-Wrapped Responses
+## Double-Wrapped Responses {#double-wrapped-responses}
 
 **Problem:** Responses appear wrapped twice with nested envelopes.
 
@@ -80,7 +80,7 @@ return ApiResults.Ok(user);
 
 ---
 
-## Minimal API Endpoints Not Wrapped
+## Minimal API Endpoints Not Wrapped {#minimal-api-endpoints-not-wrapped}
 
 **Problem:** MVC Controller responses are wrapped, but Minimal API responses are not.
 
@@ -102,7 +102,7 @@ app.Run();
 
 ---
 
-## Metadata TraceId Always Null
+## Metadata TraceId Always Null {#metadata-traceid-always-null}
 
 **Problem:** The `metadata.traceId` field is always `null` in responses.
 
@@ -132,7 +132,7 @@ options.Response.IncludeMetadata = false;
 
 ---
 
-## Pagination Links Incorrect
+## Pagination Links Incorrect {#pagination-links-incorrect}
 
 **Problem:** Pagination links have wrong parameter names or base URL.
 
@@ -155,7 +155,7 @@ return ApiResults.Paginate(items, totalCount);  // Won't generate links correctl
 
 ---
 
-## Validation Errors Not Formatted
+## Validation Errors Not Formatted {#validation-errors-not-formatted}
 
 **Problem:** Model validation errors return raw `ValidationProblemDetails` instead of the wrapped format.
 
@@ -178,7 +178,7 @@ public ActionResult Create([FromBody] CreateRequest request)
 
 ---
 
-## File/Redirect Results Being Wrapped
+## File/Redirect Results Being Wrapped {#fileredirect-results-being-wrapped}
 
 **Problem:** File downloads or redirects are being processed by response formatting.
 
@@ -200,7 +200,7 @@ return new ObjectResult(data);
 
 ---
 
-## Different Envelope Per Controller
+## Different Envelope Per Controller {#different-envelope-per-controller}
 
 **Problem:** You want different response formats for different controllers.
 
@@ -236,7 +236,7 @@ public class ConditionalResponseBuilder : IResponseBuilder
 
 ---
 
-## Exception Details Showing in Production
+## Exception Details Showing in Production {#exception-details-showing-in-production}
 
 **Problem:** Stack traces and exception details are visible in production responses.
 
@@ -264,7 +264,7 @@ else
 
 ---
 
-## ApiResults Methods Not Found
+## ApiResults Methods Not Found {#apiresults-methods-not-found}
 
 **Problem:** Compiler error: `'ApiResults' does not contain a definition for 'Ok'`.
 
@@ -284,7 +284,7 @@ public class MyController : ControllerBase
 
 ---
 
-## Custom Builder Not Being Used
+## Custom Builder Not Being Used {#custom-builder-not-being-used}
 
 **Problem:** You registered a custom builder but responses still use the default format.
 
@@ -312,7 +312,7 @@ options.Response.ResponseBuilder = serviceProvider.GetRequiredService<IResponseB
 
 ---
 
-## Debugging Response Formatting
+## Debugging Response Formatting {#debugging-response-formatting}
 
 Use the `AfterResponseWrapAsync` hook to inspect responses:
 

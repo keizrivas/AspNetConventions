@@ -4,7 +4,7 @@ How AspNetConventions handles parameter transformation and model binding across 
 
 ---
 
-## Basic Parameter Binding
+## Basic Parameter Binding {#basic-parameter-binding}
 
 Parameter names are transformed in the URL, but **model binding always uses the original name**. AspNetConventions registers internal binding aliases, making the resolution transparent.
 
@@ -17,7 +17,7 @@ public ActionResult GetByUser(int userId)   // binds from {user-id}
 }
 ```
 
-### Supported Binding Sources
+### Supported Binding Sources {#supported-binding-sources}
 
 | Attribute | Binding Source | Example |
 |-----------|---------------|---------|
@@ -41,7 +41,7 @@ public ActionResult Create(
 }
 ```
 
-### Route Constraints
+### Route Constraints {#route-constraints}
 
 Constraints survive transformation — only the parameter name is rewritten:
 
@@ -53,18 +53,18 @@ Constraints survive transformation — only the parameter name is rewritten:
 
 ---
 
-## Complex Types
+## Complex Types {#complex-types}
 
 When you bind a complex type (a class with multiple properties), AspNetConventions transforms **all property names recursively** to match your configured case style.
 
-### How It Works
+### How It Works {#how-it-works}
 
 1. **Property Discovery** — Scans all public properties of the complex type
 2. **Recursive Transformation** — Nested objects have their properties transformed as well
 3. **Binding Alias Registration** — Internal aliases map transformed names back to original property names
 4. **Transparent Resolution** — Your C# code continues using original property names
 
-### Example Model
+### Example Model {#example-model}
 
 ```csharp
 public class ProductSearchRequest
@@ -81,7 +81,7 @@ public class PriceRange
 }
 ```
 
-### Binding Source Examples
+### Binding Source Examples {#binding-source-examples}
 
 ::: tabs
 
@@ -214,7 +214,7 @@ x-request-id: abc-123
 
 ---
 
-## Custom Binding Names
+## Custom Binding Names {#custom-binding-names}
 
 Some binding attributes allow you to explicitly define the parameter name via `IModelNameProvider`. When an explicit name is provided, AspNetConventions transforms it according to your configured casing style.
 
@@ -227,9 +227,9 @@ public ActionResult ThemeGenerator([FromRoute(Name = "AccentColor")] string colo
 }
 ```
 
-### Preserving Explicit Names
+### Preserving Explicit Names {#preserving-explicit-names}
 
-To skip transformation for explicitly named parameters, enable [`PreserveExplicitBindingNames`](/docs/route-standardization/configuration/#routeconventionoptions):
+To skip transformation for explicitly named parameters, enable [`PreserveExplicitBindingNames`](./configuration.md#routeconventionoptions):
 
 ```csharp
 // MVC Controllers
@@ -248,7 +248,7 @@ public ActionResult GetUser([FromRoute(Name = "user_id")] int userId)
 }
 ```
 
-### Complex Objects with Custom Names
+### Complex Objects with Custom Names {#complex-objects-with-custom-names}
 
 There are two levels of customization:
 
@@ -281,7 +281,7 @@ public ActionResult Search([FromQuery(Name = "FilterBy")] ProductFilter filter)
 /search?filter-by.category-name=Electronics&filter-by.min-price=10
 ```
 
-### Property-Level Custom Names
+### Property-Level Custom Names {#property-level-custom-names}
 
 Override individual property names using `[ModelBinder(Name = "...")]`:
 
@@ -318,15 +318,15 @@ public ActionResult Search([FromQuery(Name = "F")] SearchFilters filters)
 /search?f.category=Electronics&f.q=laptop&f.prices.from=100&f.prices.to=500
 ```
 
-When [`PreserveExplicitBindingNames`](/docs/route-standardization/configuration/#routeconventionoptions) is enabled, only properties **without** explicit `[ModelBinder(Name = "...")]` are transformed.
+When [`PreserveExplicitBindingNames`](./configuration.md#routeconventionoptions) is enabled, only properties **without** explicit `[ModelBinder(Name = "...")]` are transformed.
 
 ---
 
-## Razor Pages Property Binding
+## Razor Pages Property Binding {#razor-pages-property-binding}
 
-In Razor Pages, [`TransformPropertyNames`](/docs/route-standardization/configuration/#razorpagesrouteoptions) (enabled by default) transforms `[BindProperty]` names automatically, creating a seamless experience between standardized routes and your page models.
+In Razor Pages, [`TransformPropertyNames`](./configuration.md#razorpagesrouteoptions) (enabled by default) transforms `[BindProperty]` names automatically, creating a seamless experience between standardized routes and your page models.
 
-### Basic Property Binding
+### Basic Property Binding {#basic-property-binding}
 ```csharp
 // /Pages/Edit.cshtml.cs
 public class EditModel : PageModel
@@ -357,7 +357,7 @@ public class EditModel : PageModel
 ...
 ```
 
-### How Property Binding Works
+### How Property Binding Works {#how-property-binding-works}
 
 The transformation applies to three binding scenarios:
 
@@ -368,7 +368,7 @@ The transformation applies to three binding scenarios:
 | **Form Fields** | `UserName` | `user-name` | `<input name="user-name">` → `UserName = "value"` |
 
 
-### Property Binding With Razor View
+### Property Binding With Razor View {#property-binding-with-razor-view}
 
 **AspNetConventions** extends ASP.NET Core's built-in **Tag Helpers** to automatically transform `asp-for` attribute outputs into your configured casing style. The form fields always match your standardized route conventions without any extra code in your views.
 
@@ -388,4 +388,4 @@ Generated HTML with **AspNetConventions**:
 ```html
 <input name="user-name" id="UserName" />
 ```
-This seamless integration means you never have to manually maintain HTML attribute names, see how to [Enable Tag Helpers](/docs/getting-started/quick-start/#enable-tag-helpers) in your setup.
+This seamless integration means you never have to manually maintain HTML attribute names, see how to [Enable Tag Helpers](../getting-started/quick-start.md#enable-tag-helpers) in your setup.

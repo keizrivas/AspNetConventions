@@ -79,6 +79,14 @@
   filter: blur(120px);
 }
 
+.sidebar nav li.nav-group {
+  background: transparent;
+}
+
+.sidebar-nav .nav-external-icon {
+  margin-left: auto;
+}
+
 @media (max-width: 768px) {
   .sidebar-header {
     height: 4em;
@@ -128,7 +136,7 @@
     min-width: 20px;
     min-height: 20px;
     margin-right: 0.5rem;
-    color: var(--text-color);
+    color: var(--primary-color);
   }
 
   &._blank{

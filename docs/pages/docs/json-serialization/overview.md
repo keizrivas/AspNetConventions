@@ -4,7 +4,7 @@ AspNetConventions provides a unified, implementation-agnostic JSON configuration
 
 ---
 
-## How It Works
+## How It Works {#how-it-works}
 
 The JSON configuration in AspNetConventions is **serializer-agnostic**: it does not depend on `System.Text.Json` or `Newtonsoft.Json` directly. You configure your conventions through the AspNetConventions fluent API, and the library translates those conventions into the appropriate settings for the serializer your application uses, applying them globally at startup.
 
@@ -12,7 +12,7 @@ This means you can switch the underlying serializer without rewriting your conve
 
 ---
 
-## Casing Style
+## Casing Style {#casing-style}
 
 Set the JSON property casing style for the entire application:
 
@@ -36,7 +36,7 @@ This applies to all serialized objects: API response payloads, model objects, an
 
 ---
 
-## Per-Type Property Configuration
+## Per-Type Property Configuration {#per-type-property-configuration}
 
 Use `options.Json.ConfigureTypes` to apply fine-grained property-level rules for specific types.
 
@@ -59,7 +59,7 @@ builder.Services
     });
 ```
 
-### Renaming Properties
+### Renaming Properties {#renaming-properties}
 
 Override the serialized name of a specific property:
 
@@ -78,7 +78,7 @@ cfg.Type<Product>(type =>
 
 The `.Name()` override takes precedence over the global `CaseStyle`.
 
-### Ordering Properties
+### Ordering Properties {#ordering-properties}
 
 Control the order in which properties appear in the serialized output:
 
@@ -94,7 +94,7 @@ cfg.Type<UserResponse>(type =>
 
 Properties without an explicit order are placed after those with one, in their natural declaration order.
 
-### Ignoring Properties
+### Ignoring Properties {#ignoring-properties}
 
 Exclude a property from serialization entirely using `JsonIgnoreCondition`:
 
@@ -121,7 +121,7 @@ cfg.Type<User>(type =>
 
 ---
 
-## Configuration Reference
+## Configuration Reference {#configuration-reference}
 
 ```csharp
 builder.Services
@@ -148,9 +148,9 @@ All calls inside `ConfigureTypes` are scoped to the type specified in `cfg.Type<
 
 ---
 
-## Advanced Examples
+## Advanced Examples {#advanced-examples}
 
-### Multiple types with different rules
+### Multiple types with different rules {#multiple-types-with-different-rules}
 
 ```csharp
 options.Json.ConfigureTypes = cfg =>
@@ -178,7 +178,7 @@ options.Json.ConfigureTypes = cfg =>
 };
 ```
 
-### Snake case globally with a renamed field
+### Snake case globally with a renamed field {#snake-case-globally-with-a-renamed-field}
 
 ```csharp
 options.Json.CaseStyle = CasingStyle.SnakeCase;
@@ -206,7 +206,7 @@ options.Json.ConfigureTypes = cfg =>
 
 (`key_id` and `created_at` follow the global snake_case; `key` is the explicit override.)
 
-### Ordering the standard API response fields
+### Ordering the standard API response fields {#ordering-the-standard-api-response-fields}
 
 If you use a custom `IResponseBuilder` that returns a concrete class, you can control the field order in the envelope:
 
@@ -235,28 +235,28 @@ options.Json.ConfigureTypes = cfg =>
 
 ---
 
-## API Reference
+## API Reference {#api-reference}
 
-### `JsonConventionOptions`
+### `JsonConventionOptions` {#jsonconventionoptions}
 
 | Member | Type | Description |
 |---|---|---|
 | `CaseStyle` | `CasingStyle` | Global JSON property casing style. Defaults to `CamelCase`. |
 | `ConfigureTypes` | `Action<JsonTypeConfigurator>?` | Delegate for per-type property configuration |
 
-### `JsonTypeConfigurator`
+### `JsonTypeConfigurator` {#jsontypeconfigurator}
 
 | Method | Description |
 |---|---|
 | `Type<T>(Action<TypeBuilder<T>>)` | Opens a configuration scope for the given type `T` |
 
-### `TypeBuilder<T>`
+### `TypeBuilder<T>` {#typebuilder}
 
 | Method | Returns | Description |
 |---|---|---|
 | `Property(Expression<Func<T, object>>)` | `PropertyBuilder` | Selects a property for configuration |
 
-### `PropertyBuilder`
+### `PropertyBuilder` {#propertybuilder}
 
 | Method | Returns | Description |
 |---|---|---|
@@ -269,7 +269,7 @@ All `PropertyBuilder` methods are fluent and can be chained:
 type.Property(x => x.Id).Order(0).Name("identifier");
 ```
 
-### `CasingStyle` enum
+### `CasingStyle` enum {#casingstyle-enum}
 
 ```csharp
 namespace AspNetConventions.Core.Enums;
@@ -285,7 +285,7 @@ public enum CasingStyle
 
 ---
 
-## Architecture / How It Works Internally
+## Architecture / How It Works Internally {#architecture-how-it-works-internally}
 
 At startup, AspNetConventions builds a **type metadata registry** from your `ConfigureTypes` configuration. This registry maps each `Type` to a set of property descriptors (name overrides, order, ignore conditions).
 
@@ -306,7 +306,7 @@ Startup
 
 ---
 
-## FAQ & Troubleshooting
+## FAQ & Troubleshooting {#faq-troubleshooting}
 
 **Q: I set `CaseStyle = SnakeCase` but my response properties are still camelCase.**
 

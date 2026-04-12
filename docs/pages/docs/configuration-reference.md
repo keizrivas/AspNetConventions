@@ -1,8 +1,10 @@
 # Configuration Reference
 
-Configuration for **AspNetConventions** is centralized through the options callback. Depending on your project type, you can access these settings via the [`.AddAspNetConventions()`](/docs/getting-started/#addaspnetconventions) method on `IMvcBuilder` or the [`.UseAspNetConventions()`](/docs/getting-started/#useaspnetconventions) method for `WebApplication` setups.
+Configuration for **AspNetConventions** is centralized through the options callback. Depending on your project type, you can access these settings via the [`.AddAspNetConventions()`](./getting-started/index.md#addaspnetconventions) method on `IMvcBuilder` or the [`.UseAspNetConventions()`](./getting-started/index.md#useaspnetconventions) method for `WebApplication` setups.
 
-## Entry Points
+---
+
+## Entry Points {#entry-points}
 
 For **MVC Controllers** and **Razor Pages**:
 ```csharp
@@ -20,7 +22,7 @@ app.UseAspNetConventions(options =>
         // Convention options for Minimal API here...
     });
 ```
-## MVC vs Minimal APIs
+## MVC vs Minimal APIs {#mvc-vs-minimal-apis}
 
 AspNetConventions uses **different configuration contexts** depending on the type of endpoint you are working with. This separation exists because each endpoint type is integrated at a different stage of the ASP.NET pipeline.
 
@@ -50,7 +52,7 @@ app.UseAspNetConventions(options =>
 ```
 ---
 
-## AspNetConventionOptions
+## AspNetConventionOptions {#aspnetconventionoptions}
 
 **Namespace:** `AspNetConventions.Configuration.Options`
 
@@ -58,10 +60,10 @@ The `AspNetConventionOptions` object is the root configuration container. Every 
 
 | Property | Type | Default | Description |
 |---|---|---|---|
-| `Route` | [`RouteConventionOptions`](/docs/route-standardization/route-convention-options) | `new()` | Route naming convention settings |
-| `Response` | [`ResponseFormattingOptions`](/) | `new()` | Response formatting settings |
-| `Json` | [`JsonSerializationOptions`](/) | `new()` | JSON serialization settings |
-| `ExceptionHandling` | [`ExceptionHandlingOptions`](/) | `new()` | Exception handling settings |
+| `Route` | [`RouteConventionOptions`](./route-standardization/configuration.md#routeconventionoptions) | `new()` | Route naming convention settings |
+| `Response` | [`ResponseFormattingOptions`](./response-formatting/configuration.md#responseformattingoptions) | `new()` | Response formatting settings |
+| `Json` | [`JsonSerializationOptions`](./json-serialization/configuration.md#jsonserializationoptions) | `new()` | JSON serialization settings |
+| `ExceptionHandling` | [`ExceptionHandlingOptions`](./exception-handling/configuration.md#exceptionhandlingoptions) | `new()` | Exception handling settings |
 
 **Configuration Example:**
 You can configure multiple features simultaneously to ensure your API remains consistent across all layers.
@@ -85,14 +87,14 @@ builder.Services
 
 ---
 
-## Related Documentation
+## Related Documentation {#related-documentation}
 
 To see the specific properties available for each feature, refer to their individual reference pages:
 
-*   [Route Convention Options](/docs/route-standardization/route-convention-options)
+*   [Route Convention Options](./route-standardization/configuration.md)
     
-*   [Response Formatting Options](/docs/response-formatting/options)
+*   [Response Formatting Options](./response-formatting/configuration.md)
     
-*   [JSON Serialization Options](/docs/json-serialization/options)
+*   [JSON Serialization Options](./json-serialization/configuration.md)
     
-*   [Exception Handling Options](/docs/exception-handling/options)
+*   [Exception Handling Options](./exception-handling/configuration.md)

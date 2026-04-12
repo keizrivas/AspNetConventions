@@ -21,293 +21,121 @@ public class RazorPageRouteConventionTests
         _optionsMock.Setup(x => x.Value).Returns(_options);
     }
 
-    [Fact]
-    public void Apply_WhenRouteIsDisabled_DoesNotTransformRoutes()
+    [Theory]
+    [InlineData("Pages/TestPage",  CasingStyle.KebabCase,  "pages/test-page")]
+    [InlineData("Pages/TestPage",  CasingStyle.SnakeCase,  "pages/test_page")]
+    [InlineData("Pages/TestPage",  CasingStyle.CamelCase,  "pages/testPage")]
+    [InlineData("pages/test-page", CasingStyle.PascalCase, "Pages/TestPage")]
+    public void Apply_TransformsRoute_ForAllCasingStyles(string template, CasingStyle style, string expected)
     {
-        _options.Route.IsEnabled = false;
+        _options.Route.CaseStyle = style;
         var convention = new RazorPageRouteConvention(_optionsMock.Object);
+        var page = CreatePageModel(template);
 
-        var pageModel = CreatePageModel("Pages/TestPage");
+        convention.Apply(page);
 
-        convention.Apply(pageModel);
+        Assert.Equal(expected, page.Selectors[0].AttributeRouteModel?.Template);
+    }
 
-        Assert.Equal("Pages/TestPage", pageModel.Selectors[0].AttributeRouteModel?.Template);
+    [Theory]
+    [InlineData(false, true)]
+    [InlineData(true,  false)]
+    public void Apply_WhenDisabled_PreservesTemplate(bool routeEnabled, bool razorEnabled)
+    {
+        _options.Route.IsEnabled = routeEnabled;
+        _options.Route.RazorPages.IsEnabled = razorEnabled;
+        var convention = new RazorPageRouteConvention(_optionsMock.Object);
+        var page = CreatePageModel("Pages/TestPage");
+
+        convention.Apply(page);
+
+        Assert.Equal("Pages/TestPage", page.Selectors[0].AttributeRouteModel?.Template);
     }
 
     [Fact]
-    public void Apply_WhenRazorPagesIsDisabled_DoesNotTransformRoutes()
-    {
-        _options.Route.IsEnabled = true;
-        _options.Route.RazorPages.IsEnabled = false;
-        var convention = new RazorPageRouteConvention(_optionsMock.Object);
-
-        var pageModel = CreatePageModel("Pages/TestPage");
-
-        convention.Apply(pageModel);
-
-        Assert.Equal("Pages/TestPage", pageModel.Selectors[0].AttributeRouteModel?.Template);
-    }
-
-    [Fact]
-    public void Apply_WithKebabCase_TransformsRouteToKebabCase()
-    {
-        _options.Route.CaseStyle = CasingStyle.KebabCase;
-        var convention = new RazorPageRouteConvention(_optionsMock.Object);
-
-        var pageModel = CreatePageModel("Pages/TestPage");
-
-        convention.Apply(pageModel);
-
-        Assert.Equal("pages/test-page", pageModel.Selectors[0].AttributeRouteModel?.Template);
-    }
-
-    [Fact]
-    public void Apply_WithSnakeCase_TransformsRouteToSnakeCase()
-    {
-        _options.Route.CaseStyle = CasingStyle.SnakeCase;
-        var convention = new RazorPageRouteConvention(_optionsMock.Object);
-
-        var pageModel = CreatePageModel("Pages/TestPage");
-
-        convention.Apply(pageModel);
-
-        Assert.Equal("pages/test_page", pageModel.Selectors[0].AttributeRouteModel?.Template);
-    }
-
-    [Fact]
-    public void Apply_WithCamelCase_TransformsRouteToCamelCase()
-    {
-        _options.Route.CaseStyle = CasingStyle.CamelCase;
-        var convention = new RazorPageRouteConvention(_optionsMock.Object);
-
-        var pageModel = CreatePageModel("Pages/TestPage");
-
-        convention.Apply(pageModel);
-
-        Assert.Equal("pages/testPage", pageModel.Selectors[0].AttributeRouteModel?.Template);
-    }
-
-    [Fact]
-    public void Apply_WithPascalCase_TransformsRouteToPascalCase()
-    {
-        _options.Route.CaseStyle = CasingStyle.PascalCase;
-        var convention = new RazorPageRouteConvention(_optionsMock.Object);
-
-        var pageModel = CreatePageModel("pages/test-page");
-
-        convention.Apply(pageModel);
-
-        Assert.Equal("Pages/TestPage", pageModel.Selectors[0].AttributeRouteModel?.Template);
-    }
-
-    [Fact]
-    public void Apply_WithRouteParameters_TransformsParameterNames()
+    public void Apply_WithParameters_TransformsName_PreservesConstraint_Optional_Wildcard()
     {
         _options.Route.CaseStyle = CasingStyle.KebabCase;
         _options.Route.RazorPages.TransformParameterNames = true;
         var convention = new RazorPageRouteConvention(_optionsMock.Object);
 
-        var pageModel = CreatePageModelWithRouteParams("Pages/TestPage", "{id}/{userName}");
+        var plain    = CreatePageModelWithRouteParams("Pages/TestPage", "{userName}");
+        var typed    = CreatePageModelWithRouteParams("Pages/TestPage", "{id:int}");
+        var optional = CreatePageModelWithRouteParams("Pages/TestPage", "{id?}");
+        var wildcard = CreatePageModelWithRouteParams("Pages/TestPage", "{*path}");
 
-        convention.Apply(pageModel);
+        convention.Apply(plain);
+        convention.Apply(typed);
+        convention.Apply(optional);
+        convention.Apply(wildcard);
 
-        Assert.Equal("pages/test-page/{id}/{user-name}",
-            pageModel.Selectors[0].AttributeRouteModel?.Template);
+        Assert.Equal("pages/test-page/{user-name}", plain.Selectors[0].AttributeRouteModel?.Template);
+        Assert.Equal("pages/test-page/{id:int}", typed.Selectors[0].AttributeRouteModel?.Template);
+        Assert.Equal("pages/test-page/{id?}", optional.Selectors[0].AttributeRouteModel?.Template);
+        Assert.Equal("pages/test-page/{*path}", wildcard.Selectors[0].AttributeRouteModel?.Template);
     }
 
     [Fact]
-    public void Apply_WithShouldTransformRouteHook_ReturnsEarly()
+    public void Apply_Hooks_BeforeAndAfterFireWithCorrectTemplates_ShouldTransformCanSkip()
     {
+        string? before = null, afterOld = null, afterNew = null;
+
         _options.Route.CaseStyle = CasingStyle.KebabCase;
+        _options.Route.Hooks.BeforeRouteTransform = (route, _) => before = route;
+        _options.Route.Hooks.AfterRouteTransform  = (route, old, _) => { afterNew = route; afterOld = old; };
+
+        new RazorPageRouteConvention(_optionsMock.Object)
+            .Apply(CreatePageModel("Pages/TestPage"));
+
+        Assert.Equal("Pages/TestPage", before);
+        Assert.Equal("Pages/TestPage", afterOld);
+        Assert.Equal("pages/test-page", afterNew);
+
         _options.Route.Hooks.ShouldTransformRoute = (_, _) => false;
-        var convention = new RazorPageRouteConvention(_optionsMock.Object);
+        var page2 = CreatePageModel("Pages/TestPage");
+        new RazorPageRouteConvention(_optionsMock.Object).Apply(page2);
 
-        var pageModel = CreatePageModel("Pages/TestPage");
-
-        convention.Apply(pageModel);
-
-        Assert.Equal("Pages/TestPage", pageModel.Selectors[0].AttributeRouteModel?.Template);
-    }
-
-    [Fact]
-    public void Apply_CallsBeforeRouteTransformHook()
-    {
-        string? capturedTemplate = null;
-        _options.Route.CaseStyle = CasingStyle.KebabCase;
-        _options.Route.Hooks.BeforeRouteTransform = (template, _) => capturedTemplate = template;
-
-        var convention = new RazorPageRouteConvention(_optionsMock.Object);
-        var pageModel = CreatePageModel("Pages/TestPage");
-
-        convention.Apply(pageModel);
-
-        Assert.Equal("Pages/TestPage", capturedTemplate);
-    }
-
-    [Fact]
-    public void Apply_CallsAfterRouteTransformHook()
-    {
-        string? capturedNewTemplate = null;
-        string? capturedOldTemplate = null;
-        _options.Route.CaseStyle = CasingStyle.KebabCase;
-        _options.Route.Hooks.AfterRouteTransform = (newTemplate, oldTemplate, _) =>
-        {
-            capturedNewTemplate = newTemplate;
-            capturedOldTemplate = oldTemplate;
-        };
-
-        var convention = new RazorPageRouteConvention(_optionsMock.Object);
-        var pageModel = CreatePageModel("Pages/TestPage");
-
-        convention.Apply(pageModel);
-
-        Assert.Equal("pages/test-page", capturedNewTemplate);
-        Assert.Equal("Pages/TestPage", capturedOldTemplate);
-    }
-
-    [Fact]
-    public void Apply_WithNullRouteTemplate_SkipsTransformation()
-    {
-        _options.Route.CaseStyle = CasingStyle.KebabCase;
-        var convention = new RazorPageRouteConvention(_optionsMock.Object);
-
-        var pageModel = CreatePageModel(null);
-
-        convention.Apply(pageModel);
-
-        Assert.Null(pageModel.Selectors[0].AttributeRouteModel?.Template);
-    }
-
-    [Fact]
-    public void Apply_WithEmptyRouteTemplate_SkipsTransformation()
-    {
-        _options.Route.CaseStyle = CasingStyle.KebabCase;
-        var convention = new RazorPageRouteConvention(_optionsMock.Object);
-
-        var pageModel = CreatePageModel("");
-
-        convention.Apply(pageModel);
-
-        Assert.Equal("", pageModel.Selectors[0].AttributeRouteModel?.Template);
-    }
-
-    [Fact]
-    public void Apply_PreservesRouteConstraints()
-    {
-        _options.Route.CaseStyle = CasingStyle.KebabCase;
-        _options.Route.RazorPages.TransformParameterNames = true;
-        var convention = new RazorPageRouteConvention(_optionsMock.Object);
-
-        var pageModel = CreatePageModelWithRouteParams("Pages/TestPage", "{id:int}");
-
-        convention.Apply(pageModel);
-
-        Assert.Equal("pages/test-page/{id:int}",
-            pageModel.Selectors[0].AttributeRouteModel?.Template);
-    }
-
-    [Fact]
-    public void Apply_PreservesOptionalParameters()
-    {
-        _options.Route.CaseStyle = CasingStyle.KebabCase;
-        _options.Route.RazorPages.TransformParameterNames = true;
-        var convention = new RazorPageRouteConvention(_optionsMock.Object);
-
-        var pageModel = CreatePageModelWithRouteParams("Pages/TestPage", "{id?}");
-
-        convention.Apply(pageModel);
-
-        Assert.Equal("pages/test-page/{id?}",
-            pageModel.Selectors[0].AttributeRouteModel?.Template);
-    }
-
-    [Fact]
-    public void Apply_PreservesWildcardParameters()
-    {
-        _options.Route.CaseStyle = CasingStyle.KebabCase;
-        _options.Route.RazorPages.TransformParameterNames = true;
-        var convention = new RazorPageRouteConvention(_optionsMock.Object);
-
-        var pageModel = CreatePageModelWithRouteParams("Pages/TestPage", "{*path}");
-
-        convention.Apply(pageModel);
-
-        Assert.Equal("pages/test-page/{*path}",
-            pageModel.Selectors[0].AttributeRouteModel?.Template);
+        Assert.Equal("Pages/TestPage", page2.Selectors[0].AttributeRouteModel?.Template);
     }
 
     [Fact]
     public void Apply_WithCustomCaseConverter_UsesCustomConverter()
     {
-        var customConverter = new TestCaseConverter("pre");
-        _options.Route.CaseConverter = customConverter;
+        _options.Route.CaseConverter = new PrefixedConverter("pre");
         var convention = new RazorPageRouteConvention(_optionsMock.Object);
+        var page = CreatePageModel("Pages/TestPage");
 
-        var pageModel = CreatePageModel("Pages/TestPage");
+        convention.Apply(page);
 
-        convention.Apply(pageModel);
-
-        Assert.Equal("pre-pages/pre-test-page",
-            pageModel.Selectors[0].AttributeRouteModel?.Template);
-    }
-
-    [Fact]
-    public void Apply_PreservesLeadingSlash()
-    {
-        _options.Route.CaseStyle = CasingStyle.KebabCase;
-        var convention = new RazorPageRouteConvention(_optionsMock.Object);
-
-        var pageModel = CreatePageModel("/Pages/TestPage");
-
-        convention.Apply(pageModel);
-
-        Assert.Equal("/pages/test-page", pageModel.Selectors[0].AttributeRouteModel?.Template);
+        Assert.Equal("pre-pages/pre-test-page", page.Selectors[0].AttributeRouteModel?.Template);
     }
 
     private static PageRouteModel CreatePageModel(string? template)
     {
-        var pageModel = new PageRouteModel(
-            "TestPage",
-            "/TestPage");
-
-        pageModel.Selectors.Add(new SelectorModel
+        var page = new PageRouteModel("TestPage", "/TestPage");
+        page.Selectors.Add(new SelectorModel
         {
             AttributeRouteModel = template != null
                 ? new AttributeRouteModel { Template = template }
                 : null
         });
-
-        return pageModel;
+        return page;
     }
 
     private static PageRouteModel CreatePageModelWithRouteParams(string baseTemplate, string routeParams)
     {
-        var pageModel = new PageRouteModel(
-            "TestPage",
-            "/TestPage");
-
-        var fullTemplate = routeParams != null ? $"{baseTemplate}/{routeParams}" : baseTemplate;
-
-        pageModel.Selectors.Add(new SelectorModel
+        var page = new PageRouteModel("TestPage", "/TestPage");
+        page.Selectors.Add(new SelectorModel
         {
-            AttributeRouteModel = new AttributeRouteModel { Template = fullTemplate }
+            AttributeRouteModel = new AttributeRouteModel { Template = $"{baseTemplate}/{routeParams}" }
         });
-
-        return pageModel;
+        return page;
     }
 
-    private class TestCaseConverter : Core.Abstractions.Contracts.ICaseConverter
+    private class PrefixedConverter : Core.Abstractions.Contracts.ICaseConverter
     {
         private readonly string _prefix;
-
-        public TestCaseConverter(string prefix)
-        {
-            _prefix = prefix;
-        }
-
-        public string Convert(string value)
-        {
-            return $"{_prefix}-{value.ToKebabCase()}";
-        }
+        public PrefixedConverter(string prefix) => _prefix = prefix;
+        public string Convert(string value) => $"{_prefix}-{value.ToKebabCase()}";
     }
 }

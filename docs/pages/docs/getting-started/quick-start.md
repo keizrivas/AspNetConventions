@@ -4,7 +4,7 @@ This guide covers installation and basic setup for each supported endpoint type.
 
 ---
 
-## Installation
+## Installation {#installation}
 Install the package via your preferred package manager.
 
 ::: tabs
@@ -25,11 +25,11 @@ Install-Package AspNetConventions
 
 ---
 
-## Setup 
+## Setup {#setup}
 
-### MVC Controllers
+### MVC Controllers {#mvc-controllers}
 
-Call [`.AddAspNetConventions()`](/docs/getting-started/#addaspnetconventions) on the `IMvcBuilder` returned by `.AddControllers()` or `.AddControllersWithViews()`:
+Call [`.AddAspNetConventions()`](./index.md#addaspnetconventions) on the `IMvcBuilder` returned by `.AddControllers()` or `.AddControllersWithViews()`:
 
 ```csharp
 // Program.cs
@@ -48,9 +48,9 @@ app.Run();
 ```
 ---
 
-### Minimal APIs
+### Minimal APIs {#minimal-apis}
 
-Call [.UseAspNetConventions()](/docs/getting-started/#useaspnetconventions) on the `WebApplication` after endpoints declaration to apply conventions.
+Call [.UseAspNetConventions()](./index.md#useaspnetconventions) on the `WebApplication` after endpoints declaration to apply conventions.
 
 ```csharp
 // Program.cs
@@ -70,9 +70,9 @@ app.Run();
 
 ---
 
-### Razor Pages
+### Razor Pages {#razor-pages}
 
-Call [`.AddAspNetConventions()`](/docs/getting-started/#addaspnetconventions) on the `IMvcBuilder` returned by `.AddRazorPages()` or `.AddControllersWithViews()`:
+Call [`.AddAspNetConventions()`](./index.md#addaspnetconventions) on the `IMvcBuilder` returned by `.AddRazorPages()` or `.AddControllersWithViews()`:
 
 ```csharp
 // Program.cs
@@ -90,7 +90,7 @@ app.MapRazorPages();
 app.Run();
 ```
 
-#### Enable Tag Helpers
+#### Enable Tag Helpers {#enable-tag-helpers}
 
 To support standardized routing and property binding within your views, add the `AspNetConventions` directive to your `_ViewImports.cshtml` file. 
 This ensures that helper attributes like `asp-for` correctly map your C# properties to the transformed HTML name attributes:
@@ -111,4 +111,4 @@ The Tag Helper automatically aligns your HTML forms with your selected casing st
 <input name="city-name" id="CityName" type="text" value="" />
 ```
 
-See [Disabling Property Transformation](/docs/getting-started/basic-usage/#disabling-property-transformation) If you need to maintain the original C# property names.
+See [Disabling Property Transformation](./basic-usage.md#disabling-property-transformation) If you need to maintain the original C# property names.

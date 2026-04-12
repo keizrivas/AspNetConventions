@@ -12,7 +12,7 @@
     "js:watch": "esbuild public/js/main.js --bundle --outfile=site/assets/js/main.js --watch"
   },
   "dependencies": {
-    "@docmd/core": "^0.4.9",
+    "@docmd/core": "^0.6.9",
     "@tailwindcss/cli": "^4.2.1",
     "alpinejs": "^3.15.8",
     "lucide": "^0.575.0",

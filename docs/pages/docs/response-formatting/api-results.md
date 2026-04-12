@@ -1,14 +1,14 @@
 # ApiResults
 
-The `ApiResults` static class provides factory methods for creating strongly-typed [`ApiResult<T>`](/docs/response-formatting/configuration/#apiresultlttgt) instances with consistent HTTP status codes. It works seamlessly with both **MVC Controllers** and **Minimal APIs**.
+The `ApiResults` static class provides factory methods for creating strongly-typed [`ApiResult<T>`](./configuration.md#apiresultlttgt) instances with consistent HTTP status codes. It works seamlessly with both **MVC Controllers** and **Minimal APIs**.
 
 ---
 
-## Standard Methods vs ApiResults
+## Standard Methods vs ApiResults {#standard-methods-vs-apiresults}
 
 **AspNetConventions** works with both ASP.NET Core's built-in response methods—no changes required. However, the `ApiResults` helper class unlocks additional capabilities.
 
-### What Works Out of the Box
+### What Works Out of the Box {#what-works-out-of-the-box}
 
 | Framework | Standard Methods | AspNetConventions Support |
 | --- | --- | --- |
@@ -19,13 +19,13 @@ Standard methods return properly formatted responses with metadata, consistent s
 
 ---
 
-## Why ApiResults?
+## Why ApiResults? {#why-apiresults}
 
 Instead of manually constructing responses with status codes and messages, `ApiResults` provides:
 
 - **Consistent status codes** — Each method maps to a specific HTTP status code
 - **Type safety** — Generic methods ensure compile-time type checking
-- **Implicit conversion** — [`ApiResult<T>`](/docs/response-formatting/configuration/#apiresultlttgt) converts automatically to `ActionResult` or `IResult`
+- **Implicit conversion** — [`ApiResult<T>`](./configuration.md#apiresultlttgt) converts automatically to `ActionResult` or `IResult`
 - **Message support** — Optional messages for additional context
 - **Pagination built-in** — `Paginate()` method for collection responses
 
@@ -37,17 +37,17 @@ return NotFound(new { error = "User not found." });
 return ApiResults.NotFound("User not found.");
 ```
 ::: callout info ApiResults vs ApiResult
-- [**`ApiResult`**](/docs/response-formatting/configuration/#apiresult) is the **object** that holds your response data—it's the container with properties like `StatusCode`, `Message`, `Data`, and `Metadata`. 
+- [**`ApiResult`**](./configuration.md#apiresult) is the **object** that holds your response data—it's the container with properties like `StatusCode`, `Message`, `Data`, and `Metadata`. 
 - **`ApiResults`** (notice the plural) is the **helper class** that creates these objects for you. Think of it this way: `ApiResults` is the factory, `ApiResult` is the product.
 :::
 
 ---
 
-## Usage
+## Usage {#usage}
 
-### MVC Controllers
+### MVC Controllers {#mvc-controllers}
 
-The [`ApiResult<T>`](/docs/response-formatting/configuration/#apiresultlttgt) class integrates directly with MVC controllers through **implicit conversions** to `ActionResult<T>` and `ActionResult`. This allows you to return strongly-typed, standardized responses without any additional boilerplate:
+The [`ApiResult<T>`](./configuration.md#apiresultlttgt) class integrates directly with MVC controllers through **implicit conversions** to `ActionResult<T>` and `ActionResult`. This allows you to return strongly-typed, standardized responses without any additional boilerplate:
 
 ```csharp
 using AspNetConventions.Http;
@@ -100,7 +100,7 @@ public class ProductsController : ControllerBase
 }
 ```
 
-### Minimal APIs
+### Minimal APIs {#minimal-apis}
 
 The `ApiResults` helper class is fully compatible with Minimal APIs, offering a consistent and expressive way to return standardized responses:
 
@@ -143,7 +143,7 @@ app.MapPut("/api/products/{id}", (int id, UpdateProductRequest request, IProduct
     return ApiResults.Ok(updated, "Product updated successfully.");
 });
 ```
-#### Strongly-Typed Responses
+#### Strongly-Typed Responses {#strongly-typed-responses}
 
 When working with Minimal APIs, you can leverage .NET's `Results<T1, T2, T..>` union type for full type safety. Use the `.ToHttpResult()` method or the implicit conversion to `HttpApiResult<T>`:
 
@@ -159,9 +159,9 @@ api.MapGet("/product/{id}", Results<HttpApiResult<UserDto>, NotFound> (int id, I
 ```
 ---
 
-## Success Methods
+## Success Methods {#success-methods}
 
-### Ok
+### Ok {#ok}
 
 Returns a `200 OK` response.
 
@@ -180,7 +180,7 @@ return ApiResults.Ok(user, "User retrieved successfully.");
 return ApiResults.Ok("Operation completed.");
 ```
 
-### Created
+### Created {#created}
 
 Returns a `201 Created` response.
 
@@ -197,7 +197,7 @@ ApiResults.Created(string message)
 return ApiResults.Created(newUser, "User created successfully.");
 ```
 
-### Accepted
+### Accepted {#accepted}
 
 Returns a `202 Accepted` response for async operations.
 
@@ -214,7 +214,7 @@ ApiResults.Accepted(string message)
 return ApiResults.Accepted(new { jobId = "abc-123" }, "Processing started.");
 ```
 
-### NoContent
+### NoContent {#nocontent}
 
 Returns a `204 No Content` response.
 
@@ -227,7 +227,7 @@ ApiResults.NoContent(string? message = null)
 return ApiResults.NoContent("Resource deleted.");
 ```
 
-### PartialContent
+### PartialContent {#partialcontent}
 
 Returns a `206 Partial Content` response.
 
@@ -242,9 +242,9 @@ return ApiResults.PartialContent(partialData, "Partial results returned.");
 
 ---
 
-## Redirection Methods
+## Redirection Methods {#redirection-methods}
 
-### MovedPermanently
+### MovedPermanently {#movedpermanently}
 
 Returns a `301 Moved Permanently` response.
 
@@ -252,7 +252,7 @@ Returns a `301 Moved Permanently` response.
 ApiResults.MovedPermanently<TValue>(TValue? value, string? message = null)
 ```
 
-### Found
+### Found {#found}
 
 Returns a `302 Found` response.
 
@@ -260,7 +260,7 @@ Returns a `302 Found` response.
 ApiResults.Found<TValue>(TValue? value, string? message = null)
 ```
 
-### NotModified
+### NotModified {#notmodified}
 
 Returns a `304 Not Modified` response.
 
@@ -270,9 +270,9 @@ ApiResults.NotModified(string? message = null)
 
 ---
 
-## Client Error Methods
+## Client Error Methods {#client-error-methods}
 
-### BadRequest
+### BadRequest {#badrequest}
 
 Returns a `400 Bad Request` response.
 
@@ -322,7 +322,7 @@ return ApiResults.BadRequest(new
 return ApiResults.BadRequest("Invalid request parameters.");
 ```
 
-### Unauthorized
+### Unauthorized {#unauthorized}
 
 Returns a `401 Unauthorized` response.
 
@@ -335,7 +335,7 @@ ApiResults.Unauthorized(string? message = null)
 return ApiResults.Unauthorized("Authentication required.");
 ```
 
-### Forbidden
+### Forbidden {#forbidden}
 
 Returns a `403 Forbidden` response.
 
@@ -348,7 +348,7 @@ ApiResults.Forbidden(string? message = null)
 return ApiResults.Forbidden("You don't have permission to access this resource.");
 ```
 
-### NotFound
+### NotFound {#notfound}
 
 Returns a `404 Not Found` response.
 
@@ -366,7 +366,7 @@ return ApiResults.NotFound("User not found.");
 return ApiResults.NotFound(new { resourceType = "User", id = 123 }, "Resource not found.");
 ```
 
-### MethodNotAllowed
+### MethodNotAllowed {#methodnotallowed}
 
 Returns a `405 Method Not Allowed` response.
 
@@ -374,7 +374,7 @@ Returns a `405 Method Not Allowed` response.
 ApiResults.MethodNotAllowed(string? message = null)
 ```
 
-### RequestTimeout
+### RequestTimeout {#requesttimeout}
 
 Returns a `408 Request Timeout` response.
 
@@ -382,7 +382,7 @@ Returns a `408 Request Timeout` response.
 ApiResults.RequestTimeout(string? message = null)
 ```
 
-### Conflict
+### Conflict {#conflict}
 
 Returns a `409 Conflict` response.
 
@@ -396,7 +396,7 @@ ApiResults.Conflict(string? message = null)
 return ApiResults.Conflict("A user with this email already exists.");
 ```
 
-### Gone
+### Gone {#gone}
 
 Returns a `410 Gone` response.
 
@@ -404,7 +404,7 @@ Returns a `410 Gone` response.
 ApiResults.Gone(string? message = null)
 ```
 
-### UnprocessableEntity
+### UnprocessableEntity {#unprocessableentity}
 
 Returns a `422 Unprocessable Entity` response.
 
@@ -418,7 +418,7 @@ ApiResults.UnprocessableEntity(string? message = null)
 return ApiResults.UnprocessableEntity("The request was valid but could not be processed.");
 ```
 
-### TooManyRequests
+### TooManyRequests {#toomanyrequests}
 
 Returns a `429 Too Many Requests` response.
 
@@ -433,9 +433,9 @@ return ApiResults.TooManyRequests("Rate limit exceeded. Try again later.");
 
 ---
 
-## Server Error Methods
+## Server Error Methods {#server-error-methods}
 
-### InternalServerError
+### InternalServerError {#internalservererror}
 
 Returns a `500 Internal Server Error` response.
 
@@ -444,7 +444,7 @@ ApiResults.InternalServerError<TValue>(TValue? value, string? message = null)
 ApiResults.InternalServerError(string? message = null)
 ```
 
-### NotImplemented
+### NotImplemented {#notimplemented}
 
 Returns a `501 Not Implemented` response.
 
@@ -452,7 +452,7 @@ Returns a `501 Not Implemented` response.
 ApiResults.NotImplemented(string? message = null)
 ```
 
-### BadGateway
+### BadGateway {#badgateway}
 
 Returns a `502 Bad Gateway` response.
 
@@ -460,7 +460,7 @@ Returns a `502 Bad Gateway` response.
 ApiResults.BadGateway(string? message = null)
 ```
 
-### ServiceUnavailable
+### ServiceUnavailable {#serviceunavailable}
 
 Returns a `503 Service Unavailable` response.
 
@@ -468,7 +468,7 @@ Returns a `503 Service Unavailable` response.
 ApiResults.ServiceUnavailable(string? message = null)
 ```
 
-### GatewayTimeout
+### GatewayTimeout {#gatewaytimeout}
 
 Returns a `504 Gateway Timeout` response.
 
@@ -478,9 +478,9 @@ ApiResults.GatewayTimeout(string? message = null)
 
 ---
 
-## Pagination Methods
+## Pagination Methods {#pagination-methods}
 
-### Paginate
+### Paginate {#paginate}
 
 Returns a `200 OK` response with pagination metadata.
 
@@ -551,13 +551,13 @@ public ActionResult<CollectionResult<Product>> GetProducts(
   }
 }
 ```
-See [Pagination Metadata](/docs/response-formatting/metadata/#pagination-metadata) for more information.
+See [Pagination Metadata](./metadata.md#pagination-metadata) for more information.
 
 ---
 
-## Special Methods
+## Special Methods {#special-methods}
 
-### Problem
+### Problem {#problem}
 
 Returns a `ProblemDetails` response (RFC 7807).
 
@@ -585,7 +585,7 @@ return ApiResults.Problem(
     });
 ```
 
-### Custom
+### Custom {#custom}
 
 Returns a response with a custom HTTP status code.
 

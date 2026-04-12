@@ -1,4 +1,4 @@
-## JSON Serialization
+## JSON Serialization {#json-serialization}
 
 **Documentation in progress** — Coming soon.
 
