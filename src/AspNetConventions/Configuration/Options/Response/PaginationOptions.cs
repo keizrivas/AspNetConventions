@@ -15,6 +15,11 @@ namespace AspNetConventions.Configuration.Options.Response
         public bool IncludeLinks { get; set; } = true;
 
         /// <summary>
+        /// Include hasNextPage and hasPreviousPage boolean flags in pagination metadata.
+        /// </summary>
+        public bool IncludeNavigationFlags { get; set; }
+
+        /// <summary>
         /// Query parameter name for page number
         /// </summary>
         public string PageNumberParameterName { get; set; } = "page";

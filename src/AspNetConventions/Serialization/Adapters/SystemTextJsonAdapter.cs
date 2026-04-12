@@ -70,6 +70,9 @@ namespace AspNetConventions.Serialization.Adapters
             // Default ignore rules
             ignoreRules.IgnoreProperty<ApiResponse>(e => e.Metadata, JsonIgnoreCondition.WhenWritingNull);
             ignoreRules.IgnoreProperty<DefaultApiResponse>(e => e.Pagination, JsonIgnoreCondition.WhenWritingNull);
+            ignoreRules.IgnoreProperty<PaginationMetadata>(e => e.Links, JsonIgnoreCondition.WhenWritingNull);
+            ignoreRules.IgnoreProperty<PaginationMetadata>(e => e.HasNextPage, JsonIgnoreCondition.WhenWritingNull);
+            ignoreRules.IgnoreProperty<PaginationMetadata>(e => e.HasPreviousPage, JsonIgnoreCondition.WhenWritingNull);
 
             // Allow user to configure additional ignore rules
             _options.ConfigureIgnoreRules?.Invoke(ignoreRules);
