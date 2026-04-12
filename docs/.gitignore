@@ -1,0 +1,6 @@
+# Docmd default build output directory
+dist/
+site/
+
+# Node.js dependencies
+node_modules/

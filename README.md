@@ -1,10 +1,10 @@
 # AspNetConventions
 
-[![License](https://img.shields.io/github/license/keizrivas/AspNetConventions)](https://github.com/keizrivas/AspNetConventions/blob/main/LICENSE)
+[![License](https://img.shields.io/github/license/keizrivas/AspNetConventions?label=License&labelColor=383f47)](https://github.com/keizrivas/AspNetConventions?tab=MIT-1-ov-file)
 [![Build Status](https://github.com/keizrivas/AspNetConventions/actions/workflows/build.yml/badge.svg)](https://github.com/keizrivas/AspNetConventions/actions/workflows/build.yml)
-[![NuGet Version](https://img.shields.io/nuget/v/AspNetConventions.svg)](https://www.nuget.org/packages/AspNetConventions)
-[![NuGet Downloads](https://img.shields.io/nuget/dt/AspNetConventions.svg)](https://www.nuget.org/packages/AspNetConventions)
-[![.NET](https://img.shields.io/badge/.NET-8.0+-512BD4.svg)](https://dotnet.microsoft.com/download)
+[![NuGet Version](https://img.shields.io/nuget/v/AspNetConventions.svg?color=00a6f4&logo=nuget&logoColor=959da5&label=NuGet&labelColor=383f47)](https://www.nuget.org/packages/AspNetConventions)
+[![NuGet Downloads](https://img.shields.io/nuget/dt/AspNetConventions.svg?color=155dfc&label=Downloads&labelColor=383f47)](https://www.nuget.org/packages/AspNetConventions)
+[![.NET](https://img.shields.io/badge/.NET-8.0+-512BD4.svg?labelColor=383f47)](https://dotnet.microsoft.com/download)
 
 <p align="center">
   <picture>
@@ -45,6 +45,7 @@ dotnet add package AspNetConventions
 
 ```csharp
 // Program.cs
+using AspNetConventions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -55,10 +56,10 @@ builder.Services
 
 var app = builder.Build();
 
-// Apply conventions to Minimal APIs
-var api = app.UseAspNetConventions("/");
+app.MapGet("/GetUser/{UserId}", (int UserId) => new { userId = UserId });
 
-api.MapGet("/GetUser/{UserId}", (int UserId) => new { userId = UserId });
+// Apply conventions to Minimal APIs
+app.UseAspNetConventions();
 
 app.Run();
 ```
@@ -95,10 +96,11 @@ GET /api/users/public-profile/{id}
 
 **Your Code:**
 ```csharp
-var api = app.UseAspNetConventions("/Api");
 
-api.MapGet("/WeatherForecasts/City/{name}", (string name) => 
+app.MapGet("/WeatherForecasts/City/{name}", (string name) => 
     Results.Ok(new { CityName = name, Temperature = 72 }));
+
+app.UseAspNetConventions();
 ```
 
 **Standardized Route:**
@@ -120,6 +122,14 @@ public class EditModel : PageModel
         // Your logic here
     }
 }
+```
+
+```razor
+// Pages/UserProfile/Edit.cshtml
+@page "{UserId:int}"
+@model EditModel
+
+<h2>Edit User</h2>
 ```
 
 **Standardized Route:**
@@ -168,7 +178,7 @@ GET /user-profile/edit/{user-id}
   "metadata": {
     "requestType": "PUT",
     "timestamp": "0000-00-00T00:00:00.000000Z",
-    "trace_id": "00-8e5513ae9369648487c2323d9a3508aa-2a8f92c7d45d3f74-00",
+    "traceId": "00-8e5513ae9369648487c2323d9a3508aa-2a8f92c7d45d3f74-00",
     "path": "/api/users/{id}"
   }
 }

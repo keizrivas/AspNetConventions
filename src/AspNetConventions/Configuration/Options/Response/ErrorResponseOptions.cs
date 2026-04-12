@@ -48,7 +48,7 @@ namespace AspNetConventions.Configuration.Options.Response
         /// <summary>
         /// Maximum depth for nested stack trace
         /// </summary>
-        public int MaxStackTraceDepth { get; set; } = 25;
+        public int MaxStackTraceDepth { get; set; } = 10;
 
         /// <summary>
         /// Creates a deep clone of <see cref="ErrorResponseOptions"/> instance.

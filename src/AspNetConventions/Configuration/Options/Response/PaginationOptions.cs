@@ -27,7 +27,7 @@ namespace AspNetConventions.Configuration.Options.Response
         /// <summary>
         /// Default page size when not specified
         /// </summary>
-        public int DefaultPageSize { get; set; } = 20;
+        public int DefaultPageSize { get; set; } = 25;
 
         /// <summary>
         /// Creates a deep clone of <see cref="PaginationOptions"/> instance.

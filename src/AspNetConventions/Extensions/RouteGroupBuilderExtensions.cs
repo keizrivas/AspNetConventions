@@ -1,6 +1,7 @@
 using System;
 using System.Text.Json;
 using AspNetConventions.Configuration.Options;
+using AspNetConventions.ExceptionHandling;
 using AspNetConventions.ExceptionHandling.Abstractions;
 using AspNetConventions.ExceptionHandling.Handlers;
 using AspNetConventions.Routing.Transformation;
@@ -9,6 +10,7 @@ using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 
 namespace AspNetConventions.Extensions
@@ -72,12 +74,14 @@ namespace AspNetConventions.Extensions
             ArgumentNullException.ThrowIfNull(options);
 
             // Get services
-            var logger = app.Services.GetRequiredService<ILogger<GlobalExceptionHandler>>();
+            var logger = app.Services.GetService<ILogger<GlobalExceptionHandler>>()
+                ?? NullLogger<GlobalExceptionHandler>.Instance;
             var serializer = app.Services.GetOptions<Microsoft.AspNetCore.Http.Json.JsonOptions>()
                 .Value.SerializerOptions;
 
             // Create the exception handler
-            var writer = new ExceptionResponseWriter(Options.Create(options), logger);
+            var writer = app.Services.GetService<IExceptionResponseWriter>()
+                ?? new ExceptionResponseWriter(Options.Create(options), logger);
 
             var handler = new GlobalExceptionHandler(writer);
 
