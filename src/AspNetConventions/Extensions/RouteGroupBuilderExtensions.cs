@@ -1,4 +1,5 @@
 using System;
+using System.Text.Json;
 using AspNetConventions.Configuration.Options;
 using AspNetConventions.ExceptionHandling;
 using AspNetConventions.ExceptionHandling.Abstractions;
@@ -82,7 +83,7 @@ namespace AspNetConventions.Extensions
             var writer = app.Services.GetService<IExceptionResponseWriter>()
                 ?? new ExceptionResponseWriter(Options.Create(options), logger);
 
-            var handler = new GlobalExceptionHandler(writer, serializer);
+            var handler = new GlobalExceptionHandler(writer);
 
             app.UseExceptionHandler(exceptionHandlerApp =>
             {
@@ -127,8 +128,10 @@ namespace AspNetConventions.Extensions
             }
 
             // Apply json serializer options to existing service
-            var serializerOptions = options.BuildSerializerOptions();
-            httpJsonOptions.SerializerOptions.ApplyFrom(serializerOptions);
+            if (options.GetSerializerOptions() is JsonSerializerOptions serializerOptions)
+            {
+                httpJsonOptions.SerializerOptions.ApplyFrom(serializerOptions);
+            }
 
             return app;
         }

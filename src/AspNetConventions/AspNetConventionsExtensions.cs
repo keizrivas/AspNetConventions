@@ -74,7 +74,8 @@ namespace AspNetConventions
             ArgumentNullException.ThrowIfNull(prefix);
 
             // Build and validate options
-            var options = app.Services.BuildAspNetConventionOptions(configure);
+            var options = new AspNetConventionOptions();
+            configure?.Invoke(options);
 
             var group = app.MapGroup(prefix);
             group.AddEndpointFilter(new ResponseConventionEndpointFilter(options));

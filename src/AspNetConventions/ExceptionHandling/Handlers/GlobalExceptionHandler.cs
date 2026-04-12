@@ -12,13 +12,11 @@ namespace AspNetConventions.ExceptionHandling.Handlers
     /// Exception handler that provides standardized error responses.
     /// </summary>
     /// <param name="exceptionResponseWriter">The service responsible for writing exception responses.</param>
-    /// <param name="jsonSerializerOptions">The JSON serializer options to use when formatting error responses.</param>
     /// <remarks>
     /// This handler integrates with AspNetConventions to provide consistent error response formatting
     /// </remarks>
     internal sealed class GlobalExceptionHandler(
-        IExceptionResponseWriter exceptionResponseWriter,
-        JsonSerializerOptions jsonSerializerOptions) : IExceptionHandler
+        IExceptionResponseWriter exceptionResponseWriter) : IExceptionHandler
     {
         /// <summary>
         /// Attempts to handle the specified exception for the Minimal API request context.
@@ -34,7 +32,6 @@ namespace AspNetConventions.ExceptionHandling.Handlers
             CancellationToken cancellationToken)
         {
             await exceptionResponseWriter
-                .WithSerializerOptions(jsonSerializerOptions)
                 .WriteResponseAsync(httpContext, exception, cancellationToken)
                 .ConfigureAwait(false);
 
