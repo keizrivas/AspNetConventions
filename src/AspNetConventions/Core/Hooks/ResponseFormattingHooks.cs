@@ -40,6 +40,13 @@ namespace AspNetConventions.Core.Hooks
         public delegate Task AfterResponseWrapCallback(object? wrappedResponse, ApiResult apiResult, RequestDescriptor requestDescriptor);
 
         /// <summary>
+        /// Represents a synchronous callback method invoked to customize metadata before the response is built.
+        /// </summary>
+        /// <param name="metadata">The metadata dictionary pre-populated with standard request fields.</param>
+        /// <param name="requestDescriptor">The request descriptor containing context information.</param>
+        public delegate void CustomizeMetadataCallback(Metadata metadata, RequestDescriptor requestDescriptor);
+
+        /// <summary>
         /// Gets or sets the asynchronous callback to determine whether a response should be wrapped.
         /// </summary>
         /// <value>A callback that returns false to skip wrapping for the specified response.</value>
@@ -58,6 +65,13 @@ namespace AspNetConventions.Core.Hooks
         public AfterResponseWrapCallback? AfterResponseWrapAsync { get; set; }
 
         /// <summary>
+        /// Gets or sets a synchronous callback invoked after the standard metadata fields are populated
+        /// and before the response is built, allowing custom entries to be added or standard fields
+        /// to be removed.
+        /// </summary>
+        public CustomizeMetadataCallback? CustomizeMetadata { get; set; }
+
+        /// <summary>
         /// Creates a deep clone of <see cref="ResponseFormattingHooks"/> instance.
         /// </summary>
         /// <returns>A new <see cref="ResponseFormattingHooks"/> instance with all nested objects cloned.</returns>
@@ -67,7 +81,8 @@ namespace AspNetConventions.Core.Hooks
             {
                 ShouldWrapResponseAsync = ShouldWrapResponseAsync,
                 BeforeResponseWrapAsync = BeforeResponseWrapAsync,
-                AfterResponseWrapAsync = AfterResponseWrapAsync,
+                AfterResponseWrapAsync  = AfterResponseWrapAsync,
+                CustomizeMetadata       = CustomizeMetadata,
             };
         }
     }

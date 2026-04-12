@@ -232,24 +232,23 @@ namespace AspNetConventions.Responses
             }
 
             var metadata = (Metadata)_requestDescriptor;
-            if (exceptionDescriptor == null)
-            {
-                return metadata;
-            }
 
-            // Include exception details
-            if ((Options.Response.ErrorResponse.IncludeExceptionDetails ?? _requestDescriptor.IsDevelopment)
-                && exceptionDescriptor.Exception != null)
+            // Include exception details when applicable
+            if (exceptionDescriptor?.Exception != null
+                && (Options.Response.ErrorResponse.IncludeExceptionDetails ?? _requestDescriptor.IsDevelopment))
             {
                 if (Options.Response.ErrorResponse.IncludeExceptionDetails == true && !_requestDescriptor.IsDevelopment)
                 {
                     Logger.LogDisclosureVulnerabilityWarning("Exception details should not be exposed in non-development environments.");
                 }
 
-                metadata.Exception = new ExceptionMetadata(
+                metadata[Metadata.ExceptionKey] = new ExceptionMetadata(
                     exceptionDescriptor.Exception,
                     Options.Response.ErrorResponse.MaxStackTraceDepth);
             }
+
+            // Allow callers to add, remove, or replace metadata entries
+            Options.Response.Hooks.CustomizeMetadata?.Invoke(metadata, _requestDescriptor);
 
             return metadata;
         }
