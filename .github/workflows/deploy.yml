@@ -27,6 +27,6 @@ jobs:
         working-directory: docs
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: ./site
+          path: docs/site
       - id: deployment
         uses: actions/deploy-pages@v4
