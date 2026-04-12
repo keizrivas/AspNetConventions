@@ -4,7 +4,7 @@ Exception mappers transform exceptions into structured error responses. Create c
 
 ---
 
-## Creating a Custom Mapper
+## Creating a Custom Mapper {#creating-a-custom-mapper}
 
 Inherit from `ExceptionMapper<TException>` and implement the `MapException` method:
 
@@ -34,7 +34,7 @@ public class OrderNotFoundExceptionMapper : ExceptionMapper<OrderNotFoundExcepti
 }
 ```
 
-### Registering Your Mapper
+### Registering Your Mapper {#registering-your-mapper}
 
 ```csharp
 builder.Services.AddControllers()
@@ -46,9 +46,9 @@ builder.Services.AddControllers()
 
 ---
 
-## ExceptionMapper&lt;T&gt; Base Class
+## ExceptionMapper&lt;T&gt; Base Class {#exceptionmapper-base-class}
 
-The [`ExceptionMapper`{.code-left}](/docs/exception-handling/configuration/#iexceptionmapper)`<TException>`{.code-right} base class provides:
+The [`ExceptionMapper`{.code-left}](./configuration.md#iexceptionmapper)`<TException>`{.code-right} base class provides:
 
 ```csharp
 public abstract class ExceptionMapper<TException> : IExceptionMapper
@@ -67,7 +67,7 @@ public abstract class ExceptionMapper<TException> : IExceptionMapper
 }
 ```
 
-### CanMapException
+### CanMapException {#canmapexception}
 
 Override `CanMapException` for custom matching logic:
 
@@ -97,11 +97,11 @@ public class HttpExceptionMapper : ExceptionMapper<HttpRequestException>
 
 ---
 
-## Building ExceptionDescriptor
+## Building ExceptionDescriptor {#building-exceptiondescriptor}
 
 The `ExceptionDescriptor` controls every aspect of the error response:
 
-### Simple Descriptor
+### Simple Descriptor {#simple-descriptor}
 
 ```csharp
 return new ExceptionDescriptor
@@ -112,7 +112,7 @@ return new ExceptionDescriptor
 };
 ```
 
-### Full Descriptor
+### Full Descriptor {#full-descriptor}
 
 ```csharp
 return new ExceptionDescriptor
@@ -131,13 +131,13 @@ return new ExceptionDescriptor
 };
 ```
 
-See [`ExceptionDescriptor`](/docs/exception-handling/configuration/#exceptiondescriptor) for more information.
+See [`ExceptionDescriptor`](./configuration.md#exceptiondescriptor) for more information.
 
 ---
 
-## Common Mapper Patterns
+## Common Mapper Patterns {#common-mapper-patterns}
 
-### Not Found Exception
+### Not Found Exception {#not-found-exception}
 
 ```csharp
 public class ResourceNotFoundException : Exception
@@ -175,7 +175,7 @@ public class ResourceNotFoundExceptionMapper : ExceptionMapper<ResourceNotFoundE
 }
 ```
 
-### Validation Exception
+### Validation Exception {#validation-exception}
 
 ```csharp
 public class BusinessValidationException : Exception
@@ -207,7 +207,7 @@ public class BusinessValidationExceptionMapper : ExceptionMapper<BusinessValidat
 }
 ```
 
-### Conflict Exception
+### Conflict Exception {#conflict-exception}
 
 ```csharp
 public class DuplicateEntityException : Exception
@@ -248,7 +248,7 @@ public class DuplicateEntityExceptionMapper : ExceptionMapper<DuplicateEntityExc
 }
 ```
 
-### Rate Limit Exception
+### Rate Limit Exception {#rate-limit-exception}
 
 ```csharp
 public class RateLimitExceededException : Exception
@@ -286,7 +286,7 @@ public class RateLimitExceptionMapper : ExceptionMapper<RateLimitExceededExcepti
 }
 ```
 
-### External Service Exception
+### External Service Exception {#external-service-exception}
 
 ```csharp
 public class ExternalServiceException : Exception
@@ -326,7 +326,7 @@ public class ExternalServiceExceptionMapper : ExceptionMapper<ExternalServiceExc
 
 ---
 
-## Mappers with Dependencies
+## Mappers with Dependencies {#mappers-with-dependencies}
 
 For mappers that need injected services, create them with dependencies and register appropriately:
 
@@ -375,7 +375,7 @@ builder.Services.AddControllers()
 
 ---
 
-## Logging Best Practices
+## Logging Best Practices {#logging-best-practices}
 
 **When to Log:**
 

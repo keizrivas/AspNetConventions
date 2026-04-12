@@ -36,7 +36,6 @@ customHead: |
           <img src="assets/images/logo_dark.svg" alt="AspNetConventions" class="dark:block hidden">
         </a>
       </div>
-
       <div 
         :class="{
           'max-md:mt-0!': isScrolled,
@@ -99,7 +98,6 @@ customHead: |
           </svg>
           <span class="font-mono" x-text="$store.packageMetadata.version"></span> Now available
       </a>
-
       <h1 class="text-5xl md:text-7xl font-extrabold tracking-tight leading-tight mb-6  ">
         Dynamic
         <span class="bg-linear-to-r from-brand-pink via-purple-500 to-brand-purple text-transparent bg-clip-text animate-gradient">
@@ -138,7 +136,6 @@ customHead: |
           </div>
         </div>
       </div>
-
       <div class="mt-16 flex items-center justify-center gap-2 sm:gap-8">
         <div class="flex items-center gap-2">
           <i data-lucide="star" class="w-4.5 h-4.5"></i>
@@ -164,7 +161,7 @@ customHead: |
 
   <!-- features Section -->
   <section id="features" class="py-24 w-full bg-slate-100 dark:bg-dark-200">
-    <div class="mx-auto max-w-2xl px-1 min-[400px]:px-2.5 md:px-6 lg:max-w-7xl lg:px-8">
+    <div class="mx-auto max-w-2xl px-0.5 min-[360px] md:px-6 lg:max-w-7xl lg:px-8">
       <h2 class="text-center text-base/7 font-semibold text-brand-purple">
         Features
       </h2>
@@ -175,14 +172,14 @@ customHead: |
         <div class="card relative lg:row-span-2 before:lg:rounded-l-4xl! after:lg:rounded-l-4xl!">
           <div class="glow"></div>
           <div class="relative flex h-full flex-col lg:rounded-l-4xl overflow-hidden">
-            <div class="px-4 pt-8 pb-3 sm:px-10 sm:pt-10 sm:pb-0">
-              <p class="mt-2 text-lg font-medium tracking-tight max-lg:text-center">
-                Route Standarization
+            <a href="/AspNetConventions/docs/route-standardization/" class="group px-4 pt-8 pb-3 sm:px-10 sm:pt-10 sm:pb-0">
+              <p class="group-hover:underline flex items-center mt-2 text-lg font-medium tracking-tight max-lg:text-center">
+                <i data-lucide="link" class="w-4.5 h-4.5 mr-2"></i> Route Standarization
               </p>
               <p class="mt-2 max-w-lg text-sm/6 text-slate-500 max-lg:text-center">
                 Turn complex, inconsistent URLs into clean, SEO-friendly paths automatically.
               </p>
-            </div>
+            </a>
             <div class="flex flex-col gap-4 px-2 pt-2 sm:px-6 pb-8 mt-4 h-full">
               <div class="relative z-10">
                 <div class="flex flex-col gap-y-3 bg-glass shadow-xl rounded-3xl p-3 mt-4">
@@ -219,14 +216,14 @@ customHead: |
         <div class="card max-lg:row-start-1 before:max-lg:rounded-t-4xl! after:max-lg:rounded-t-4xl!">
           <div class="glow"></div>
           <div class="relative flex h-full flex-col rounded-2xl max-lg:rounded-t-4xl min-h-72 overflow-hidden">
-            <div class="px-4 pt-8 sm:px-10 sm:pt-10">
-              <p class="mt-2 text-lg font-medium tracking-tight max-lg:text-center">
-                Exception Handling
+            <a href="/AspNetConventions/docs/exception-handling/" class="group px-4 pt-8 sm:px-10 sm:pt-10">
+              <p class="group-hover:underline flex items-center mt-2 text-lg font-medium tracking-tight max-lg:text-center">
+                <i data-lucide="link" class="w-4.5 h-4.5 mr-2"></i> Exception Handling
               </p>
               <p class="mt-2 max-w-lg text-sm/6 text-slate-500 max-lg:text-center">
                 A safety net that intercepts, map and formats every failure.
               </p>
-            </div>
+            </a>
             <div class="flex-1 px-4 sm:px-10 py-5 relative">
               <div class="relative flex flex-col gap-2.5 z-10 pr-24 lg:pr-2 xl:pr-18">
                 <div class="flex gap-2 font-mono text-sm bg-glass shadow-lg rounded-xl px-4 py-2">
@@ -247,14 +244,14 @@ customHead: |
           <div class="glow"></div>
           <div class="bg-noise absolute inset-px rounded-2xl opacity-75 bg-black/25 dark:bg-black/50"></div>
           <div class="relative flex flex-col h-full min-h-72 overflow-hidden">
-            <div class="px-4 pt-8 sm:px-10 sm:pt-10">
-              <p class="mt-2 text-lg font-medium tracking-tight max-lg:text-center">
-                JSON Serialization
+            <a href="/AspNetConventions/docs/json-serialization/" class="group px-4 pt-8 sm:px-10 sm:pt-10">
+              <p class="group-hover:underline flex items-center mt-2 text-lg font-medium tracking-tight max-lg:text-center">
+                <i data-lucide="link" class="w-4.5 h-4.5 mr-2"></i> JSON Serialization
               </p>
               <p class="mt-2 max-w-lg text-sm/6 text-slate-200 max-lg:text-center">
                 Global Json serialization control with zero external dependencies.
               </p>
-            </div>
+            </a>
             <div class="flex-1 py-5 px-4 sm:px-10 relative">
               <div class="relative flex flex-col gap-2.5 z-10 pr-24 lg:pr-2 xl:pr-18">
                 <div class="ml-3.5">
@@ -288,14 +285,14 @@ customHead: |
           <div class="glow"></div>
           <div class="h-full w-full rounded-2xl max-lg:rounded-b-4xl lg:rounded-r-4xl overflow-hidden">
             <div class="relative flex h-full flex-col">
-              <div class="px-4 pt-8 pb-3 sm:px-10 sm:pt-10 sm:pb-0">
-                <p class="mt-2 text-lg font-medium tracking-tight max-lg:text-center">
-                  Response Formatting
+              <a href="/AspNetConventions/docs/response-formatting/" class="group px-4 pt-8 pb-3 sm:px-10 sm:pt-10 sm:pb-0">
+                <p class="group-hover:underline flex items-center mt-2 text-lg font-medium tracking-tight max-lg:text-center">
+                  <i data-lucide="link" class="w-4.5 h-4.5 mr-2"></i> Response Formatting
                 </p>
                 <p class="mt-2 max-w-lg text-sm/6 text-slate-500 max-lg:text-center">
                   Elegant and customizable response models for every endpoint across your API.
                 </p>
-              </div>
+              </a>
               <div class="relative min-h-120 w-full grow">
                 <div class="absolute top-10 right-0 bottom-0 left-6 rounded-tl-3xl outline outline-black/20 dark:outline-white/10 border-glass -mb-0.5 -mr-0.5">
                   <div class="absolute inset-px mt-2 ml-2 rounded-tl-2xl text-black dark:text-white bg-slate-100 dark:bg-dark-300 outline outline-black/10 dark:outline-white/5 overflow-hidden">
@@ -338,22 +335,55 @@ customHead: |
   </section>
 
   <!-- Footer -->
-  <footer class="py-20 w-full">
-    <div class="max-w-7xl mx-auto px-6">
-      <div class="flex flex-col md:flex-row items-center justify-between gap-8">
-        <img src="./assets/images/logo.svg" alt="" class="w-32" />
-        
-        <!-- <div class="flex gap-8 text-sm font-medium text-slate-500">
-          <a href="#" class="hover:text-white transition-colors">GitHub</a>
-          <a href="#" class="hover:text-white transition-colors">NuGet</a>
-        </div> -->
-
-        <div x-data="{ year: new Date().getFullYear() }" class="text-xs text-slate-600">
-          Open Source under MIT License | © <span x-text="year"></span> AspNetConventions.
+  <footer>
+      <div class="mx-auto w-full max-w-7xl p-4 py-6 lg:py-8">
+          <div class="md:flex md:justify-between md:items-center">
+            <div class="mb-6 md:mb-0">
+                <a href="/AspNetConventions/" class="flex items-center">
+                    <img src="./assets/images/logo.svg" class="w-24 me-3" alt="AspNetConventions" />
+                </a>
+            </div>
+            <div class="grid grid-cols-1 gap-8 sm:gap-6 sm:grid-cols-2 text-sm">
+                <div>
+                    <h2 class="mb-6 text-sm font-semibold">Source</h2>
+                    <ul class="text-slate-500">
+                        <li class="mb-4">
+                            <a href="https://www.nuget.org/packages/AspNetConventions" class="hover:underline">NuGet</a>
+                        </li>
+                        <li class="mb-4">
+                            <a href="https://github.com/keizrivas/AspNetConventions" class="hover:underline">GitHub</a>
+                        </li>
+                        <li>
+                            <a href="https://github.com/keizrivas/AspNetConventions/releases" class="hover:underline">Releases</a>
+                        </li>
+                    </ul>
+                </div>
+                <div>
+                    <h2 class="mb-6 text-sm font-semibold">Features</h2>
+                    <ul class="text-slate-500">
+                        <li class="mb-4">
+                            <a href="/AspNetConventions/docs/route-standardization/" class="hover:underline">Route Standarization</a>
+                        </li>
+                        <li class="mb-4">
+                            <a href="/AspNetConventions/docs/response-formatting/" class="hover:underline">Response Formatting</a>
+                        </li>
+                        <li class="mb-4">
+                            <a href="/AspNetConventions/docs/exception-handling/" class="hover:underline">Exception Handling</a>
+                        </li>
+                        <li>
+                            <a href="/AspNetConventions/docs/json-serialization/" class="hover:underline">JSON Serialization</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <hr class="my-6 border-slate-400 dark:border-slate-600 sm:mx-auto lg:my-8 opacity-50" />
+        <div class="sm:flex sm:items-center sm:justify-between">
+            <p class="text-sm sm:text-center text-slate-400 dark:text-slate-600" x-data="{ year: new Date().getFullYear() }">
+              Open Source under MIT License | © <span x-text="year"></span> AspNetConventions
+            </p>
         </div>
       </div>
-    </div>
   </footer>
-
   <script src="./assets/js/main.js"></script>
 </body>

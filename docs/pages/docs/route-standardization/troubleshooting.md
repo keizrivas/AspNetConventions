@@ -4,7 +4,7 @@ Common issues and solutions when using Route Standardization.
 
 ---
 
-## Parameter Binding Fails in Minimal APIs
+## Parameter Binding Fails in Minimal APIs {#parameter-binding-fails-in-minimal-apis}
 
 **Problem:** After enabling route transformation, Minimal API parameters return null or cause binding errors.
 
@@ -29,7 +29,7 @@ options.Route.MinimalApi.TransformRouteParameters = false; // default
 
 ---
 
-## Routes Not Being Transformed
+## Routes Not Being Transformed {#routes-not-being-transformed}
 
 **Problem:** Routes remain in PascalCase despite configuration.
 
@@ -64,7 +64,7 @@ options.Route.Hooks.ShouldTransformRoute = (template, model) => {
 
 ---
 
-## Query String Parameters Not Binding
+## Query String Parameters Not Binding {#query-string-parameters-not-binding}
 
 **Problem:** Complex type properties don't bind from query strings.
 
@@ -92,7 +92,7 @@ public class SearchRequest
 
 ---
 
-## Route Constraints Not Working
+## Route Constraints Not Working {#route-constraints-not-working}
 
 **Problem:** Route constraints like `{id:int}` cause 404 errors after transformation.
 
@@ -116,7 +116,7 @@ Check that your constraint is properly formatted:
 
 ---
 
-## Razor Pages Form Fields Not Binding
+## Razor Pages Form Fields Not Binding {#razor-pages-form-fields-not-binding}
 
 **Problem:** Form submissions fail to bind to `[BindProperty]` properties.
 
@@ -141,7 +141,7 @@ Or use tag helpers which handle this automatically:
 
 ---
 
-## URL Generation Returns Original Names
+## URL Generation Returns Original Names {#url-generation-returns-original-names}
 
 **Problem:** `Url.Action()` or tag helpers generate URLs with PascalCase names.
 
@@ -166,7 +166,7 @@ app.UseAspNetConventions(); // Must be called before MapGet, etc.
 
 ---
 
-## Debugging Transformations
+## Debugging Transformations {#debugging-transformations}
 
 Use the `AfterRouteTransform` hook to log all transformations:
 

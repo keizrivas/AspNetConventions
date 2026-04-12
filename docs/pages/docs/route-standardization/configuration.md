@@ -4,10 +4,10 @@ Complete reference for all Route Standardization configuration options.
 
 ---
 
-## RouteConventionOptions
+## RouteConventionOptions {#routeconventionoptions}
 
 **Namespace:** `AspNetConventions.Configuration.Options`
-**Accessed via:** [`options`{.code-left}](/docs/configuration-reference/#aspnetconventionoptions)`.Route`{.code-right}
+**Accessed via:** [`options`{.code-left}](../configuration-reference.md#aspnetconventionoptions)`.Route`{.code-right}
 
 Controls how route paths and parameters are transformed across all endpoint types.
 
@@ -22,7 +22,7 @@ Controls how route paths and parameters are transformed across all endpoint type
 | `MinimalApi` | [`MinimalApiRouteOptions`](#minimalapirouteoptions) | `new()` | Minimal API–specific route options |
 | `Hooks` | [`RouteConventionHooks`](#routeconventionhooks) | `new()` | Hooks for intercepting the route transformation pipeline |
 
-### Disabling Route Standardization
+### Disabling Route Standardization {#disabling-route-standardization}
 
 ```csharp
 builder.Services.AddControllers()
@@ -35,10 +35,10 @@ builder.Services.AddControllers()
 
 ---
 
-## CasingStyle
+## CasingStyle {#casingstyle}
 
 **Namespace:** `AspNetConventions.Core.Enums`
-**Accessed via:** [`options`{.code-left}](/docs/configuration-reference/#aspnetconventionoptions)`.`{.code-left .code-right}[`Route`{.code-left .code-right}](#routeconventionoptions)`.CaseStyle`{.code-right}
+**Accessed via:** [`options`{.code-left}](../configuration-reference.md#aspnetconventionoptions)`.`{.code-left .code-right}[`Route`{.code-left .code-right}](#routeconventionoptions)`.CaseStyle`{.code-right}
 
 | Value | Index | Route example | Parameter example |
 |---|---|---|---|
@@ -48,14 +48,14 @@ builder.Services.AddControllers()
 | `PascalCase` | `3` | `/GetUserById` | `{UserId}` |
 
 
-See [Custom Case Converter](/docs/route-standardization/#custom-case-converter) for more information about override the default `CasingStyle` options.
+See [Custom Case Converter](./index.md#custom-case-converter) for more information about override the default `CasingStyle` options.
 
 ---
 
-## ControllerRouteOptions
+## ControllerRouteOptions {#controllerrouteoptions}
 
 **Namespace:** `AspNetConventions.Configuration.Options.Route`
-**Accessed via:** [`options`{.code-left}](/docs/configuration-reference/#aspnetconventionoptions)`.`{.code-left .code-right}[`Route`{.code-left .code-right}](#routeconventionoptions)`.Controllers`{.code-right}
+**Accessed via:** [`options`{.code-left}](../configuration-reference.md#aspnetconventionoptions)`.`{.code-left .code-right}[`Route`{.code-left .code-right}](#routeconventionoptions)`.Controllers`{.code-right}
 
 | Property | Type | Default | Description |
 |---|---|---|---|
@@ -84,10 +84,10 @@ options.Route.Controllers.ExcludeAreas.Add("Admin");
 
 ---
 
-## MinimalApiRouteOptions
+## MinimalApiRouteOptions {#minimalapirouteoptions}
 
 **Namespace:** `AspNetConventions.Configuration.Options.Route`
-**Accessed via:** [`options`{.code-left}](/docs/configuration-reference/#aspnetconventionoptions)`.`{.code-left .code-right}[`Route`{.code-left .code-right}](#routeconventionoptions)`.MinimalApi`{.code-right}
+**Accessed via:** [`options`{.code-left}](../configuration-reference.md#aspnetconventionoptions)`.`{.code-left .code-right}[`Route`{.code-left .code-right}](#routeconventionoptions)`.MinimalApi`{.code-right}
 
 | Property | Type | Default | Description |
 |---|---|---|---|
@@ -131,10 +131,10 @@ options.Route.MinimalApi.ExcludeTags.Add("internal");
 
 ---
 
-## RazorPagesRouteOptions
+## RazorPagesRouteOptions {#razorpagesrouteoptions}
 
 **Namespace:** `AspNetConventions.Configuration.Options.Route`
-**Accessed via:** [`options`{.code-left}](/docs/configuration-reference/#aspnetconventionoptions)`.`{.code-left .code-right}[`Route`{.code-left .code-right}](#routeconventionoptions)`.RazorPages`{.code-right}
+**Accessed via:** [`options`{.code-left}](../configuration-reference.md#aspnetconventionoptions)`.`{.code-left .code-right}[`Route`{.code-left .code-right}](#routeconventionoptions)`.RazorPages`{.code-right}
 
 | Property | Type | Default | Description |
 |---|---|---|---|
@@ -154,10 +154,10 @@ options.Route.RazorPages.PreserveExplicitBindingNames = true;
 
 ---
 
-## RouteConventionHooks
+## RouteConventionHooks {#routeconventionhooks}
 
 **Namespace:** `AspNetConventions.Core.Hooks`
-**Accessed via:** [`RouteConventionOptions`{.code-left}](#routeconventionoptions)`.Hooks`{.code-right}
+**Accessed via:** [`options`{.code-left}](../configuration-reference.md#aspnetconventionoptions)`.`{.code-left .code-right}[`Route`{.code-left .code-right}](#routeconventionoptions)`.Hooks`{.code-right}
 
 Hooks provide fine-grained control over the transformation pipeline. Each hook is optional — set only the ones you need.
 
@@ -189,7 +189,7 @@ options.Route.Hooks.AfterRouteTransform = (route, originalRoute, model) =>
 };
 ```
 
-### RouteModelContext
+### RouteModelContext {#routemodelcontext}
 
 The `RouteModelContext` provides information about the endpoint being transformed:
 
@@ -201,7 +201,7 @@ The `RouteModelContext` provides information about the endpoint being transforme
 | `Page` | Razor page model (null for others) |
 | `RouteEndpointBuilder` | Minimal API endpoint builder (null for others) |
 
-### RouteParameterContext
+### RouteParameterContext {#routeparametercontext}
 
 The `RouteParameterContext` provides information about the parameter being transformed:
 
@@ -213,7 +213,7 @@ The `RouteParameterContext` provides information about the parameter being trans
 
 ---
 
-## Default Values Reference
+## Default Values Reference {#default-values-reference}
 
 | Option | Default |
 |---|---|

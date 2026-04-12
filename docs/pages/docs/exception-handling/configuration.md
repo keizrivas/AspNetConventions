@@ -4,10 +4,10 @@ Complete reference for all Exception Handling configuration options.
 
 ---
 
-## ExceptionHandlingOptions
+## ExceptionHandlingOptions {#exceptionhandlingoptions}
 
 **Namespace:** `AspNetConventions.Configuration.Options`
-**Accessed via:** [`options`{.code-left}](/docs/configuration-reference/#aspnetconventionoptions)`.ExceptionHandling`{.code-right}
+**Accessed via:** [`options`{.code-left}](../configuration-reference.md#aspnetconventionoptions)`.ExceptionHandling`{.code-right}
 
 Controls how unhandled exceptions are caught, mapped, and formatted across the application.
 
@@ -19,7 +19,7 @@ Controls how unhandled exceptions are caught, mapped, and formatted across the a
 | `ExcludeException` | `HashSet<Type>` | `[]` | Exception types that should bypass handling and propagate normally |
 | `Hooks` | [`ExceptionHandlingHooks`](#exceptionhandlinghooks) | `new()` | Hooks for intercepting the exception handling pipeline |
 
-### Disabling Exception Handling
+### Disabling Exception Handling {#disabling-exception-handling}
 
 ```csharp
 builder.Services.AddControllers()
@@ -30,7 +30,7 @@ builder.Services.AddControllers()
     });
 ```
 
-### Excluding Status Codes
+### Excluding Status Codes {#excluding-status-codes}
 
 Prevent specific HTTP status codes from being reformatted — useful when other middleware handles certain responses:
 
@@ -42,7 +42,7 @@ options.ExceptionHandling.ExcludeStatusCodes.Add(HttpStatusCode.Forbidden);
 
 When a mapper returns an excluded status code, the exception is re-thrown to be handled by other middleware.
 
-### Excluding Exception Types
+### Excluding Exception Types {#excluding-exception-types}
 
 Allow specific exception types to bypass the handler entirely and propagate up the pipeline:
 
@@ -53,7 +53,7 @@ options.ExceptionHandling.ExcludeException.Add(typeof(TaskCanceledException));
 
 ---
 
-## IExceptionMapper
+## IExceptionMapper {#iexceptionmapper}
 
 **Namespace:** `AspNetConventions.Core.Abstractions`
 
@@ -62,9 +62,9 @@ The contract that all exception mappers must implement. Custom mappers registere
 | Member | Signature | Description |
 |---|---|---|
 | `CanMap` | `(Exception) → bool` | Returns `true` if this mapper handles the given exception type |
-| `Map` | `(Exception, `{.code-left}[`RequestDescriptor`{.code-left .code-right}](/docs/response-formatting/configuration/#requestdescriptor)`)  →  `{.code-left .code-right}[`ExceptionDescriptor`{.code-right}](#exceptiondescriptor) | Produces the [`ExceptionDescriptor`](#exceptiondescriptor) that controls the error response |
+| `Map` | `(Exception, `{.code-left}[`RequestDescriptor`{.code-left .code-right}](../response-formatting/configuration.md#requestdescriptor)`)  →  `{.code-left .code-right}[`ExceptionDescriptor`{.code-right}](#exceptiondescriptor) | Produces the [`ExceptionDescriptor`](#exceptiondescriptor) that controls the error response |
 
-### Implementing IExceptionMapper
+### Implementing IExceptionMapper {#implementing-iexceptionmapper}
 
 The recommended approach is to extend the abstract `ExceptionMapper<TException>` base class, which provides a strongly-typed implementation of `IExceptionMapper`:
 
@@ -111,7 +111,7 @@ public class PaymentExceptionMapper : IExceptionMapper
 
 ---
 
-### Registering Custom Mappers
+### Registering Custom Mappers {#registering-custom-mappers}
 
 Add instances of your `ExceptionMapper<T>` implementations to the `Mappers` set:
 
@@ -125,7 +125,7 @@ builder.Services.AddControllers()
     });
 ```
 
-### Resolution Order
+### Resolution Order {#resolution-order}
 
 When an exception is thrown, mappers are resolved in this order:
 
@@ -133,7 +133,7 @@ When an exception is thrown, mappers are resolved in this order:
 2. **Built-in mappers** for `ArgumentNullException`, `ArgumentException`, `ValidationException`, etc.
 3. **DefaultExceptionMapper** as the final fallback (returns 500)
 
-### Replacing Built-in Mappers
+### Replacing Built-in Mappers {#replacing-built-in-mappers}
 
 To override a built-in mapper, register your own mapper for that exception type:
 
@@ -146,7 +146,7 @@ Custom mappers always take precedence over built-in ones.
 
 ---
 
-## ExceptionDescriptor
+## ExceptionDescriptor {#exceptiondescriptor}
 
 The `ExceptionDescriptor` is produced by mappers and controls the error response:
 
@@ -160,7 +160,7 @@ The `ExceptionDescriptor` is produced by mappers and controls the error response
 | `LogLevel` | `LogLevel` | `Error` | Log level when `ShouldLog` is `true` |
 | `Exception` | `Exception?` | — | Original exception (set automatically) |
 
-### Generic ExceptionDescriptor
+### Generic ExceptionDescriptor {#generic-exceptiondescriptor}
 
 For strongly-typed values, use `ExceptionDescriptor<TValue>`:
 
@@ -185,21 +185,21 @@ public override ExceptionDescriptor MapException(
 
 ---
 
-## ExceptionHandlingHooks
+## ExceptionHandlingHooks {#exceptionhandlinghooks}
 
 **Namespace:** `AspNetConventions.Core.Hooks`
-**Accessed via:** [`options`{.code-left}](/docs/configuration-reference/#aspnetconventionoptions)`.`{.code-left .code-right}[`ExceptionHandling`{.code-left .code-right}](#exceptionhandlingoptions)`.Hooks`{.code-right}
+**Accessed via:** [`options`{.code-left}](../configuration-reference.md#aspnetconventionoptions)`.`{.code-left .code-right}[`ExceptionHandling`{.code-left .code-right}](#exceptionhandlingoptions)`.Hooks`{.code-right}
 
 Hooks provide fine-grained control over the exception handling pipeline. All hooks are asynchronous.
 
 | Property | Delegate Signature | Description |
 |---|---|---|
 | `TryHandleAsync` | `(Exception) → Task` | Global exception observer. Runs for every exception across Minimal APIs, MVC Controllers, and Razor Pages — without affecting the normal handling pipeline |
-| `ShouldHandleAsync` | `(Exception, `{.code-left}[`RequestDescriptor`{.code-left .code-right}](/docs/response-formatting/configuration/#requestdescriptor)`) → Task<bool>`{.code-right} | Return `false` to skip handling for a specific exception |
-| `BeforeMappingAsync` | `(`{.code-left}[`IExceptionMapper`{.code-left .code-right}](#iexceptionmapper)`, `{.code-left .code-right}[`RequestDescriptor`{.code-left .code-right}](/docs/response-formatting/configuration/#requestdescriptor)`) → Task<`{.code-left .code-right}[`IExceptionMapper`{.code-left .code-right}](#iexceptionmapper)`>`{.code-right} | Called before mapping. Can replace the mapper |
-| `AfterMappingAsync` | `(`{.code-left}[`ExceptionDescriptor`{.code-left .code-right}](#exceptiondescriptor)`, `{.code-left .code-right}[`IExceptionMapper`{.code-left .code-right}](#iexceptionmapper)`, `{.code-left .code-right}[`RequestDescriptor`{.code-left .code-right}](/docs/response-formatting/configuration/#requestdescriptor)`) → Task<`{.code-right .code-left}[`ExceptionDescriptor`{.code-left .code-right}](#exceptiondescriptor)`>`{.code-right} | Called after mapping. Can modify the descriptor |
+| `ShouldHandleAsync` | `(Exception, `{.code-left}[`RequestDescriptor`{.code-left .code-right}](../response-formatting/configuration.md#requestdescriptor)`) → Task<bool>`{.code-right} | Return `false` to skip handling for a specific exception |
+| `BeforeMappingAsync` | `(`{.code-left}[`IExceptionMapper`{.code-left .code-right}](#iexceptionmapper)`, `{.code-left .code-right}[`RequestDescriptor`{.code-left .code-right}](../response-formatting/configuration.md#requestdescriptor)`) → Task<`{.code-left .code-right}[`IExceptionMapper`{.code-left .code-right}](#iexceptionmapper)`>`{.code-right} | Called before mapping. Can replace the mapper |
+| `AfterMappingAsync` | `(`{.code-left}[`ExceptionDescriptor`{.code-left .code-right}](#exceptiondescriptor)`, `{.code-left .code-right}[`IExceptionMapper`{.code-left .code-right}](#iexceptionmapper)`, `{.code-left .code-right}[`RequestDescriptor`{.code-left .code-right}](../response-formatting/configuration.md#requestdescriptor)`) → Task<`{.code-right .code-left}[`ExceptionDescriptor`{.code-left .code-right}](#exceptiondescriptor)`>`{.code-right} | Called after mapping. Can modify the descriptor |
 
-### ShouldHandleAsync
+### ShouldHandleAsync {#shouldhandleasync}
 
 Determine whether an exception should be handled:
 
@@ -218,7 +218,7 @@ options.ExceptionHandling.Hooks.ShouldHandleAsync = async (exception, request) =
 };
 ```
 
-### BeforeMappingAsync
+### BeforeMappingAsync {#beforemappingasync}
 
 Intercept before the mapper runs:
 
@@ -235,7 +235,7 @@ options.ExceptionHandling.Hooks.BeforeMappingAsync = async (mapper, request) =>
 };
 ```
 
-### AfterMappingAsync
+### AfterMappingAsync {#aftermappingasync}
 
 Modify the descriptor after mapping:
 
@@ -264,7 +264,7 @@ options.ExceptionHandling.Hooks.AfterMappingAsync = async (descriptor, mapper, r
 };
 ```
 
-### TryHandleAsync
+### TryHandleAsync {#tryhandleasync}
 
 A global exception observer that runs for every unhandled exception across Minimal APIs, MVC Controllers, and Razor Pages. It does **not** override the pipeline — mapper resolution, logging, and response building all continue normally.
 
@@ -287,7 +287,7 @@ options.ExceptionHandling.Hooks.TryHandleAsync = async (exception) =>
 
 ---
 
-## Default Values Reference
+## Default Values Reference {#default-values-reference}
 
 | Option | Default |
 |---|---|

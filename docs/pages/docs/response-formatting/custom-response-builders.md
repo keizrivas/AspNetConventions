@@ -4,7 +4,7 @@ If the default response envelope doesn't match your API contract, you can replac
 
 ---
 
-## When to Use Custom Builders
+## When to Use Custom Builders {#when-to-use-custom-builders}
 
 - **Different envelope structure** — Your API contract requires a specific JSON shape
 - **Legacy API compatibility** — Matching an existing API format
@@ -12,12 +12,12 @@ If the default response envelope doesn't match your API contract, you can replac
 - **Minimalist responses** — Removing metadata or simplifying the envelope
 
 ::: callout info Before you start
-Make sure you understand [`ApiResult`](/docs/response-formatting/configuration/#apiresult) and [`RequestDescriptor`](/docs/response-formatting/configuration/#requestdescriptor) before proceeding. The following examples build on these concepts.
+Make sure you understand [`ApiResult`](./configuration.md#apiresult) and [`RequestDescriptor`](./configuration.md#requestdescriptor) before proceeding. The following examples build on these concepts.
 :::
 
 ---
 
-## IResponseBuilder
+## IResponseBuilder {#iresponsebuilder}
 
 Controls the shape of **success responses** (`2xx`, `3xx` status codes).
 
@@ -36,7 +36,7 @@ public interface IResponseBuilder
 }
 ```
 
-### Implementing IResponseBuilder
+### Implementing IResponseBuilder {#implementing-iresponsebuilder}
 
 ```csharp
 using AspNetConventions.Core.Abstractions.Contracts;
@@ -63,7 +63,7 @@ public class MyResponseBuilder : IResponseBuilder
 
 ---
 
-## IErrorResponseBuilder
+## IErrorResponseBuilder {#ierrorresponsebuilder}
 
 Controls the shape of **error responses** (`4xx`, `5xx` status codes).
 
@@ -82,7 +82,7 @@ public interface IErrorResponseBuilder
 }
 ```
 
-### Implementing IErrorResponseBuilder
+### Implementing IErrorResponseBuilder {#implementing-ierrorresponsebuilder}
 
 ```csharp
 using AspNetConventions.Core.Abstractions.Contracts;
@@ -114,7 +114,7 @@ The `exception` parameter is the original exception (if one was thrown). Use it 
 
 ---
 
-## Registering Custom Builders
+## Registering Custom Builders {#registering-custom-builders}
 
 Register your custom builders in the options configuration:
 
@@ -131,7 +131,7 @@ You can replace one or both builders independently. If you only set `ResponseBui
 
 ---
 
-## Preventing Double-Wrapping
+## Preventing Double-Wrapping {#preventing-double-wrapping}
 
 The `IsWrappedResponse` method prevents your response from being wrapped twice. This is important when:
 
@@ -164,9 +164,9 @@ When `IsWrappedResponse` returns `true`:
 
 ---
 
-## Example
+## Example {#example}
 
-### Flat Envelope
+### Flat Envelope {#flat-envelope}
 
 A minimal, flat response structure:
 
@@ -218,7 +218,7 @@ public class FlatErrorResponseBuilder : IErrorResponseBuilder
 
 ---
 
-### HATEOAS-Style Links
+### HATEOAS-Style Links {#hateoas-style-links}
 
 Adding hypermedia links to responses:
 
@@ -267,7 +267,7 @@ public class HateoasResponseBuilder : IResponseBuilder
 
 ---
 
-### RFC 7807 Problem Details
+### RFC 7807 Problem Details {#rfc-7807-problem-details}
 
 Conforming to the Problem Details specification:
 
@@ -326,7 +326,7 @@ public class ProblemDetailsErrorBuilder : IErrorResponseBuilder
 
 ---
 
-### Conditional Wrapping
+### Conditional Wrapping {#conditional-wrapping}
 
 Wrap only certain response types:
 
@@ -359,7 +359,7 @@ public class ConditionalResponseBuilder : IResponseBuilder
 
 ---
 
-### Using Dependency Injection
+### Using Dependency Injection {#using-dependency-injection}
 
 For builders that need dependencies, register them with DI:
 
@@ -405,7 +405,7 @@ builder.Services.AddControllers()
 
 ---
 
-## Best Practices
+## Best Practices {#best-practices}
 
 1. **Keep builders simple** — Focus on structure transformation, not business logic
 2. **Use consistent naming** — Match your API documentation and client expectations

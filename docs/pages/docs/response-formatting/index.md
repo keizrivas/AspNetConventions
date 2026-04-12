@@ -4,7 +4,7 @@
 
 ---
 
-## Why Response Formatting?
+## Why Response Formatting? {#why-response-formatting}
 
 REST APIs often return inconsistent response structures — some endpoints return raw data, others wrap it in envelopes, and error responses vary wildly. This inconsistency makes client-side parsing difficult and increases maintenance overhead.
 
@@ -43,7 +43,7 @@ REST APIs often return inconsistent response structures — some endpoints retur
 
 ---
 
-## Features
+## Features {#features}
 
 - **Automatic response wrapping** — All responses are wrapped in a consistent envelope without code changes
 - **Unified error handling** — Error responses follow the same structure with type codes and messages
@@ -55,7 +55,7 @@ REST APIs often return inconsistent response structures — some endpoints retur
 
 ---
 
-## The Response Pipeline
+## The Response Pipeline {#the-response-pipeline}
 
 When your application returns a response, **AspNetConventions** processes it through the following pipeline:
 
@@ -86,11 +86,11 @@ For **error responses**, the flow is slightly different:
 ```
 ---
 
-## Default Response Format
+## Default Response Format {#default-response-format}
 
 **AspNetConventions** provides a consistent, predictable response format across all your API endpoints. This standardization eliminates the guesswork for API consumers and simplifies client-side integration.
 
-### Real-World Banking Examples
+### Real-World Banking Examples {#real-world-banking-examples}
 
 The examples below demonstrate a banking API handling various scenarios.
 
@@ -228,21 +228,21 @@ The examples below demonstrate a banking API handling various scenarios.
 
 ---
 
-### Response Types
+### Response Types {#response-types}
 
 The `type` field in your error responses can be customized to reflect your business domain. By implementing a custom `ExceptionMapper<TException>`, you can return meaningful error codes that your API clients can handle programmatically.
 
 **Example:** `"ORDER_NOT_FOUND"` tells the client exactly which resource is missing, rather than a generic `"NOT_FOUND"`.
 
 ::: callout info
-The `type` field is only visible in **validation failure** and **exception** responses. See [`DefaultApiResponseBuilder`](/docs/response-formatting/custom-response-builders/#iresponsebuilder) and [`DefaultApiErrorResponseBuilder`](/docs/response-formatting/custom-response-builders/#ierrorresponsebuilder) for more information about response formats.
+The `type` field is only visible in **validation failure** and **exception** responses. See [`DefaultApiResponseBuilder`](./custom-response-builders.md#iresponsebuilder) and [`DefaultApiErrorResponseBuilder`](./custom-response-builders.md#ierrorresponsebuilder) for more information about response formats.
 :::
 
-To return custom `type` codes directly from your endpoints, use [`ApiResults.Custom()`](/docs/response-formatting/api-results/#custom)—it works for both **success** and **error** responses. For automatic exception handling with custom `type` codes, see [Custom Exception Mapping](/docs/exception-handling/exception-mappers/#creating-a-custom-mapper).
+To return custom `type` codes directly from your endpoints, use [`ApiResults.Custom()`](./api-results.md#custom)—it works for both **success** and **error** responses. For automatic exception handling with custom `type` codes, see [Custom Exception Mapping](../exception-handling/exception-mappers.md#creating-a-custom-mapper).
 
 ---
 
-### Response Metadata
+### Response Metadata {#response-metadata}
 
 Every response automatically includes a `metadata` block that provides essential request context and observability information. This helps with debugging, logging, and correlating requests across distributed systems.
 
@@ -256,11 +256,11 @@ Every response automatically includes a `metadata` block that provides essential
 }
 ```
 
-See [Response Metadata](/docs/response-formatting/metadata/#response-metadata) for more information.
+See [Response Metadata](./metadata.md#response-metadata) for more information.
 
 ---
 
-### Pagination Metadata
+### Pagination Metadata {#pagination-metadata}
 
 When returning large result sets, **AspNetConventions** automatically includes pagination information that helps clients navigate through data efficiently. The `pagination` block provides current page details, total counts, and ready-to-use navigation URLs—eliminating the need for clients to manually construct pagination links.
 
@@ -287,15 +287,15 @@ When returning large result sets, **AspNetConventions** automatically includes p
 }
 ```
 
-See [Pagination Metadata](/docs/response-formatting/metadata/#pagination-metadata) for more information.
+See [Pagination Metadata](./metadata.md#pagination-metadata) for more information.
 
 ---
 
-## ApiResults
+## ApiResults {#apiresults}
 
-While ASP.NET Core provides built-in response methods like `Ok()`, `BadRequest()`, and `Problem()` for MVC, and `Results.Ok()`, `Results.BadRequest()`, `Results.Created()` for Minimal APIs, **AspNetConventions** offers an enhanced alternative: The [`ApiResults`](/docs/response-formatting/api-results/) helper class.
+While ASP.NET Core provides built-in response methods like `Ok()`, `BadRequest()`, and `Problem()` for MVC, and `Results.Ok()`, `Results.BadRequest()`, `Results.Created()` for Minimal APIs, **AspNetConventions** offers an enhanced alternative: The [`ApiResults`](./api-results.md) helper class.
 
-[`ApiResults`](/docs/response-formatting/api-results/) builds on top of these standard methods, providing a unified factory for creating strongly-typed responses with additional capabilities:
+[`ApiResults`](./api-results.md) builds on top of these standard methods, providing a unified factory for creating strongly-typed responses with additional capabilities:
 
 | Feature | Standard ASP.NET Core | With ApiResults |
 | --- | --- | --- |
@@ -316,4 +316,4 @@ return ApiResults.Paginate(users, totalRecords, pageNumber, pageSize);
 return ApiResults.BadRequest(ModelState);
 ```
 
-See [ApiResults Reference](/docs/response-formatting/api-results) for complete documentation.
+See [ApiResults Reference](./api-results.md) for complete documentation.

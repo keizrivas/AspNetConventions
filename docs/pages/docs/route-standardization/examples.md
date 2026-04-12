@@ -4,7 +4,7 @@ Complete working examples demonstrating Route Standardization across MVC Control
 
 ---
 
-## MVC Controller API
+## MVC Controller API {#mvc-controller-api}
 
 A complete REST API controller with various HTTP methods and parameter types.
 
@@ -53,7 +53,7 @@ public class UserSettings
 }
 ```
 
-### Generated Routes
+### Generated Routes {#generated-routes}
 
 | HTTP Method | Original | Transformed |
 |-------------|----------|-------------|
@@ -65,7 +65,7 @@ public class UserSettings
 
 ---
 
-## Minimal API
+## Minimal API {#minimal-api}
 
 A complete Minimal API setup with route groups and exclusions.
 
@@ -104,7 +104,7 @@ app.Run();
 public record CreateOrderRequest(string ProductName, int Quantity);
 ```
 
-### Configuration
+### Configuration {#configuration}
 
 ```csharp
 var api = app.UseAspNetConventions("/api", options =>
@@ -114,7 +114,7 @@ var api = app.UseAspNetConventions("/api", options =>
 });
 ```
 
-### Generated Routes
+### Generated Routes {#generated-routes}
 
 | HTTP Method | Original | Transformed |
 |-------------|----------|-------------|
@@ -127,11 +127,11 @@ var api = app.UseAspNetConventions("/api", options =>
 
 ---
 
-## Razor Pages
+## Razor Pages {#razor-pages}
 
 A Razor Pages example with route parameters and form binding.
 
-### Page Model
+### Page Model {#page-model}
 
 ```csharp
 // Pages/UserProfile/EditAddress.cshtml.cs
@@ -170,7 +170,7 @@ public class AddressForm
 }
 ```
 
-### Razor View
+### Razor View {#razor-view}
 
 ```html
 <!-- Pages/UserProfile/EditAddress.cshtml -->
@@ -200,14 +200,14 @@ public class AddressForm
 </form>
 ```
 
-### Generated Routes
+### Generated Routes {#generated-routes}
 
 | Action | Original | Transformed |
 |--------|----------|-------------|
 | GET | `/UserProfile/EditAddress/{UserId}/{AddressId}` | `/user-profile/edit-address/{user-id}/{address-id}` |
 | POST | `/UserProfile/EditAddress/{UserId}/{AddressId}` | `/user-profile/edit-address/{user-id}/{address-id}` |
 
-### Form Fields
+### Form Fields {#form-fields}
 
 | Original Property | Transformed Field Name |
 |-------------------|------------------------|
@@ -218,7 +218,7 @@ public class AddressForm
 
 ---
 
-## Mixed Endpoint Configuration
+## Mixed Endpoint Configuration {#mixed-endpoint-configuration}
 
 Configure MVC Controllers and Minimal APIs with different settings in the same application.
 
@@ -260,7 +260,7 @@ apiV2.MapPost("/CreateOrder/{StoreId}", handler);
 app.Run();
 ```
 
-### Result Comparison
+### Result Comparison {#result-comparison}
 
 | Endpoint Type | Original | Transformed |
 |---------------|----------|-------------|
@@ -271,7 +271,7 @@ app.Run();
 
 ---
 
-## Complete Application Setup
+## Complete Application Setup {#complete-application-setup}
 
 A full `Program.cs` example with all features configured.
 
@@ -342,7 +342,7 @@ app.Run();
 public record CreateOrderDto(Guid OrderId, string ProductName, int Quantity);
 ```
 
-### Output in Development
+### Output in Development {#output-in-development}
 
 ```
 [MvcAction] api/UserProfile/GetById/{UserId} → api/user-profile/by-id/{user-id}

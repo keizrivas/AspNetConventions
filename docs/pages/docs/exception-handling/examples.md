@@ -4,7 +4,7 @@ Complete working examples demonstrating Exception Handling across MVC Controller
 
 ---
 
-## Domain Exceptions Library
+## Domain Exceptions Library {#domain-exceptions-library}
 
 A common set of domain exceptions for your application:
 
@@ -90,7 +90,7 @@ public class RateLimitException : DomainException
 
 ---
 
-## Exception Mappers
+## Exception Mappers {#exception-mappers}
 
 Mappers for the domain exceptions:
 
@@ -175,7 +175,7 @@ public class RateLimitExceptionMapper : ExceptionMapper<RateLimitException>
 
 ---
 
-## MVC Controller
+## MVC Controller {#mvc-controller}
 
 A complete controller using domain exceptions:
 
@@ -298,7 +298,7 @@ public class OrdersController : ControllerBase
 
 ---
 
-## Minimal API
+## Minimal API {#minimal-api}
 
 The same functionality using Minimal APIs:
 
@@ -353,7 +353,7 @@ app.Run();
 ```
 ---
 
-## Alerting Integration
+## Alerting Integration {#alerting-integration}
 
 Send alerts for critical errors:
 

@@ -4,7 +4,7 @@ Complete working examples demonstrating Response Formatting across **MVC Control
 
 ---
 
-## MVC Controller API
+## MVC Controller API {#mvc-controller-api}
 
 A complete REST API controller using `ApiResults` for consistent responses.
 
@@ -82,7 +82,7 @@ public class ProductsController : ControllerBase
 }
 ```
 
-### Response Examples
+### Response Examples {#response-examples}
 
 ::: tabs
 
@@ -153,7 +153,7 @@ public class ProductsController : ControllerBase
 
 ---
 
-## Minimal API
+## Minimal API {#minimal-api}
 
 A complete Minimal API setup with response formatting.
 
@@ -215,9 +215,9 @@ app.Run();
 
 ---
 
-## Error Handling Scenarios
+## Error Handling Scenarios {#error-handling-scenarios}
 
-### Validation Errors
+### Validation Errors {#validation-errors}
 
 ```csharp
 [HttpPost]
@@ -251,7 +251,7 @@ public ActionResult<User> CreateUser([FromBody] CreateUserRequest request)
 }
 ```
 
-### Not Found
+### Not Found {#not-found}
 
 ```csharp
 [HttpGet("{id}")]
@@ -276,7 +276,7 @@ public ActionResult<Order> GetOrder(int id)
 }
 ```
 
-### Conflict
+### Conflict {#conflict}
 
 ```csharp
 [HttpPost]
@@ -309,9 +309,9 @@ public ActionResult<Account> CreateAccount([FromBody] CreateAccountRequest reque
 
 ---
 
-## Pagination Examples
+## Pagination Examples {#pagination-examples}
 
-### Basic Pagination
+### Basic Pagination {#basic-pagination}
 
 ```csharp
 [HttpGet]
@@ -324,7 +324,7 @@ public ActionResult<CollectionResult<Product>> GetProducts(
 }
 ```
 
-### Filtered Pagination
+### Filtered Pagination {#filtered-pagination}
 
 ```csharp
 [HttpGet]
@@ -347,7 +347,7 @@ public ActionResult<CollectionResult<Product>> SearchProducts(
 }
 ```
 
-### Cursor-Based Pagination
+### Cursor-Based Pagination {#cursor-based-pagination}
 
 For large datasets, use cursor-based pagination:
 
@@ -368,9 +368,9 @@ public ActionResult GetProducts([FromQuery] string? cursor, [FromQuery] int limi
 
 ---
 
-## Integration with Exception Handling
+## Integration with Exception Handling {#integration-with-exception-handling}
 
-Combine with [exception mappers](/docs/exception-handling/exception-mappers/#creating-a-custom-mapper) for consistent error responses:
+Combine with [exception mappers](../exception-handling/exception-mappers.md#creating-a-custom-mapper) for consistent error responses:
 
 ```csharp
 // Custom exception

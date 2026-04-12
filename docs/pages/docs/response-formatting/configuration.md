@@ -4,10 +4,10 @@ Complete reference for all Response Formatting configuration options.
 
 ---
 
-## ResponseFormattingOptions
+## ResponseFormattingOptions {#responseformattingoptions}
 
 **Namespace:** `AspNetConventions.Configuration.Options`
-**Accessed via:** [`options`{.code-left}](/docs/configuration-reference/#aspnetconventionoptions)`.Response`{.code-right}
+**Accessed via:** [`options`{.code-left}](../configuration-reference.md#aspnetconventionoptions)`.Response`{.code-right}
 
 Controls how successful and error responses are wrapped and formatted.
 
@@ -18,11 +18,11 @@ Controls how successful and error responses are wrapped and formatted.
 | `Pagination` | [`PaginationOptions`](#paginationoptions) | `new()` | Controls how paginated/collection responses are formatted |
 | `ErrorResponse` | [`ErrorResponseOptions`](#errorresponseoptions) | `new()` | Controls error-specific response formatting behaviour |
 | `CollectionResultAdapters` | `HashSet<ICollectionResultAdapter>` | `[]` | Custom adapters for resolving and formatting specific collection types in paginated responses |
-| `ResponseBuilder` | [`IResponseBuilder`{.code-left}](/docs/response-formatting/custom-response-builders#iresponsebuilder)`?`{.code-right} | `null` | Custom builder for successful responses. Falls back to `DefaultApiResponseBuilder` when `null` |
-| `ErrorResponseBuilder` | [`IErrorResponseBuilder`{.code-left}](/docs/response-formatting/custom-response-builders#ierrorresponsebuilder)`?`{.code-right} | `null` | Custom builder for error responses. Falls back to `DefaultApiErrorResponseBuilder` when `null` |
+| `ResponseBuilder` | [`IResponseBuilder`{.code-left}](./custom-response-builders.md#iresponsebuilder)`?`{.code-right} | `null` | Custom builder for successful responses. Falls back to `DefaultApiResponseBuilder` when `null` |
+| `ErrorResponseBuilder` | [`IErrorResponseBuilder`{.code-left}](./custom-response-builders.md#ierrorresponsebuilder)`?`{.code-right} | `null` | Custom builder for error responses. Falls back to `DefaultApiErrorResponseBuilder` when `null` |
 | `Hooks` | [`ResponseFormattingHooks`](#responseformattinghooks) | `new()` | Hooks for intercepting the response formatting pipeline |
 
-### Disabling Response Formatting
+### Disabling Response Formatting {#disabling-response-formatting}
 
 ```csharp
 builder.Services.AddControllers()
@@ -33,7 +33,7 @@ builder.Services.AddControllers()
     });
 ```
 
-### Disabling Metadata
+### Disabling Metadata {#disabling-metadata}
 
 ```csharp
 builder.Services.AddControllers()
@@ -49,10 +49,10 @@ builder.Services.AddControllers()
 
 ---
 
-## PaginationOptions
+## PaginationOptions {#paginationoptions}
 
 **Namespace:** `AspNetConventions.Configuration.Options.Response`
-**Accessed via:** [`options`{.code-left}](/docs/configuration-reference/#aspnetconventionoptions)`.`{.code-left .code-right}[`Response`{.code-left .code-right}](#responseformattingoptions)`.Pagination`{.code-right}
+**Accessed via:** [`options`{.code-left}](../configuration-reference.md#aspnetconventionoptions)`.`{.code-left .code-right}[`Response`{.code-left .code-right}](#responseformattingoptions)`.Pagination`{.code-right}
 
 Controls how paginated and collection responses are formatted.
 
@@ -74,10 +74,10 @@ options.Response.Pagination.DefaultPageSize = 50;
 
 ---
 
-## ErrorResponseOptions
+## ErrorResponseOptions {#errorresponseoptions}
 
 **Namespace:** `AspNetConventions.Configuration.Options.Response`
-**Accessed via:** [`options`{.code-left}](/docs/configuration-reference/#aspnetconventionoptions)`.`{.code-left .code-right}[`Response`{.code-left .code-right}](#responseformattingoptions)`.ErrorResponse`{.code-right}
+**Accessed via:** [`options`{.code-left}](../configuration-reference.md#aspnetconventionoptions)`.`{.code-left .code-right}[`Response`{.code-left .code-right}](#responseformattingoptions)`.ErrorResponse`{.code-right}
 
 Controls error-specific response formatting behaviour.
 
@@ -108,7 +108,7 @@ options.Response.ErrorResponse.AllowedProblemDetailsExtensions.Add("correlationI
 options.Response.ErrorResponse.AllowedProblemDetailsExtensions.Add("helpUrl");
 ```
 
-### Exception Details Behavior
+### Exception Details Behavior {#exception-details-behavior}
 
 The `IncludeExceptionDetails` property controls whether stack traces and inner exception information are included:
 
@@ -124,10 +124,10 @@ Never enable `IncludeExceptionDetails = true` in production environments. Stack 
 
 ---
 
-## ResponseFormattingHooks
+## ResponseFormattingHooks {#responseformattinghooks}
 
 **Namespace:** `AspNetConventions.Core.Hooks`
-**Accessed via:** [`options`{.code-left}](/docs/configuration-reference/#aspnetconventionoptions)`.`{.code-left .code-right}[`Response`{.code-left .code-right}](#responseformattingoptions)`.Hooks`{.code-right}
+**Accessed via:** [`options`{.code-left}](../configuration-reference.md#aspnetconventionoptions)`.`{.code-left .code-right}[`Response`{.code-left .code-right}](#responseformattingoptions)`.Hooks`{.code-right}
 
 Hooks provide fine-grained control over the response formatting pipeline. All hooks are asynchronous.
 
@@ -178,7 +178,7 @@ options.Response.Hooks.BeforeResponseWrapAsync = async (apiResult, request) =>
 };
 ```
 
-### ApiResult
+### ApiResult {#apiresult}
 Encapsulates the standard execution result structure for an HTTP request. This is the abstract base class for all API responses.
 
 | Property | Type | Description |
@@ -204,7 +204,7 @@ Encapsulates the standard execution result structure for an HTTP request. This i
 
 :::
 
-### ApiResult&lt;T&gt;
+### ApiResult&lt;T&gt; {#apiresult-t}
 
 The generic version adds type safety and is the recommended way to return responses in your controllers.
 
@@ -225,7 +225,7 @@ public sealed class ApiResult<TValue> : ApiResult
 - `ActionResult` — For non-generic action returns
 - `HttpApiResult<T>` — For Minimal API endpoints
 
-### RequestDescriptor
+### RequestDescriptor {#requestdescriptor}
 Provides a comprehensive snapshot of the current HTTP request and its associated metadata within the application context. This class is useful for logging, error handling, and response formatting.
 
 | Property | Type | Description |
@@ -244,7 +244,7 @@ Provides a comprehensive snapshot of the current HTTP request and its associated
 
 ---
 
-## Default Values Reference
+## Default Values Reference {#default-values-reference}
 
 | Option | Default |
 |---|---|

@@ -4,7 +4,7 @@
 
 ---
 
-## Why Route Standardization?
+## Why Route Standardization? {#why-route-standardization}
 
 REST APIs follow conventions where URLs use lowercase words separated by hyphens (kebab-case), but C# uses PascalCase for class and method names. This creates a mismatch:
 
@@ -30,7 +30,7 @@ GET /api/user-profile/get-by-id/{user-id}
 
 ---
 
-## Features
+## Features {#features}
 
 - **Automatic route transformation** — Converts route segments to your preferred casing style
 - **Parameter name transformation** — Ensures route parameters follow consistent naming (`{UserId}` → `{user-id}`)
@@ -41,7 +41,7 @@ GET /api/user-profile/get-by-id/{user-id}
 
 ---
 
-## Before & After
+## Before & After {#before-after}
 
 ::: tabs
 
@@ -110,7 +110,7 @@ GET /user-profile/edit-address/{user-id}/{address-id}
 
 ---
 
-## The Transformation Flow
+## The Transformation Flow {#the-transformation-flow}
 
 When your application starts, **AspNetConventions** processes all registered endpoints and applies transformations in this order:
 
@@ -130,7 +130,7 @@ All transformations happen **once at startup** — there's no runtime overhead d
 
 ---
 
-## Route Template Transformation
+## Route Template Transformation {#route-template-transformation}
 
 Route templates are broken into segments, and each segment is transformed according to your configured casing style.
 
@@ -154,7 +154,7 @@ api/user-profile/get-user-by-id/{user-id}
 
 ---
 
-## Parameter Binding
+## Parameter Binding {#parameter-binding}
 
 When a parameter name is transformed in the URL, you might wonder: how does ASP.NET Core still bind the value to your C# parameter?
 
@@ -176,11 +176,11 @@ public ActionResult GetOrder(int OrderId)
    - The alias maps it to the `OrderId` parameter
    - Your method receives `OrderId = 123`
 
-This works seamlessly for all binding sources, see [Supported Binding Sources](/docs/route-standardization/parameter-binding/#supported-binding-sources) for more information. 
+This works seamlessly for all binding sources, see [Supported Binding Sources](./parameter-binding.md#supported-binding-sources) for more information. 
 
 ---
 
-## URL Generation
+## URL Generation {#url-generation}
 
 AspNetConventions also handles **outbound URL generation**. When you generate URLs using ASP.NET Core's built-in helpers, the transformed routes are used automatically.
 
@@ -199,18 +199,18 @@ The route values you pass (`OrderId`) are automatically matched to the transform
 
 ---
 
-## Transformation Hooks
+## Transformation Hooks {#transformation-hooks}
 
 Hooks provide fine-grained control over the transformation pipeline. They allow you to conditionally skip transformation for specific routes, parameters, or tokens based on custom logic.
 
-### When to Use Hooks
+### When to Use Hooks {#when-to-use-hooks}
 
 - **Versioned routes** — Preserve `/v1/`, `/v2/` segments as-is
 - **Internal endpoints** — Skip transformation for admin or debug routes
 - **Specific parameters** — Keep `{id}` unchanged while transforming others
 - **Logging/Debugging** — Track all transformations at startup
 
-### Quick Example
+### Quick Example {#quick-example}
 
 ```csharp
 // Skip transformation for routes containing "/internal"
@@ -226,9 +226,9 @@ options.Route.Hooks.AfterRouteTransform = (newRoute, originalRoute, model) =>
     Console.WriteLine($"Transformed: {originalRoute} → {newRoute}");
 ```
 
-For the complete list of available hooks and their signatures, see [`RouteConventionHooks`](/docs/route-standardization/configuration/#routeconventionhooks).
+For the complete list of available hooks and their signatures, see [`RouteConventionHooks`](./configuration.md#routeconventionhooks).
 
-### Debugging Transformations
+### Debugging Transformations {#debugging-transformations}
 
 Use the `AfterRouteTransform` hook to log all transformations at startup:
 
@@ -255,7 +255,7 @@ options.Route.Hooks.AfterRouteTransform = (newRoute, originalRoute, model) =>
 
 ---
 
-## Custom Case Converter
+## Custom Case Converter {#custom-case-converter}
 
 If the built-in case styles don't fit your needs, implement `ICaseConverter`:
 

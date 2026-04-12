@@ -2,11 +2,11 @@
 
 **AspNetConventions** is designed to be zero-effort implementation. This guide explains the core workflow from initialization to final production build, ensuring your application enforces consistent API conventions across your entire ASP.NET Core ecosystem.
 
-## MVC Controllers
+## MVC Controllers {#mvc-controllers}
 
-When using MVC Controllers, the library integrates [`.AddAspNetConventions()`](/docs/getting-started/#addaspnetconventions) with the `IMvcBuilder` to inject global action filters and route token transformers. This ensures that every controller and action follows your specified naming conventions without requiring manual `[Route]` overrides on every method.
+When using MVC Controllers, the library integrates [`.AddAspNetConventions()`](./index.md#addaspnetconventions) with the `IMvcBuilder` to inject global action filters and route token transformers. This ensures that every controller and action follows your specified naming conventions without requiring manual `[Route]` overrides on every method.
 
-### Your Code
+### Your Code {#your-code}
 
 ```csharp
     [ApiController]
@@ -25,9 +25,9 @@ When using MVC Controllers, the library integrates [`.AddAspNetConventions()`](/
     }
 ```
 
-See [`ApiResults`](/docs/response-formatting/api-results) for more information about custom standardized responses.
+See [`ApiResults`](../response-formatting/api-results.md) for more information about custom standardized responses.
 
-### Route Transformation
+### Route Transformation {#route-transformation}
 
 The following table demonstrates how the library automatically transforms standard PascalCase names into clean, SEO-friendly paths.
 
@@ -36,7 +36,7 @@ The following table demonstrates how the library automatically transforms standa
 | `GET /api/Profile/GetUser/{UserId:int}` | `GET /api/profile/get-user/{user-id:int}` |
 | `POST /api/Profile/CreateAccount` | `POST /api/profile/create-account` |
 
-### Customizing the Route Style
+### Customizing the Route Style {#customizing-the-route-style}
 
 If you prefer a different naming convention, such as `snake_case` or remove prefixes/suffixes on controller/action names, you can define it globally during service registration. 
 
@@ -50,15 +50,15 @@ builder.Services
         options.Route.Controllers.RemoveActionPrefixes.Add("Get");
     });
 ```
-See [`RouteConventionOptions`](/docs/route-standardization/route-convention-options) and [`ControllerRouteOptions`](/docs/route-standardization/route-convention-options#controller-route-options) for more information about MVC Controllers route customization.
+See [`RouteConventionOptions`](../route-standardization/configuration.md#routeconventionoptions) and [`ControllerRouteOptions`](../route-standardization/configuration.md#controllerrouteoptions) for more information about MVC Controllers route customization.
 
 ---
 
-## Minimal APIs
+## Minimal APIs {#minimal-apis}
 
-For Minimal APIs, the library provides an [.UseAspNetConventions()](/docs/getting-started/#useaspnetconventions) extension for `WebApplication`. This allows to apply conventions to a specific branch of your API tree or the entire application.
+For Minimal APIs, the library provides an [.UseAspNetConventions()](./index.md#useaspnetconventions) extension for `WebApplication`. This allows to apply conventions to a specific branch of your API tree or the entire application.
 
-### Your Code
+### Your Code {#your-code}
 
 ```csharp
 api.MapGet("/WeatherForecast/{city}", (string city) =>
@@ -70,7 +70,7 @@ api.MapGet("/GetUserById/{userId}", (int userId) =>
 app.UseAspNetConventions();
 ```
 
-### Route Transformation
+### Route Transformation {#route-transformation}
 
 In Minimal APIs, route segments are transformed, but parameters are kept stable by default to ensure binding remains intact.
 
@@ -105,15 +105,15 @@ api.MapGet("/UserAccount/{userId}", ([FromRoute(Name = "user-id")] int userId) =
 
 :::
 
-See [`MinimalApiRouteOptions`](/docs/route-standardization/route-convention-options#minimal-api-route-options) for more information about Minimal APIs route customization.
+See [`MinimalApiRouteOptions`](../route-standardization/configuration.md#minimalapirouteoptions) for more information about Minimal APIs route customization.
 
 ---
 
-## Razor Pages
+## Razor Pages {#razor-pages}
 
 Razor Pages often suffer from inconsistent URL structures due to folder nesting. AspNetConventions automatically transforms physical file paths and route parameters into a consistent casing style, making your UI routes match your API routes.
 
-### Your Code
+### Your Code {#your-code}
 
 The transformation applies to the page path and any parameters defined in `OnGet` / `OnPost` method signatures or `@page` directives. Additionally, it can transform properties marked with `[BindProperty]`.
 
@@ -128,14 +128,14 @@ public class EditAddressModel : PageModel
 }
 ```
 
-### Route Transformation
+### Route Transformation {#route-transformation}
 
 | State | Route Example |
 | --- | --- |
 | Original | `GET /UserProfile/EditAddress/{UserId}/{AddressId}?ZipCode=...` |
 | Standardized | `GET /user-profile/edit-address/{user-id}/{address-id}?zip-code=...` |
 
-### Disabling Property Transformation
+### Disabling Property Transformation {#disabling-property-transformation}
 
 If you need to keep property names in their original C# casing (e.g., for compatibility with external integrations), you can disable property-level transformation.
 
@@ -147,15 +147,15 @@ builder.Services
     );
 ```
 
-See [`RazorPagesRouteOptions`](/docs/route-standardization/options#razor-pages-route-options) for more information about razor page route customization.
+See [`RazorPagesRouteOptions`](../route-standardization/configuration.md#razorpagesrouteoptions) for more information about razor page route customization.
 
 ---
 
-## Response Standardization Examples
+## Response Standardization Examples {#response-standardization-examples}
 
 A core feature of the library is the **Uniform Response Envelope**. Whether an endpoint succeeds or fails, the client receives a predictable JSON structure containing the data, status information, and useful debugging metadata.
 
-### Success Response
+### Success Response {#success-response}
 
 Successful requests are wrapped in a `success` status with a `2xx` code and a `metadata` object for request tracking.
 
@@ -177,7 +177,7 @@ Successful requests are wrapped in a `success` status with a `2xx` code and a `m
 }
 ```
 
-### Validation Error Response
+### Validation Error Response {#validation-error-response}
 
 Errors are categorized by `type` (e.g., `VALIDATION_ERROR`) and include a detailed `errors` array that maps specific fields to their failure reasons.
 
@@ -201,7 +201,7 @@ Errors are categorized by `type` (e.g., `VALIDATION_ERROR`) and include a detail
 }
 ```
 
-#### Global Response Configuration
+#### Global Response Configuration {#global-response-configuration}
 
 You can control the verbosity of your responses globally, such as hiding metadata in production or changing default messages.
 
@@ -218,19 +218,19 @@ builder.Services.AddControllers()
         options.Response.ErrorResponse.DefaultValidationMessage = "Check your input.";
     });
 ```
-See [`ResponseFormattingOptions`](/docs/response-formatting/response-formatting-options) and [`JsonSerializationOptions`](/docs/json-serialization/json-serialization-options) for more information about response and json serialization customization.
+See [`ResponseFormattingOptions`](../response-formatting/configuration.md#responseformattingoptions) and [`JsonSerializationOptions`](../json-serialization/configuration.md) for more information about response and json serialization customization.
 
-## Next Steps
+## Next Steps {#next-steps}
 
 Explore the deep-dive documentation for each specific feature to customize the behavior to your needs:
 
-[<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-link-icon lucide-link"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg> **Route Standardization**](/docs/route-standardization){.text-color .link style="min-width: 300px;"}
+[<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-link-icon lucide-link"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg> **Route Standardization**](../route-standardization/index.md){.text-color .link style="min-width: 300px;"}
 
-[<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-shield-alert-icon lucide-shield-alert"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg> **Exception Handling**](/docs/exception-handling){.text-color .link style="min-width: 300px;"}
+[<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-shield-alert-icon lucide-shield-alert"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg> **Exception Handling**](../exception-handling/index.md){.text-color .link style="min-width: 300px;"}
 
-[<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-file-braces-corner-icon lucide-file-braces-corner"><path d="M14 22h4a2 2 0 0 0 2-2V8a2.4 2.4 0 0 0-.706-1.706l-3.588-3.588A2.4 2.4 0 0 0 14 2H6a2 2 0 0 0-2 2v6"/><path d="M14 2v5a1 1 0 0 0 1 1h5"/><path d="M5 14a1 1 0 0 0-1 1v2a1 1 0 0 1-1 1 1 1 0 0 1 1 1v2a1 1 0 0 0 1 1"/><path d="M9 22a1 1 0 0 0 1-1v-2a1 1 0 0 1 1-1 1 1 0 0 1-1-1v-2a1 1 0 0 0-1-1"/></svg> **Response Formatting**](/docs/response-formatting){.text-color .link style="min-width: 300px;"}
+[<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-file-braces-corner-icon lucide-file-braces-corner"><path d="M14 22h4a2 2 0 0 0 2-2V8a2.4 2.4 0 0 0-.706-1.706l-3.588-3.588A2.4 2.4 0 0 0 14 2H6a2 2 0 0 0-2 2v6"/><path d="M14 2v5a1 1 0 0 0 1 1h5"/><path d="M5 14a1 1 0 0 0-1 1v2a1 1 0 0 1-1 1 1 1 0 0 1 1 1v2a1 1 0 0 0 1 1"/><path d="M9 22a1 1 0 0 0 1-1v-2a1 1 0 0 1 1-1 1 1 0 0 1-1-1v-2a1 1 0 0 0-1-1"/></svg> **Response Formatting**](../response-formatting/index.md){.text-color .link style="min-width: 300px;"}
 
-[<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-braces-icon lucide-braces"><path d="M8 3H7a2 2 0 0 0-2 2v5a2 2 0 0 1-2 2 2 2 0 0 1 2 2v5c0 1.1.9 2 2 2h1"/><path d="M16 21h1a2 2 0 0 0 2-2v-5c0-1.1.9-2 2-2a2 2 0 0 1-2-2V5a2 2 0 0 0-2-2h-1"/></svg> **JSON Serialization**](/docs/json-serialization){.text-color .link style="min-width: 300px;"}
+[<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-braces-icon lucide-braces"><path d="M8 3H7a2 2 0 0 0-2 2v5a2 2 0 0 1-2 2 2 2 0 0 1 2 2v5c0 1.1.9 2 2 2h1"/><path d="M16 21h1a2 2 0 0 0 2-2v-5c0-1.1.9-2 2-2a2 2 0 0 1-2-2V5a2 2 0 0 0-2-2h-1"/></svg> **JSON Serialization**](../json-serialization/index.md){.text-color .link style="min-width: 300px;"}
 
 
 
