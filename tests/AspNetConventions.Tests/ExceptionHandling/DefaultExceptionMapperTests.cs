@@ -10,225 +10,59 @@ public class DefaultExceptionMapperTests
 {
     private readonly DefaultExceptionMapper _mapper = new();
 
-    [Fact]
-    public void CanMapException_ForArgumentNullException_ReturnsTrue()
+    public static TheoryData<Exception, HttpStatusCode, string> ExceptionMappings => new()
     {
-        var result = _mapper.CanMapException(new ArgumentNullException("param"), null!);
+        { new ArgumentNullException("param"),       HttpStatusCode.BadRequest,     "ARGUMENT_NULL" },
+        { new ArgumentOutOfRangeException("param"), HttpStatusCode.BadRequest,     "ARGUMENT_OUT_OF_RANGE" },
+        { new ArgumentException("msg"),             HttpStatusCode.BadRequest,     "INVALID_ARGUMENT" },
+        { new UnauthorizedAccessException(),        HttpStatusCode.Unauthorized,   "UNAUTHORIZED" },
+        { new SecurityException(),                  HttpStatusCode.Forbidden,      "FORBIDDEN" },
+        { new KeyNotFoundException(),               HttpStatusCode.NotFound,       "NOT_FOUND" },
+        { new FileNotFoundException(),              HttpStatusCode.NotFound,       "FILE_NOT_FOUND" },
+        { new DirectoryNotFoundException(),         HttpStatusCode.NotFound,       "DIRECTORY_NOT_FOUND" },
+        { new InvalidOperationException(),          HttpStatusCode.Conflict,       "INVALID_OPERATION" },
+        { new ObjectDisposedException("obj"),       HttpStatusCode.Gone,           "OBJECT_DISPOSED" },
+        { new NotImplementedException(),            HttpStatusCode.NotImplemented, "NOT_IMPLEMENTED" },
+        { new TimeoutException(),                   HttpStatusCode.RequestTimeout, "TIMEOUT" },
+        { new TaskCanceledException(),              HttpStatusCode.RequestTimeout, "REQUEST_CANCELLED" },
+        { new OperationCanceledException(),         HttpStatusCode.RequestTimeout, "OPERATION_CANCELLED" },
+    };
 
-        Assert.True(result);
+    [Theory, MemberData(nameof(ExceptionMappings))]
+    public void Maps_KnownException_ToExpectedStatusAndType(
+        Exception exception, HttpStatusCode expectedStatus, string expectedType)
+    {
+        Assert.True(_mapper.CanMapException(exception, null!));
+
+        var descriptor = _mapper.MapException(exception, null!);
+
+        Assert.Equal(expectedStatus, descriptor.StatusCode);
+        Assert.Equal(expectedType, descriptor.Type);
     }
 
     [Fact]
-    public void CanMapException_ForArgumentOutOfRangeException_ReturnsTrue()
+    public void Maps_ValidationException_ExtractsErrorsByMember()
     {
-        var result = _mapper.CanMapException(new ArgumentOutOfRangeException("param"), null!);
+        var result = new ValidationResult("Required", ["Email"]);
+        var exception = new ValidationException(result, null, null);
 
-        Assert.True(result);
+        var descriptor = _mapper.MapException(exception, null!);
+
+        Assert.Equal(HttpStatusCode.BadRequest, descriptor.StatusCode);
+        Assert.Equal("VALIDATION_ERROR", descriptor.Type);
+        Assert.NotNull(descriptor.Value);
     }
 
     [Fact]
-    public void CanMapException_ForArgumentException_ReturnsTrue()
+    public void DoesNotMap_UnknownException_ReturnsNullStatusAndType()
     {
-        var result = _mapper.CanMapException(new ArgumentException("message"), null!);
+        var exception = new Exception("unhandled");
 
-        Assert.True(result);
-    }
+        Assert.False(_mapper.CanMapException(exception, null!));
 
-    [Fact]
-    public void CanMapException_ForUnauthorizedAccessException_ReturnsTrue()
-    {
-        var result = _mapper.CanMapException(new UnauthorizedAccessException(), null!);
+        var descriptor = _mapper.MapException(exception, null!);
 
-        Assert.True(result);
-    }
-
-    [Fact]
-    public void CanMapException_ForSecurityException_ReturnsTrue()
-    {
-        var result = _mapper.CanMapException(new SecurityException(), null!);
-
-        Assert.True(result);
-    }
-
-    [Fact]
-    public void CanMapException_ForKeyNotFoundException_ReturnsTrue()
-    {
-        var result = _mapper.CanMapException(new KeyNotFoundException(), null!);
-
-        Assert.True(result);
-    }
-
-    [Fact]
-    public void CanMapException_ForFileNotFoundException_ReturnsTrue()
-    {
-        var result = _mapper.CanMapException(new FileNotFoundException("file"), null!);
-
-        Assert.True(result);
-    }
-
-    [Fact]
-    public void CanMapException_ForDirectoryNotFoundException_ReturnsTrue()
-    {
-        var result = _mapper.CanMapException(new DirectoryNotFoundException(), null!);
-
-        Assert.True(result);
-    }
-
-    [Fact]
-    public void CanMapException_ForInvalidOperationException_ReturnsTrue()
-    {
-        var result = _mapper.CanMapException(new InvalidOperationException(), null!);
-
-        Assert.True(result);
-    }
-
-    [Fact]
-    public void CanMapException_ForObjectDisposedException_ReturnsTrue()
-    {
-        var result = _mapper.CanMapException(new ObjectDisposedException("obj"), null!);
-
-        Assert.True(result);
-    }
-
-    [Fact]
-    public void CanMapException_ForNotImplementedException_ReturnsTrue()
-    {
-        var result = _mapper.CanMapException(new NotImplementedException(), null!);
-
-        Assert.True(result);
-    }
-
-    [Fact]
-    public void CanMapException_ForTimeoutException_ReturnsTrue()
-    {
-        var result = _mapper.CanMapException(new TimeoutException(), null!);
-
-        Assert.True(result);
-    }
-
-    [Fact]
-    public void CanMapException_ForTaskCanceledException_ReturnsTrue()
-    {
-        var result = _mapper.CanMapException(new TaskCanceledException(), null!);
-
-        Assert.True(result);
-    }
-
-    [Fact]
-    public void CanMapException_ForOperationCanceledException_ReturnsTrue()
-    {
-        var result = _mapper.CanMapException(new OperationCanceledException(), null!);
-
-        Assert.True(result);
-    }
-
-    [Fact]
-    public void CanMapException_ForUnhandledException_ReturnsFalse()
-    {
-        var result = _mapper.CanMapException(new Exception("unknown"), null!);
-
-        Assert.False(result);
-    }
-
-    [Fact]
-    public void MapException_ArgumentNullException_ReturnsBadRequest()
-    {
-        var result = _mapper.MapException(new ArgumentNullException("param"), null!);
-
-        Assert.Equal(HttpStatusCode.BadRequest, result.StatusCode);
-        Assert.Equal("ARGUMENT_NULL", result.Type);
-    }
-
-    [Fact]
-    public void MapException_ArgumentOutOfRangeException_ReturnsBadRequest()
-    {
-        var result = _mapper.MapException(new ArgumentOutOfRangeException("param"), null!);
-
-        Assert.Equal(HttpStatusCode.BadRequest, result.StatusCode);
-        Assert.Equal("ARGUMENT_OUT_OF_RANGE", result.Type);
-    }
-
-    [Fact]
-    public void MapException_ArgumentException_ReturnsBadRequest()
-    {
-        var result = _mapper.MapException(new ArgumentException("message"), null!);
-
-        Assert.Equal(HttpStatusCode.BadRequest, result.StatusCode);
-        Assert.Equal("INVALID_ARGUMENT", result.Type);
-    }
-
-    [Fact]
-    public void MapException_UnauthorizedAccessException_ReturnsUnauthorized()
-    {
-        var result = _mapper.MapException(new UnauthorizedAccessException(), null!);
-
-        Assert.Equal(HttpStatusCode.Unauthorized, result.StatusCode);
-        Assert.Equal("UNAUTHORIZED", result.Type);
-    }
-
-    [Fact]
-    public void MapException_SecurityException_ReturnsForbidden()
-    {
-        var result = _mapper.MapException(new SecurityException(), null!);
-
-        Assert.Equal(HttpStatusCode.Forbidden, result.StatusCode);
-        Assert.Equal("FORBIDDEN", result.Type);
-    }
-
-    [Fact]
-    public void MapException_KeyNotFoundException_ReturnsNotFound()
-    {
-        var result = _mapper.MapException(new KeyNotFoundException(), null!);
-
-        Assert.Equal(HttpStatusCode.NotFound, result.StatusCode);
-        Assert.Equal("NOT_FOUND", result.Type);
-    }
-
-    [Fact]
-    public void MapException_InvalidOperationException_ReturnsConflict()
-    {
-        var result = _mapper.MapException(new InvalidOperationException(), null!);
-
-        Assert.Equal(HttpStatusCode.Conflict, result.StatusCode);
-        Assert.Equal("INVALID_OPERATION", result.Type);
-    }
-
-    [Fact]
-    public void MapException_NotImplementedException_ReturnsNotImplemented()
-    {
-        var result = _mapper.MapException(new NotImplementedException(), null!);
-
-        Assert.Equal(HttpStatusCode.NotImplemented, result.StatusCode);
-        Assert.Equal("NOT_IMPLEMENTED", result.Type);
-    }
-
-    [Fact]
-    public void MapException_TimeoutException_ReturnsRequestTimeout()
-    {
-        var result = _mapper.MapException(new TimeoutException(), null!);
-
-        Assert.Equal(HttpStatusCode.RequestTimeout, result.StatusCode);
-        Assert.Equal("TIMEOUT", result.Type);
-    }
-
-    [Fact]
-    public void MapException_UnknownException_ReturnsNullStatusCode()
-    {
-        var result = _mapper.MapException(new Exception("unknown"), null!);
-
-        Assert.Null(result.StatusCode);
-        Assert.Null(result.Type);
-    }
-
-    [Fact]
-    public void MapException_ValidationException_WithErrors_ReturnsValidationErrors()
-    {
-        var validationResult = new ValidationResult("Error message", ["PropertyName"]);
-        var validationException = new ValidationException(validationResult, null, null);
-
-        var result = _mapper.MapException(validationException, null!);
-
-        Assert.Equal(HttpStatusCode.BadRequest, result.StatusCode);
-        Assert.Equal("VALIDATION_ERROR", result.Type);
+        Assert.Null(descriptor.StatusCode);
+        Assert.Null(descriptor.Type);
     }
 }

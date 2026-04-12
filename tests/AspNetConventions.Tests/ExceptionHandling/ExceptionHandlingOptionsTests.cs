@@ -2,6 +2,8 @@ using System.Net;
 using AspNetConventions.Configuration.Options;
 using AspNetConventions.ExceptionHandling.Abstractions;
 using AspNetConventions.ExceptionHandling.Mappers;
+using AspNetConventions.ExceptionHandling.Models;
+using AspNetConventions.Http.Services;
 using Xunit;
 
 namespace AspNetConventions.Tests.ExceptionHandling;
@@ -9,19 +11,36 @@ namespace AspNetConventions.Tests.ExceptionHandling;
 public class ExceptionHandlingOptionsTests
 {
     [Fact]
-    public void DefaultValues_AreSetCorrectly()
+    public void Defaults_IsEnabled_True_CollectionsInitialized_Empty()
     {
         var options = new ExceptionHandlingOptions();
 
         Assert.True(options.IsEnabled);
-        Assert.NotNull(options.Mappers);
-        Assert.NotNull(options.ExcludeStatusCodes);
-        Assert.NotNull(options.ExcludeException);
+        Assert.Empty(options.Mappers);
+        Assert.Empty(options.ExcludeStatusCodes);
+        Assert.Empty(options.ExcludeException);
         Assert.NotNull(options.Hooks);
     }
 
     [Fact]
-    public void Clone_CreatesDeepCopy()
+    public void GetMapper_ReturnsFirstRegisteredCustom_ThenDefaultFallback()
+    {
+        var options = new ExceptionHandlingOptions();
+        var first = new AlwaysMatchMapper();
+        var second = new AlwaysMatchMapper();
+        options.Mappers.Add(first);
+        options.Mappers.Add(second);
+
+        Assert.Same(first, options.GetExceptionMapper(new Exception(), null!));
+
+        options.Mappers.Clear();
+
+        Assert.IsType<DefaultExceptionMapper>(
+            options.GetExceptionMapper(new InvalidOperationException(), null!));
+    }
+
+    [Fact]
+    public void Clone_ProducesIndependentCopy_MutatingOriginalDoesNotAffectClone()
     {
         var options = new ExceptionHandlingOptions
         {
@@ -30,87 +49,18 @@ public class ExceptionHandlingOptionsTests
             ExcludeException = { typeof(ArgumentException) }
         };
 
-        var cloned = (ExceptionHandlingOptions)options.Clone();
-
-        Assert.False(cloned.IsEnabled);
-        Assert.Contains(HttpStatusCode.NotFound, cloned.ExcludeStatusCodes);
-        Assert.Contains(typeof(ArgumentException), cloned.ExcludeException);
-
+        var clone = (ExceptionHandlingOptions)options.Clone();
         options.IsEnabled = true;
-        Assert.False(cloned.IsEnabled);
-    }
-
-    [Fact]
-    public void GetExceptionMapper_WithCustomMapper_ReturnsCustomMapper()
-    {
-        var options = new ExceptionHandlingOptions();
-        var customMapper = new CustomExceptionMapper();
-        options.Mappers.Add(customMapper);
-
-        var result = options.GetExceptionMapper(new InvalidOperationException(), null!);
-
-        Assert.Same(customMapper, result);
-    }
-
-    [Fact]
-    public void GetExceptionMapper_WithNoCustomMapper_ReturnsDefaultMapper()
-    {
-        var options = new ExceptionHandlingOptions();
-
-        var result = options.GetExceptionMapper(new InvalidOperationException(), null!);
-
-        Assert.IsType<DefaultExceptionMapper>(result);
-    }
-
-    [Fact]
-    public void GetExceptionMapper_FirstMatchingMapperIsReturned()
-    {
-        var options = new ExceptionHandlingOptions();
-        var firstMapper = new CustomExceptionMapper();
-        var secondMapper = new CustomExceptionMapper();
-        options.Mappers.Add(firstMapper);
-        options.Mappers.Add(secondMapper);
-
-        var result = options.GetExceptionMapper(new InvalidOperationException(), null!);
-
-        Assert.Same(firstMapper, result);
-    }
-
-    [Fact]
-    public void ExcludeStatusCodes_CanBeModified()
-    {
-        var options = new ExceptionHandlingOptions();
-
         options.ExcludeStatusCodes.Add(HttpStatusCode.BadRequest);
 
-        Assert.Contains(HttpStatusCode.BadRequest, options.ExcludeStatusCodes);
+        Assert.False(clone.IsEnabled);
+        Assert.DoesNotContain(HttpStatusCode.BadRequest, clone.ExcludeStatusCodes);
+        Assert.Contains(typeof(ArgumentException), clone.ExcludeException);
     }
 
-    [Fact]
-    public void ExcludeException_CanBeModified()
+    private class AlwaysMatchMapper : IExceptionMapper
     {
-        var options = new ExceptionHandlingOptions();
-
-        options.ExcludeException.Add(typeof(ArgumentNullException));
-
-        Assert.Contains(typeof(ArgumentNullException), options.ExcludeException);
-    }
-
-    [Fact]
-    public void Mappers_CanBeModified()
-    {
-        var options = new ExceptionHandlingOptions();
-        var mapper = new CustomExceptionMapper();
-
-        options.Mappers.Add(mapper);
-
-        Assert.Contains(mapper, options.Mappers);
-    }
-
-    private class CustomExceptionMapper : IExceptionMapper
-    {
-        public bool CanMapException(Exception exception, Http.Services.RequestDescriptor requestDescriptor) => true;
-        public AspNetConventions.ExceptionHandling.Models.ExceptionDescriptor MapException(Exception exception, Http.Services.RequestDescriptor requestDescriptor)
-            => new();
+        public bool CanMapException(Exception exception, RequestDescriptor request) => true;
+        public ExceptionDescriptor MapException(Exception exception, RequestDescriptor request) => new();
     }
 }
