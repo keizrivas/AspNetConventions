@@ -6,9 +6,11 @@ using AspNetConventions.Core.Abstractions.Contracts;
 using AspNetConventions.Core.Abstractions.Models;
 using AspNetConventions.Core.Converters;
 using AspNetConventions.Core.Enums;
+using AspNetConventions.Core.Enums.Json;
 using AspNetConventions.Core.Hooks;
 using AspNetConventions.Http.Models;
 using AspNetConventions.Responses.Models;
+using AspNetConventions.Serialization.Adapters;
 using AspNetConventions.Serialization.Policies;
 using AspNetConventions.Serialization.Resolvers;
 
@@ -19,6 +21,11 @@ namespace AspNetConventions.Configuration.Options
     /// </summary>
     public sealed class JsonSerializationOptions : ICloneable
     {
+        private IJsonSerializerAdapter? _serializerAdapter;
+
+        // Escape hatch for serializer-specific needs
+        private readonly Dictionary<IJsonSerializerAdapter, Action<object>> _adapterConfigurations = [];
+
         /// <summary>
         /// Gets or sets whether json serialization is enabled.
         /// </summary>
@@ -42,17 +49,22 @@ namespace AspNetConventions.Configuration.Options
         /// <summary>
         /// Gets or sets the default ignore condition.
         /// </summary>
-        public JsonIgnoreCondition DefaultIgnoreCondition { get; set; } = JsonIgnoreCondition.Never;
+        public IgnoreCondition IgnoreCondition { get; set; } = IgnoreCondition.Never;
 
         /// <summary>
         /// Gets or sets whether property name comparison is case-insensitive.
         /// </summary>
-        public bool PropertyNameCaseInsensitive { get; set; }
+        public bool CaseInsensitive { get; set; }
 
         /// <summary>
-        /// Gets or sets whether to write indented JSON (pretty-print).
+        /// Gets or sets whether to write indented JSON.
         /// </summary>
         public bool WriteIndented { get; set; }
+
+        /// <summary>
+        /// Gets or sets the maximum depth for JSON objects.
+        /// </summary>
+        public int MaxDepth { get; set; }
 
         /// <summary>
         /// Gets or sets whether to allow trailing commas in JSON.
@@ -62,28 +74,66 @@ namespace AspNetConventions.Configuration.Options
         /// <summary>
         /// Gets or sets how numbers are handled during serialization.
         /// </summary>
-        public JsonNumberHandling NumberHandling { get; set; }
+        public NumberHandling NumberHandling { get; set; } = NumberHandling.Strict;
 
         /// <summary>
-        /// Gets or sets the maximum depth for JSON objects.
+        /// Gets or sets whether to use string enum converter for enum serialization.
         /// </summary>
-        public int MaxDepth { get; set; }
+        /// <value><see langword="true"/> to convert enums to strings; otherwise, <see langword="false"/> to serialize enums as numbers.</value>
+        public bool UseStringEnumConverter { get; set; } = true;
 
         /// <summary>
         /// Gets or sets custom JSON converters.
         /// </summary>
-        public IList<JsonConverter> Converters { get; private set; } = [];
-
-        /// <summary>
-        /// Gets or sets custom serializer options.
-        /// When set, all other properties are ignored.
-        /// </summary>
-        public JsonSerializerOptions? SerializerOptions { get; set; }
+        public IReadOnlyList<object> Converters { get; private set; } = [];
 
         /// <summary>
         /// Gets or sets the collection of hooks used to customize json serialization behavior.
         /// </summary>
         public JsonSerializationHooks Hooks { get; set; } = new();
+
+        /// <summary>
+        /// Configures a custom JSON serializer adapter with optional configuration options.
+        /// </summary>
+        /// <typeparam name="TAdapter">The type of serializer adapter to use.</typeparam>
+        /// <typeparam name="TOptions">The type of configuration options for the adapter.</typeparam>
+        /// <param name="configure">An optional delegate to configure the adapter options.</param>
+        public void ConfigureAdapter<TAdapter, TOptions>(Action<TOptions>? configure = null)
+          where TAdapter : IJsonSerializerAdapter
+        {
+            _serializerAdapter = (IJsonSerializerAdapter)Activator.CreateInstance(
+                typeof(TAdapter),
+                this,
+                configure)!;
+        }
+
+        /// <summary>
+        /// Gets the configured JSON serializer adapter, creating a default one if not configured.
+        /// </summary>
+        /// <returns>The <see cref="IJsonSerializerAdapter"/> instance.</returns>
+        /// <remarks>
+        /// If no adapter has been configured via <see cref="ConfigureAdapter{TAdapter, TOptions}"/>,
+        /// a <see cref="Serialization.Adapters.SystemTextJsonAdapter"/> will be created by default.
+        /// </remarks>
+        public IJsonSerializerAdapter GetSerializerAdapter()
+        {
+            if (_serializerAdapter is not null)
+            {
+                return _serializerAdapter;
+            }
+
+            _serializerAdapter = new SystemTextJsonAdapter(this);
+            return _serializerAdapter;
+        }
+
+        /// <summary>
+        /// Gets the underlying serializer options from the configured adapter.
+        /// </summary>
+        /// <returns>The serializer options object.</returns>
+        public object GetSerializerOptions()
+        {
+            return GetSerializerAdapter().GetOptions();
+        }
 
         /// <summary>
         /// Creates a deep clone of <see cref="JsonSerializationOptions"/> instance.
@@ -93,72 +143,11 @@ namespace AspNetConventions.Configuration.Options
         {
             var cloned = (JsonSerializationOptions)MemberwiseClone();
             cloned.Converters = [.. Converters];
+            cloned.ConfigureIgnoreRules = ConfigureIgnoreRules;
+            cloned._serializerAdapter = _serializerAdapter;
             cloned.Hooks = (JsonSerializationHooks)Hooks.Clone();
 
             return cloned;
-        }
-
-        /// <summary>
-        /// Builds JsonSerializerOptions from this configuration.
-        /// </summary>
-        internal JsonSerializerOptions BuildSerializerOptions()
-        {
-            if (SerializerOptions != null)
-            {
-                return SerializerOptions;
-            }
-
-            var ignoreRules = new JsonIgnoreRules();
-
-            // Default ignore rules
-            ignoreRules.IgnoreProperty<ApiResponse>(e => e.Metadata, JsonIgnoreCondition.WhenWritingNull);
-            ignoreRules.IgnoreProperty<Metadata>(e => e.Exception, JsonIgnoreCondition.WhenWritingNull);
-            ignoreRules.IgnoreProperty<DefaultApiResponse>(e => e.Pagination, JsonIgnoreCondition.WhenWritingNull);
-
-            ConfigureIgnoreRules?.Invoke(ignoreRules);
-
-            var namingPolicy = GetNamingPolicy();
-            var options = new JsonSerializerOptions
-            {
-                PropertyNamingPolicy = namingPolicy,
-                PropertyNameCaseInsensitive = PropertyNameCaseInsensitive,
-                AllowTrailingCommas = AllowTrailingCommas,
-                DefaultIgnoreCondition = DefaultIgnoreCondition,
-                WriteIndented = WriteIndented,
-                NumberHandling = NumberHandling,
-                MaxDepth = MaxDepth,
-                TypeInfoResolver = new JsonTypeInfoResolver(ignoreRules.CreateSnapshot())
-            };
-
-            // Add enum converter with naming policy
-            options.Converters.Add(new JsonStringEnumConverter(namingPolicy));
-
-            // Add custom converters
-            foreach (var converter in Converters)
-            {
-                options.Converters.Add(converter);
-            }
-
-            return options;
-        }
-
-        /// <summary>
-        /// Get the JsonNamingPolicy from this configuration.
-        /// </summary>
-        private JsonNamingPolicy? GetNamingPolicy()
-        {
-            var defaultJsonNamingPolicy = JsonNamingPolicy.CamelCase;
-            return CaseConverter != null
-                ? new CustomJsonNamingPolicy(CaseConverter)
-                : CaseStyle switch
-                {
-                    CasingStyle.CamelCase => defaultJsonNamingPolicy,
-                    CasingStyle.SnakeCase => JsonNamingPolicy.SnakeCaseLower,
-                    CasingStyle.KebabCase => JsonNamingPolicy.KebabCaseLower,
-                    CasingStyle.PascalCase => new CustomJsonNamingPolicy(
-                        CaseConverterFactory.CreatePascalCase()),
-                    _ => defaultJsonNamingPolicy
-                };
         }
     }
 }

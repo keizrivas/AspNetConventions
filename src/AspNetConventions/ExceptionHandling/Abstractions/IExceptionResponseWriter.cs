@@ -13,13 +13,6 @@ namespace AspNetConventions.ExceptionHandling.Abstractions
     internal interface IExceptionResponseWriter
     {
         /// <summary>
-        /// Set the JSON serializer options to the current <see cref="IExceptionResponseWriter"/> instance to be used when writing error responses.
-        /// </summary>
-        /// <param name="jsonSerializerOptions">The JSON serializer options to use for formatting error responses.</param>
-        /// <returns>The current instance of <see cref="IExceptionResponseWriter"/> with the updated serializer options.</returns>
-        ExceptionResponseWriter WithSerializerOptions(JsonSerializerOptions jsonSerializerOptions);
-
-        /// <summary>
         /// Writes a standardized error response to the HTTP context based on the provided exception.
         /// </summary>
         /// <param name="httpContext">The HTTP context to write the response to.</param>

@@ -25,6 +25,7 @@ namespace AspNetConventions.Responses.Models
         /// It's typically populated when the response contains a collection of items with pagination support.
         /// </remarks>
         [JsonPropertyOrder(7)]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public PaginationMetadata? Pagination { get; set; }
     }
 }
