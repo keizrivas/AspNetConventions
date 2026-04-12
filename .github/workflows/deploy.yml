@@ -20,8 +20,11 @@ jobs:
         with:
           node-version: '22'
           cache: 'yarn'
+          cache-dependency-path: 'docs/yarn.lock'
       - run: yarn install
+        working-directory: docs
       - run: yarn docs:build
+        working-directory: docs
       - uses: actions/upload-pages-artifact@v3
         with:
           path: ./site
