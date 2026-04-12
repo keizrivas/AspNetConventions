@@ -48,7 +48,7 @@ builder.Services.AddControllers()
 
 ## ExceptionMapper&lt;T&gt; Base Class
 
-The `ExceptionMapper<TException>` base class provides:
+The [`ExceptionMapper`{.code-left}](/docs/exception-handling/configuration/#iexceptionmapper)`<TException>`{.code-right} base class provides:
 
 ```csharp
 public abstract class ExceptionMapper<TException> : IExceptionMapper
@@ -101,22 +101,6 @@ public class HttpExceptionMapper : ExceptionMapper<HttpRequestException>
 
 The `ExceptionDescriptor` controls every aspect of the error response:
 
-### Required Properties
-
-| Property | Description | Example |
-|----------|-------------|---------|
-| `Type` | Machine-readable error code | `"ORDER_NOT_FOUND"` |
-| `StatusCode` | HTTP status code | `HttpStatusCode.NotFound` |
-| `Message` | Human-readable message | `"Order 123 was not found."` |
-
-### Optional Properties
-
-| Property | Default | Description |
-|----------|---------|-------------|
-| `Value` | `null` | Structured error data (appears in `errors` field) |
-| `ShouldLog` | `true` | Whether to log this exception |
-| `LogLevel` | `Error` | Log severity level |
-
 ### Simple Descriptor
 
 ```csharp
@@ -146,6 +130,8 @@ return new ExceptionDescriptor
     LogLevel = LogLevel.Critical
 };
 ```
+
+See [`ExceptionDescriptor`](/docs/exception-handling/configuration/#exceptiondescriptor) for more information.
 
 ---
 
@@ -340,42 +326,6 @@ public class ExternalServiceExceptionMapper : ExceptionMapper<ExternalServiceExc
 
 ---
 
-## Using RequestDescriptor
-
-The `RequestDescriptor` provides request context for dynamic error responses:
-
-```csharp
-public class ContextAwareExceptionMapper : ExceptionMapper<MyException>
-{
-    public override ExceptionDescriptor MapException(
-        MyException exception,
-        RequestDescriptor request)
-    {
-        // Access request information
-        var path = request.Path;
-        var method = request.Method;
-        var traceId = request.TraceId;
-        var headers = request.HttpContext.Request.Headers;
-
-        return new ExceptionDescriptor
-        {
-            Type = "MY_ERROR",
-            StatusCode = HttpStatusCode.BadRequest,
-            Message = exception.Message,
-            Value = new
-            {
-                RequestPath = path,
-                RequestMethod = method,
-                TraceId = traceId,
-                Timestamp = DateTime.UtcNow
-            }
-        };
-    }
-}
-```
-
----
-
 ## Mappers with Dependencies
 
 For mappers that need injected services, create them with dependencies and register appropriately:
@@ -427,7 +377,7 @@ builder.Services.AddControllers()
 
 ## Logging Best Practices
 
-### When to Log
+**When to Log:**
 
 | Scenario | ShouldLog | LogLevel |
 |----------|-----------|----------|
@@ -438,7 +388,7 @@ builder.Services.AddControllers()
 | Not found (expected) | `true` | `Warning` or `Information` |
 | External service failures | `true` | `Error` |
 
-### Log Level Guidelines
+**Log Level Guidelines:**
 
 ```csharp
 // Critical — System is unusable
@@ -452,33 +402,4 @@ LogLevel = LogLevel.Warning   // Not found, invalid arguments
 
 // Information — Normal operation details
 LogLevel = LogLevel.Information  // Successful but noteworthy events
-```
-
----
-
-## Replacing Built-in Mappers
-
-Override built-in behavior by registering your own mapper for the same exception type:
-
-```csharp
-// Custom mapper for ArgumentNullException
-public class CustomArgumentNullExceptionMapper : ExceptionMapper<ArgumentNullException>
-{
-    public override ExceptionDescriptor MapException(
-        ArgumentNullException exception,
-        RequestDescriptor request)
-    {
-        return new ExceptionDescriptor
-        {
-            Type = "MISSING_REQUIRED_FIELD",
-            StatusCode = HttpStatusCode.BadRequest,
-            Message = $"Required field '{exception.ParamName}' was not provided.",
-            Value = new { Field = exception.ParamName },
-            LogLevel = LogLevel.Warning
-        };
-    }
-}
-
-// This replaces the built-in mapper
-options.Exceptions.Mappers.Add(new CustomArgumentNullExceptionMapper());
 ```

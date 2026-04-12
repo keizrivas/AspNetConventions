@@ -186,10 +186,3 @@ options.Route.Hooks.AfterRouteTransform = (newRoute, originalRoute, model) =>
 
 This helps identify which routes are being transformed and which are being skipped.
 
----
-
-## Performance Concerns
-
-**Question:** Does route transformation affect request performance?
-
-**Answer:** No. All transformations happen **once at application startup**. During request processing, standard ASP.NET Core routing is used with pre-registered binding aliases. There is no runtime overhead.

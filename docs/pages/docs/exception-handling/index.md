@@ -1,6 +1,6 @@
 # Exception Handling
 
-**AspNetConventions** provides centralized, application-wide exception handling that catches unhandled exceptions, formats them into consistent error responses, and optionally logs them — all without scattering `try/catch` blocks through your controllers.
+**AspNetConventions** provides centralized, application-wide exception handling that catches unhandled exceptions, formats them into consistent error responses, and optionally logs them — all without scattering `try/catch` blocks through your web app.
 
 ---
 
@@ -57,34 +57,28 @@ public ActionResult GetUser(int id)
 
 ## How It Works
 
-AspNetConventions hooks into ASP.NET Core at the framework level so every unhandled exception — regardless of where it originates — flows through the same pipeline. You get a single place to define mappers, configure logging, and attach hooks, without wiring anything per-controller or per-endpoint.
+**AspNetConventions** hooks into ASP.NET Core at the framework level so every unhandled exception — regardless of where it originates — flows through the same pipeline. You get a single place to define mappers, configure logging, and attach hooks, without wiring anything per-controller or per-endpoint.
 
 The integration point differs slightly by hosting model, but the pipeline that runs after interception is identical in all cases:
 
 ```text
-Exception thrown (Controller / Minimal API / Razor Page)
+Action: Exception thrown (Controller / Minimal API / Razor Page)
       ↓
-Intercepted by AspNetConventions
-  • MVC Controllers  → global IExceptionFilter (runs before the default error handler)
-  • Minimal APIs     → IExceptionHandler middleware (wraps the full request pipeline)
-  • Razor Pages      → same IExceptionFilter as MVC (Razor Pages share the MVC filter pipeline)
+Action: Intercepted by AspNetConventions
       ↓
-ShouldHandleAsync hook — optionally skip handling for this exception
+Hook: ShouldHandleAsync
       ↓
-Mapper resolution (first match wins)
-  1. Custom mappers registered in options.Exceptions.Mappers, in insertion order
-  2. Built-in DefaultExceptionMapper (covers common .NET exceptions)
-  3. Fallback — 500 Internal Server Error
+Action: Mapper resolution (options.Exceptions.Mappers)
       ↓
-TryHandleAsync hook — global observer for logging, telemetry, alerting
+Hook: TryHandleAsync
       ↓
-BeforeMappingAsync hook — optionally swap the resolved mapper
+Hook: BeforeMappingAsync
       ↓
-Mapper.MapException() → produces an ExceptionDescriptor
+Action: Mapper.MapException() → ExceptionDescriptor
       ↓
-AfterMappingAsync hook — optionally modify the descriptor
+Hook: AfterMappingAsync
       ↓
-IErrorResponseBuilder formats the descriptor into a JSON response
+Action: IErrorResponseBuilder formats the descriptor into a JSON response
       ↓
 Response written to the client
 ```

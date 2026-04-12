@@ -246,9 +246,11 @@ public class OrdersController : ControllerBase
 }
 ```
 
-### Response Examples
+**Response Examples:**
 
-**GET /api/orders/999 (Not Found):**
+::: tabs
+
+== tab "GET /api/orders/999 (Not Found):"
 ```json
 {
   "status": "failure",
@@ -263,7 +265,7 @@ public class OrdersController : ControllerBase
 }
 ```
 
-**POST /api/orders (Validation Error):**
+== tab "POST /api/orders (Validation Error):"
 ```json
 {
   "status": "failure",
@@ -278,7 +280,7 @@ public class OrdersController : ControllerBase
 }
 ```
 
-**POST /api/orders (Conflict):**
+== tab "POST /api/orders (Conflict):"
 ```json
 {
   "status": "failure",
@@ -292,6 +294,7 @@ public class OrdersController : ControllerBase
   "metadata": { ... }
 }
 ```
+:::
 
 ---
 
@@ -305,8 +308,6 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddScoped<IOrderService, OrderService>();
 
 var app = builder.Build();
-
-app.UseAspNetConventions();
 
 // GET /api/orders/{id}
 app.MapGet("/api/orders/{id}", (int id, IOrderService orderService) =>
@@ -341,116 +342,15 @@ app.MapDelete("/api/orders/{id}", (int id, IOrderService orderService) =>
     return Results.NoContent();
 });
 
-app.Run();
-```
-
----
-
-## Complete Application Setup
-
-Full `Program.cs` with all exception handling configured:
-
-```csharp
-using AspNetConventions;
-using Microsoft.Extensions.Logging;
-using System.Net;
-
-var builder = WebApplication.CreateBuilder(args);
-
-builder.Services.AddControllers()
-    .AddAspNetConventions(options =>
-    {
-        // Register custom exception mappers
-        options.Exceptions.Mappers.Add(new EntityNotFoundExceptionMapper());
-        options.Exceptions.Mappers.Add(new DomainValidationExceptionMapper());
-        options.Exceptions.Mappers.Add(new ConflictExceptionMapper());
-        options.Exceptions.Mappers.Add(new RateLimitExceptionMapper());
-
-        // Exclude certain exceptions from handling
-        options.Exceptions.ExcludeException.Add(typeof(OperationCanceledException));
-        options.Exceptions.ExcludeException.Add(typeof(TaskCanceledException));
-
-        // Add hooks for monitoring
-        options.Exceptions.Hooks.AfterMappingAsync = async (descriptor, mapper, request) =>
-        {
-            // Log all errors with correlation ID
-            if (builder.Environment.IsDevelopment())
-            {
-                Console.WriteLine($"[{descriptor.LogLevel}] {descriptor.Type}: {descriptor.Message}");
-            }
-
-            // Add correlation ID to response
-            var correlationId = request.HttpContext.Request.Headers["X-Correlation-Id"].ToString();
-            if (!string.IsNullOrEmpty(correlationId))
-            {
-                descriptor.Value = new
-                {
-                    Original = descriptor.Value,
-                    CorrelationId = correlationId
-                };
-            }
-
-            return descriptor;
-        };
-    });
-
-var app = builder.Build();
-
-app.UseAspNetConventions();
-app.MapControllers();
+app.UseAspNetConventions(options =>
+{
+    // Exception handling configuration
+    options.Exceptions.Mappers.Add(new EntityNotFoundExceptionMapper());
+    // Other mappers..
+});
 
 app.Run();
 ```
-
----
-
-## Using with Response Formatting
-
-Exception handling integrates with Response Formatting:
-
-```csharp
-builder.Services.AddControllers()
-    .AddAspNetConventions(options =>
-    {
-        // Exception handling configuration
-        options.Exceptions.Mappers.Add(new EntityNotFoundExceptionMapper());
-
-        // Response formatting configuration
-        options.Response.IncludeMetadata = true;
-        options.Response.ErrorResponse.IncludeExceptionDetails =
-            builder.Environment.IsDevelopment();
-    });
-```
-
-**Development response (with exception details):**
-```json
-{
-  "status": "failure",
-  "statusCode": 500,
-  "type": "INTERNAL_SERVER_ERROR",
-  "message": "An unexpected error occurred.",
-  "errors": null,
-  "exception": {
-    "type": "NullReferenceException",
-    "message": "Object reference not set...",
-    "stackTrace": "..."
-  },
-  "metadata": { ... }
-}
-```
-
-**Production response (without exception details):**
-```json
-{
-  "status": "failure",
-  "statusCode": 500,
-  "type": "INTERNAL_SERVER_ERROR",
-  "message": "An unexpected error occurred.",
-  "errors": null,
-  "metadata": { ... }
-}
-```
-
 ---
 
 ## Alerting Integration

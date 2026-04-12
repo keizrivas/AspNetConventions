@@ -10,18 +10,22 @@ Common issues and solutions when using Exception Handling.
 
 **Possible causes:**
 
-1. **Mapper not registered before Build():**
+1. **Mapper not registered:**
 ```csharp
-// Wrong - registered after Build()
-var app = builder.Build();
-options.Exceptions.Mappers.Add(new MyMapper());  // Too late!
 
-// Correct - registered in AddAspNetConventions
+// Registered in AddAspNetConventions
 builder.Services.AddControllers()
     .AddAspNetConventions(options =>
     {
-        options.Exceptions.Mappers.Add(new MyMapper());  // Correct
+        options.ExceptionHandling.Mappers.Add(new MyMapper());  // Correct
     });
+
+// Registered in UseAspNetConventions
+app.UseAspNetConventions(options =>
+{
+    options.ExceptionHandling.Mappers.Add(new MyMapper());  // Correct
+});
+
 ```
 
 2. **Exception type doesn't match:**
@@ -71,32 +75,20 @@ if (builder.Environment.IsProduction())
 
 ## Exceptions Not Being Caught
 
-**Problem:** Exceptions propagate without being handled by AspNetConventions.
+**Problem:** Exceptions propagate without being handled by **AspNetConventions**.
 
 **Possible causes:**
 
-1. **Exception handling disabled:**
+1. **ShouldHandleAsync returning false:**
 ```csharp
-// Check this is enabled
-options.Exceptions.IsEnabled = true;  // default
-```
-
-2. **Exception type excluded:**
-```csharp
-// Check if your exception type is excluded
-options.Exceptions.ExcludeException  // Contains your exception type?
-```
-
-3. **ShouldHandleAsync returning false:**
-```csharp
-options.Exceptions.Hooks.ShouldHandleAsync = async (exception, request) =>
+options.ExceptionHandling.Hooks.ShouldHandleAsync = async (exception, request) =>
 {
     Console.WriteLine($"Checking: {exception.GetType().Name}");  // Debug
     return true;
 };
 ```
 
-4. **Exception thrown before middleware:**
+2. **Exception thrown before middleware:**
 Exceptions in `ConfigureServices` or early middleware won't be caught.
 
 ---
@@ -140,10 +132,10 @@ builder.Logging.SetMinimumLevel(LogLevel.Warning);
 
 ```csharp
 // More specific mappers first
-options.Exceptions.Mappers.Add(new OrderNotFoundExceptionMapper());   // Specific
-options.Exceptions.Mappers.Add(new ProductNotFoundExceptionMapper()); // Specific
-options.Exceptions.Mappers.Add(new NotFoundExceptionMapper());        // General
-options.Exceptions.Mappers.Add(new DomainExceptionMapper());          // Base class
+options.ExceptionHandling.Mappers.Add(new OrderNotFoundExceptionMapper());   // Specific
+options.ExceptionHandling.Mappers.Add(new ProductNotFoundExceptionMapper()); // Specific
+options.ExceptionHandling.Mappers.Add(new NotFoundExceptionMapper());        // General
+options.ExceptionHandling.Mappers.Add(new DomainExceptionMapper());          // Base class
 ```
 
 ---
@@ -198,9 +190,11 @@ return new ExceptionDescriptor
 var app = builder.Build();
 
 // Must be called for Minimal APIs
-app.UseAspNetConventions();
 
 app.MapGet("/api/test", () => throw new Exception("test"));
+
+app.UseAspNetConventions();
+
 app.Run();
 ```
 
@@ -214,7 +208,7 @@ app.Run();
 
 1. **Hooks are assigned correctly:**
 ```csharp
-options.Exceptions.Hooks.AfterMappingAsync = async (descriptor, mapper, request) =>
+options.ExceptionHandling.Hooks.AfterMappingAsync = async (descriptor, mapper, request) =>
 {
     Console.WriteLine("Hook called!");  // Debug
     return descriptor;
@@ -224,13 +218,13 @@ options.Exceptions.Hooks.AfterMappingAsync = async (descriptor, mapper, request)
 2. **TryHandleAsync isn't set:**
 ```csharp
 // If TryHandleAsync is set, it bypasses other hooks
-options.Exceptions.Hooks.TryHandleAsync = null;  // Ensure this is not set
+options.ExceptionHandling.Hooks.TryHandleAsync = null;  // Ensure this is not set
 ```
 
 3. **ShouldHandleAsync returned false:**
 ```csharp
 // If this returns false, no further processing occurs
-options.Exceptions.Hooks.ShouldHandleAsync = async (ex, req) => true;
+options.ExceptionHandling.Hooks.ShouldHandleAsync = async (ex, req) => true;
 ```
 
 ---
@@ -261,7 +255,7 @@ If `StatusCode` is null, it defaults to 500 Internal Server Error.
 **Solution:** Use the `BeforeMappingAsync` hook to debug:
 
 ```csharp
-options.Exceptions.Hooks.BeforeMappingAsync = async (mapper, request) =>
+options.ExceptionHandling.Hooks.BeforeMappingAsync = async (mapper, request) =>
 {
     Console.WriteLine($"Selected mapper: {mapper.GetType().Name}");
     return mapper;
@@ -286,7 +280,7 @@ Enable detailed logging to troubleshoot issues:
 builder.Services.AddControllers()
     .AddAspNetConventions(options =>
     {
-        options.Exceptions.Hooks.ShouldHandleAsync = async (exception, request) =>
+        options.ExceptionHandling.Hooks.ShouldHandleAsync = async (exception, request) =>
         {
             Console.WriteLine($"=== Exception Caught ===");
             Console.WriteLine($"Type: {exception.GetType().FullName}");
@@ -295,13 +289,13 @@ builder.Services.AddControllers()
             return true;
         };
 
-        options.Exceptions.Hooks.BeforeMappingAsync = async (mapper, request) =>
+        options.ExceptionHandling.Hooks.BeforeMappingAsync = async (mapper, request) =>
         {
             Console.WriteLine($"Mapper: {mapper.GetType().Name}");
             return mapper;
         };
 
-        options.Exceptions.Hooks.AfterMappingAsync = async (descriptor, mapper, request) =>
+        options.ExceptionHandling.Hooks.AfterMappingAsync = async (descriptor, mapper, request) =>
         {
             Console.WriteLine($"Result: {descriptor.StatusCode} - {descriptor.Type}");
             Console.WriteLine($"ShouldLog: {descriptor.ShouldLog}, LogLevel: {descriptor.LogLevel}");
@@ -337,6 +331,6 @@ app.MapControllers();
 Or exclude certain exceptions/status codes:
 ```csharp
 // Let other middleware handle these
-options.Exceptions.ExcludeStatusCodes.Add(HttpStatusCode.Unauthorized);
-options.Exceptions.ExcludeException.Add(typeof(SecurityException));
+options.ExceptionHandling.ExcludeStatusCodes.Add(HttpStatusCode.Unauthorized);
+options.ExceptionHandling.ExcludeException.Add(typeof(SecurityException));
 ```
