@@ -9,7 +9,7 @@ module.exports = {
     light: 'assets/images/logo_light.svg',
     dark: 'assets/images/logo_dark.svg',
     alt: 'AspNetConventions',
-    href: '/',
+    href: '/AspNetConventions',
   },
   favicon: 'assets/favicon.ico',
 

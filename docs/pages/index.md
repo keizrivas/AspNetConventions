@@ -31,7 +31,7 @@ customHead: |
   <nav :class="isScrolled ? 'glass-nav py-3' : 'bg-transparent py-6'" class="fixed top-0 left-0 right-0 z-50 w-full border border-transparent transition-all duration-300">
     <div class="max-w-7xl mx-auto px-6 flex items-center justify-between">
       <div class="flex flex-1 items-center">
-        <a href="/" class="max-w-60 flex items-center gap-2">
+        <a href="/AspNetConventions" class="max-w-60 flex items-center gap-2">
           <img src="assets/images/logo_light.svg" alt="AspNetConventions" class="dark:hidden block">
           <img src="assets/images/logo_dark.svg" alt="AspNetConventions" class="dark:block hidden">
         </a>
@@ -50,7 +50,7 @@ customHead: |
             </a>
           </li>
           <li class="w-full">
-            <a href="/docs" class="navbar-dropdown-item">
+            <a href="/AspNetConventions/docs" class="navbar-dropdown-item">
               Documentation
             </a>
           </li>
