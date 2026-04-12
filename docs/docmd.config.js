@@ -2,7 +2,7 @@
 module.exports = {
   // --- Core Metadata ---
   siteTitle: 'AspNetConventions',
-  siteUrl: '', 
+  siteUrl: 'https://keizrivas.github.io/AspNetConventions', 
 
   // --- Branding ---
   logo: {
@@ -15,7 +15,7 @@ module.exports = {
 
   // --- Source & Output ---
   srcDir: 'pages',
-  outputDir: 'dist',
+  outputDir: 'site',
 
   // --- Layout & UI Architecture (V2) ---
   layout: {

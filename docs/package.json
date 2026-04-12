@@ -5,11 +5,11 @@
   "scripts": {
     "docs:dev": "concurrently \"docmd dev\" \"yarn css:watch\" \"yarn js:watch\"",
     "docs:build": " docmd build && yarn css:build && yarn js:build",
-    "docs:preview": "npx serve dist",
-    "css:build": "tailwindcss -i public/css/main.css -o dist/assets/css/main.css --minify",
-    "css:watch": "tailwindcss -i public/css/main.css -o dist/assets/css/main.css --watch",
-    "js:build": "esbuild public/js/main.js --bundle --minify --outfile=dist/assets/js/main.js",
-    "js:watch": "esbuild public/js/main.js --bundle --outfile=dist/assets/js/main.js --watch"
+    "docs:preview": "npx serve site",
+    "css:build": "tailwindcss -i public/css/main.css -o site/assets/css/main.css --minify",
+    "css:watch": "tailwindcss -i public/css/main.css -o site/assets/css/main.css --watch",
+    "js:build": "esbuild public/js/main.js --bundle --minify --outfile=site/assets/js/main.js",
+    "js:watch": "esbuild public/js/main.js --bundle --outfile=site/assets/js/main.js --watch"
   },
   "dependencies": {
     "@docmd/core": "^0.4.9",
