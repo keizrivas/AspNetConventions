@@ -25,6 +25,12 @@ namespace AspNetConventions.Configuration.Options.Route
         public bool TransformRouteParameters { get; set; }
 
         /// <summary>
+        /// Gets or sets whether to preserve explicitly named route parameters.
+        /// </summary>
+        /// <value>Default is false. When true, parameters with an explicit binding name are not transformed.</value>
+        public bool PreserveExplicitBindingNames { get; set; }
+
+        /// <summary>
         /// Gets the collection of route patterns to exclude from transformation.
         /// </summary>
         /// <value>Collection of route patterns (supports wildcards) that will not have their routes transformed.</value>

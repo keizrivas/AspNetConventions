@@ -41,7 +41,6 @@ namespace AspNetConventions.Extensions
             // Register convention
             builder.Services.AddSingleton<RouteControllerConvention>();
             builder.Services.AddSingleton<IValueProviderFactory, QueryValueProviderFactory>();
-            builder.Services.AddSingleton<IOutboundParameterTransformer, RouteTokenTransformer>();
             builder.Services.AddSingleton<IBindingMetadataProvider, ComplexTypeBindingMetadataProvider>();
 
             // Add Mvc conventions
@@ -50,7 +49,6 @@ namespace AspNetConventions.Extensions
                 // Get required services
                 var options = serviceProvider.GetOptions<AspNetConventionOptions>();
                 var controllerConvention = serviceProvider.GetRequiredService<RouteControllerConvention>();
-                var routeTokenTransformer = serviceProvider.GetRequiredService<IOutboundParameterTransformer>();
                 var jsonOptions = serviceProvider.GetOptions<Microsoft.AspNetCore.Mvc.JsonOptions>();
                 var metadataProvider = serviceProvider.GetRequiredService<IBindingMetadataProvider>();
                 var valueProviderFactory = serviceProvider.GetRequiredService<IValueProviderFactory>();
@@ -59,7 +57,6 @@ namespace AspNetConventions.Extensions
                 {
                     // Add endpoint conventions
                     mvcOptions.Conventions.Add(controllerConvention);
-                    mvcOptions.Conventions.Add(new RouteTokenTransformerConvention(routeTokenTransformer));
 
                     // Register collection result adapters
                     foreach (var adapters in options.Value.Response.CollectionResultAdapters)

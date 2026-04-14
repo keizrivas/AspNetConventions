@@ -5,6 +5,7 @@ using AspNetConventions.Core.Abstractions.Models;
 using AspNetConventions.Routing.ModelBinding;
 using AspNetConventions.Routing.Models;
 using AspNetConventions.Routing.Parsers;
+using AspNetConventions.Routing.Transformation;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.Extensions.Options;
@@ -15,12 +16,12 @@ namespace AspNetConventions.Routing.Conventions
     /// Applies route naming and parameter conventions to controllers and actions based on the configured ASP.NET
     /// conventions options.
     /// </summary>
-    /// <param name="Options">The options used to configure conventions.</param>
+    /// <param name="options">The options used to configure conventions.</param>
     /// <remarks>
     /// This convention is intended for use with ASP.NET Core applications to standardize route
     /// templates and parameter names according to project-wide settings.
     /// </remarks>
-    internal sealed class RouteControllerConvention(IOptions<AspNetConventionOptions> Options) : ConventionOptions(Options), IControllerModelConvention
+    internal sealed class RouteControllerConvention(IOptions<AspNetConventionOptions> options) : ConventionOptions(options), IControllerModelConvention
     {
         private static readonly HashSet<RouteParameterContext> _explicitNameCache = [];
         private static readonly Dictionary<RouteParameterContext, bool> _parameterTransformCache = [];
@@ -36,13 +37,37 @@ namespace AspNetConventions.Routing.Conventions
                 return;
             }
 
+            // Skip excluded controllers
+            if (ContainsOrdinalIgnoreCase(Options.Route.Controllers.ExcludeControllers, controller.ControllerName))
+            {
+                return;
+            }
+
+            // Skip excluded areas
+            if (Options.Route.Controllers.ExcludeAreas.Count > 0
+                && controller.RouteValues.TryGetValue("area", out var area)
+                && area != null
+                && ContainsOrdinalIgnoreCase(Options.Route.Controllers.ExcludeAreas, area))
+            {
+                return;
+            }
+
             foreach (var action in controller.Actions)
             {
+                // Set up route parameter transformer for this action
+                action.RouteParameterTransformer = new RouteTokenTransformer(options);
+
                 foreach (var selector in action.Selectors)
                 {
                     // Check if action selector has a route template
                     var template = selector.AttributeRouteModel?.Template;
                     if (selector.AttributeRouteModel == null || string.IsNullOrWhiteSpace(template))
+                    {
+                        continue;
+                    }
+
+                    // Skip templates that exceed the configured maximum length
+                    if (template.Length > Options.Route.MaxRouteTemplateLength)
                     {
                         continue;
                     }
@@ -103,6 +128,15 @@ namespace AspNetConventions.Routing.Conventions
                 if (selector.AttributeRouteModel == null || string.IsNullOrWhiteSpace(template))
                 {
                     continue;
+                }
+
+                // Replace [action] token before TransformRouteTemplate runs so that prefix/suffix
+                // stripping has access to the original action name and excluded-action context.
+                if (template.Contains("[action]", StringComparison.OrdinalIgnoreCase))
+                {
+                    var actionName = StripActionPrefixesAndSuffixes(action.ActionName);
+                    var converted  = Options.Route.GetCaseConverter().Convert(actionName);
+                    template = template.Replace("[action]", converted, StringComparison.OrdinalIgnoreCase);
                 }
 
                 // Transform action route
@@ -217,6 +251,41 @@ namespace AspNetConventions.Routing.Conventions
             return shouldTransformParameter
                 ? Options.Route.GetCaseConverter().Convert(name)
                 : name;
+        }
+
+        private string StripActionPrefixesAndSuffixes(string actionName)
+        {
+            foreach (var prefix in Options.Route.Controllers.RemoveActionPrefixes)
+            {
+                if (actionName.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
+                {
+                    actionName = actionName[prefix.Length..];
+                    break;
+                }
+            }
+
+            foreach (var suffix in Options.Route.Controllers.RemoveActionSuffixes)
+            {
+                if (actionName.EndsWith(suffix, StringComparison.OrdinalIgnoreCase))
+                {
+                    actionName = actionName[..^suffix.Length];
+                    break;
+                }
+            }
+
+            return actionName;
+        }
+
+        private static bool ContainsOrdinalIgnoreCase(HashSet<string> set, string value)
+        {
+            foreach (var item in set)
+            {
+                if (string.Equals(item, value, StringComparison.OrdinalIgnoreCase))
+                {
+                    return true;
+                }
+            }
+            return false;
         }
     }
 }

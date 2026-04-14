@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using AspNetConventions.Configuration.Options;
 using AspNetConventions.Core.Abstractions.Models;
 using AspNetConventions.Routing.ModelBinding;
@@ -25,20 +27,49 @@ namespace AspNetConventions.Routing.Conventions
                 return;
             }
 
-            // Handle page model properties
-            foreach (var property in model.HandlerProperties)
+            // Skip excluded pages
+            if (Options.Route.RazorPages.ExcludePages.Count > 0)
             {
-                var bindingContext = BindingDescriptor.GetBindingContext(property);
-                TransformBinderModelName(property, bindingContext);
+                var pageName = System.IO.Path.GetFileNameWithoutExtension(model.ViewEnginePath);
+                if (ContainsOrdinalIgnoreCase(Options.Route.RazorPages.ExcludePages, pageName))
+                {
+                    return;
+                }
             }
 
-            // Handle page model parameters
-            foreach (var handler in model.HandlerMethods)
+            // Skip pages inside excluded folders
+            if (Options.Route.RazorPages.ExcludeFolders.Count > 0)
             {
-                foreach (var parameter in handler.Parameters)
+                var segments = model.ViewEnginePath.Split('/');
+                for (var i = 0; i < segments.Length - 1; i++)
                 {
-                    var bindingContext = BindingDescriptor.GetBindingContext(parameter);
-                    TransformBinderModelName(parameter, bindingContext);
+                    if (ContainsOrdinalIgnoreCase(Options.Route.RazorPages.ExcludeFolders, segments[i]))
+                    {
+                        return;
+                    }
+                }
+            }
+
+            // Handle page model properties ([BindProperty] class-level properties)
+            if (Options.Route.RazorPages.TransformPropertyNames)
+            {
+                foreach (var property in model.HandlerProperties)
+                {
+                    var bindingContext = BindingDescriptor.GetBindingContext(property);
+                    TransformBinderModelName(property, bindingContext);
+                }
+            }
+
+            // Handle page handler method parameters
+            if (Options.Route.RazorPages.TransformParameterNames)
+            {
+                foreach (var handler in model.HandlerMethods)
+                {
+                    foreach (var parameter in handler.Parameters)
+                    {
+                        var bindingContext = BindingDescriptor.GetBindingContext(parameter);
+                        TransformBinderModelName(parameter, bindingContext);
+                    }
                 }
             }
         }
@@ -71,6 +102,18 @@ namespace AspNetConventions.Routing.Conventions
 
             parameter.BindingInfo ??= new BindingInfo();
             parameter.BindingInfo.BinderModelName = transformed;
+        }
+
+        private static bool ContainsOrdinalIgnoreCase(HashSet<string> set, string value)
+        {
+            foreach (var item in set)
+            {
+                if (string.Equals(item, value, StringComparison.OrdinalIgnoreCase))
+                {
+                    return true;
+                }
+            }
+            return false;
         }
     }
 }

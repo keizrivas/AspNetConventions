@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using AspNetConventions.Configuration.Options;
 using AspNetConventions.Core.Abstractions.Models;
 using AspNetConventions.Routing.Models;
@@ -23,12 +25,42 @@ namespace AspNetConventions.Routing.Conventions
                 return;
             }
 
+            // Skip excluded pages
+            if (Options.Route.RazorPages.ExcludePages.Count > 0)
+            {
+                var pageName = System.IO.Path.GetFileNameWithoutExtension(pageModel.ViewEnginePath);
+                if (ContainsOrdinalIgnoreCase(Options.Route.RazorPages.ExcludePages, pageName))
+                {
+                    return;
+                }
+            }
+
+            // Skip pages inside excluded folders
+            if (Options.Route.RazorPages.ExcludeFolders.Count > 0)
+            {
+                var segments = pageModel.ViewEnginePath.Split('/');
+                // All segments except the last are folder names
+                for (var i = 0; i < segments.Length - 1; i++)
+                {
+                    if (ContainsOrdinalIgnoreCase(Options.Route.RazorPages.ExcludeFolders, segments[i]))
+                    {
+                        return;
+                    }
+                }
+            }
+
             var caseConverter = Options.Route.GetCaseConverter();
             foreach (var selector in pageModel.Selectors)
             {
                 // Check if action selector has a route template
                 var template = selector.AttributeRouteModel?.Template;
                 if (selector.AttributeRouteModel == null || string.IsNullOrWhiteSpace(template))
+                {
+                    continue;
+                }
+
+                // Skip templates that exceed the configured maximum length
+                if (template.Length > Options.Route.MaxRouteTemplateLength)
                 {
                     continue;
                 }
@@ -60,6 +92,18 @@ namespace AspNetConventions.Routing.Conventions
                 selector.AttributeRouteModel.Template = newTemplate;
                 Options.Route.Hooks.AfterRouteTransform?.Invoke(newTemplate, template, modelContext);
             }
+        }
+
+        private static bool ContainsOrdinalIgnoreCase(HashSet<string> set, string value)
+        {
+            foreach (var item in set)
+            {
+                if (string.Equals(item, value, StringComparison.OrdinalIgnoreCase))
+                {
+                    return true;
+                }
+            }
+            return false;
         }
     }
 }

@@ -139,221 +139,242 @@ namespace AspNetConventions.Http
         /// <param name="modelState">The <see cref="ModelStateDictionary" /> containing errors to be returned to the client.
         /// Typically populated by model validation.</param>
         /// <param name="message">An optional message describing the validation failure.</param>
+        /// <param name="type">An optional error type code for client-side error categorization (e.g. <c>"VALIDATION_ERROR"</c>). When <see langword="null"/>, defaults to <c>"CLIENT_ERROR"</c>.</param>
         /// <returns>
         /// An <see cref="ApiResult{TValue}"/> of <see cref="ValidationProblemDetails"/> with <see cref="System.Net.HttpStatusCode.BadRequest"/> (400).
         /// </returns>
-        public static ApiResult<ValidationProblemDetails> BadRequest(ModelStateDictionary modelState, string? message = null)
-            => new(new ValidationProblemDetails(modelState), message, HttpStatusCode.BadRequest);
+        public static ApiResult<ValidationProblemDetails> BadRequest(ModelStateDictionary modelState, string? message = null, string? type = null)
+            => new(new ValidationProblemDetails(modelState), message, HttpStatusCode.BadRequest, type);
 
         /// <summary>
-        /// Produces a <c>400 Bad Request</c> result with an optional typed value and message.
+        /// Produces a <c>400 Bad Request</c> result with an optional typed value, message, and type code.
         /// </summary>
         /// <typeparam name="TValue">The type of the error detail payload, if any.</typeparam>
         /// <param name="value">An optional object describing the error details. May be <see langword="null"/>.</param>
         /// <param name="message">An optional message describing the error.</param>
+        /// <param name="type">An optional error type code for client-side error categorization (e.g. <c>"INVALID_INPUT"</c>). When <see langword="null"/>, defaults to <c>"CLIENT_ERROR"</c>.</param>
         /// <returns>
         /// An <see cref="ApiResult{TValue}"/> with <see cref="System.Net.HttpStatusCode.BadRequest"/> (400).
         /// </returns>
-        public static ApiResult<TValue> BadRequest<TValue>(TValue? value, string? message = null)
-            => new(value, message, HttpStatusCode.BadRequest);
+        public static ApiResult<TValue> BadRequest<TValue>(TValue? value, string? message = null, string? type = null)
+            => new(value, message, HttpStatusCode.BadRequest, type);
 
         /// <summary>
-        /// Produces a <c>400 Bad Request</c> result with an optional message and no typed payload.
+        /// Produces a <c>400 Bad Request</c> result with an optional message, type code, and no typed payload.
         /// </summary>
         /// <param name="message">An optional message describing the error.</param>
+        /// <param name="type">An optional error type code for client-side error categorization (e.g. <c>"INVALID_INPUT"</c>). When <see langword="null"/>, defaults to <c>"CLIENT_ERROR"</c>.</param>
         /// <returns>
         /// An <see cref="ApiResult{TValue}"/> of <c>object?</c> with <see cref="System.Net.HttpStatusCode.BadRequest"/> (400).
         /// </returns>
-        public static ApiResult<object?> BadRequest(string? message = null)
-            => new(default, message, HttpStatusCode.BadRequest);
+        public static ApiResult<object?> BadRequest(string? message = null, string? type = null)
+            => new(default, message, HttpStatusCode.BadRequest, type);
 
         /// <summary>
-        /// Produces a <c>401 Unauthorized</c> result with an optional message.
+        /// Produces a <c>401 Unauthorized</c> result with an optional message and type code.
         /// </summary>
         /// <param name="message">An optional message describing the authentication requirement.</param>
+        /// <param name="type">An optional error type code for client-side error categorization. When <see langword="null"/>, defaults to <c>"CLIENT_ERROR"</c>.</param>
         /// <returns>
         /// An <see cref="ApiResult{TValue}"/> of <c>object?</c> with <see cref="System.Net.HttpStatusCode.Unauthorized"/> (401).
         /// </returns>
-        public static ApiResult<object?> Unauthorized(string? message = null)
-            => new(default, message, HttpStatusCode.Unauthorized);
+        public static ApiResult<object?> Unauthorized(string? message = null, string? type = null)
+            => new(default, message, HttpStatusCode.Unauthorized, type);
 
         /// <summary>
-        /// Produces a <c>403 Forbidden</c> result with an optional message.
+        /// Produces a <c>403 Forbidden</c> result with an optional message and type code.
         /// </summary>
         /// <param name="message">An optional message describing why access is denied.</param>
+        /// <param name="type">An optional error type code for client-side error categorization. When <see langword="null"/>, defaults to <c>"CLIENT_ERROR"</c>.</param>
         /// <returns>
         /// An <see cref="ApiResult{TValue}"/> of <c>object?</c> with <see cref="System.Net.HttpStatusCode.Forbidden"/> (403).
         /// </returns>
-        public static ApiResult<object?> Forbidden(string? message = null)
-            => new(default, message, HttpStatusCode.Forbidden);
+        public static ApiResult<object?> Forbidden(string? message = null, string? type = null)
+            => new(default, message, HttpStatusCode.Forbidden, type);
 
         /// <summary>
-        /// Produces a <c>404 Not Found</c> result with an optional message.
+        /// Produces a <c>404 Not Found</c> result with an optional message and type code.
         /// </summary>
         /// <param name="message">An optional message describing what was not found.</param>
+        /// <param name="type">An optional error type code for client-side error categorization. When <see langword="null"/>, defaults to <c>"CLIENT_ERROR"</c>.</param>
         /// <returns>
         /// An <see cref="ApiResult{TValue}"/> of <c>object?</c> with <see cref="System.Net.HttpStatusCode.NotFound"/> (404).
         /// </returns>
-        public static ApiResult<object?> NotFound(string? message = null)
-            => new(default, message, HttpStatusCode.NotFound);
+        public static ApiResult<object?> NotFound(string? message = null, string? type = null)
+            => new(default, message, HttpStatusCode.NotFound, type);
 
         /// <summary>
-        /// Produces a <c>404 Not Found</c> result with a typed value and optional message.
+        /// Produces a <c>404 Not Found</c> result with a typed value, optional message, and type code.
         /// </summary>
         /// <typeparam name="TValue">The type of the error detail payload.</typeparam>
         /// <param name="value">An optional object describing what was not found. May be <see langword="null"/>.</param>
         /// <param name="message">An optional message describing what was not found.</param>
+        /// <param name="type">An optional error type code for client-side error categorization. When <see langword="null"/>, defaults to <c>"CLIENT_ERROR"</c>.</param>
         /// <returns>
         /// An <see cref="ApiResult{TValue}"/> with <see cref="System.Net.HttpStatusCode.NotFound"/> (404).
         /// </returns>
-        public static ApiResult<TValue> NotFound<TValue>(TValue? value, string? message = null)
-            => new(value, message, HttpStatusCode.NotFound);
+        public static ApiResult<TValue> NotFound<TValue>(TValue? value, string? message = null, string? type = null)
+            => new(value, message, HttpStatusCode.NotFound, type);
 
         /// <summary>
-        /// Produces a <c>405 Method Not Allowed</c> result with an optional message.
+        /// Produces a <c>405 Method Not Allowed</c> result with an optional message and type code.
         /// </summary>
         /// <param name="message">An optional message describing the error.</param>
+        /// <param name="type">An optional error type code for client-side error categorization. When <see langword="null"/>, defaults to <c>"CLIENT_ERROR"</c>.</param>
         /// <returns>
         /// An <see cref="ApiResult{TValue}"/> of <c>object?</c> with <see cref="System.Net.HttpStatusCode.MethodNotAllowed"/> (405).
         /// </returns>
-        public static ApiResult<object?> MethodNotAllowed(string? message = null)
-            => new(default, message, HttpStatusCode.MethodNotAllowed);
+        public static ApiResult<object?> MethodNotAllowed(string? message = null, string? type = null)
+            => new(default, message, HttpStatusCode.MethodNotAllowed, type);
 
         /// <summary>
-        /// Produces a <c>408 Request Timeout</c> result with an optional message.
+        /// Produces a <c>408 Request Timeout</c> result with an optional message and type code.
         /// </summary>
         /// <param name="message">An optional message describing the timeout.</param>
+        /// <param name="type">An optional error type code for client-side error categorization. When <see langword="null"/>, defaults to <c>"CLIENT_ERROR"</c>.</param>
         /// <returns>
         /// An <see cref="ApiResult{TValue}"/> of <c>object?</c> with <see cref="System.Net.HttpStatusCode.RequestTimeout"/> (408).
         /// </returns>
-        public static ApiResult<object?> RequestTimeout(string? message = null)
-            => new(default, message, HttpStatusCode.RequestTimeout);
+        public static ApiResult<object?> RequestTimeout(string? message = null, string? type = null)
+            => new(default, message, HttpStatusCode.RequestTimeout, type);
 
         /// <summary>
-        /// Produces a <c>409 Conflict</c> result with an optional typed value and message.
+        /// Produces a <c>409 Conflict</c> result with an optional typed value, message, and type code.
         /// </summary>
         /// <typeparam name="TValue">The type of the conflict detail payload.</typeparam>
         /// <param name="value">An optional object describing the conflict details. May be <see langword="null"/>.</param>
         /// <param name="message">An optional message describing the conflict.</param>
+        /// <param name="type">An optional error type code for client-side error categorization. When <see langword="null"/>, defaults to <c>"CLIENT_ERROR"</c>.</param>
         /// <returns>
         /// An <see cref="ApiResult{TValue}"/> with <see cref="System.Net.HttpStatusCode.Conflict"/> (409).
         /// </returns>
-        public static ApiResult<TValue> Conflict<TValue>(TValue? value, string? message = null)
-            => new(value, message, HttpStatusCode.Conflict);
+        public static ApiResult<TValue> Conflict<TValue>(TValue? value, string? message = null, string? type = null)
+            => new(value, message, HttpStatusCode.Conflict, type);
 
         /// <summary>
-        /// Produces a <c>409 Conflict</c> result with an optional message and no typed payload.
+        /// Produces a <c>409 Conflict</c> result with an optional message, type code, and no typed payload.
         /// </summary>
         /// <param name="message">An optional message describing the conflict.</param>
+        /// <param name="type">An optional error type code for client-side error categorization. When <see langword="null"/>, defaults to <c>"CLIENT_ERROR"</c>.</param>
         /// <returns>
         /// An <see cref="ApiResult{TValue}"/> of <c>object?</c> with <see cref="System.Net.HttpStatusCode.Conflict"/> (409).
         /// </returns>
-        public static ApiResult<object?> Conflict(string? message = null)
-            => new(default, message, HttpStatusCode.Conflict);
+        public static ApiResult<object?> Conflict(string? message = null, string? type = null)
+            => new(default, message, HttpStatusCode.Conflict, type);
 
         /// <summary>
-        /// Produces a <c>410 Gone</c> result with an optional message.
+        /// Produces a <c>410 Gone</c> result with an optional message and type code.
         /// </summary>
         /// <param name="message">An optional message describing the removal.</param>
+        /// <param name="type">An optional error type code for client-side error categorization. When <see langword="null"/>, defaults to <c>"CLIENT_ERROR"</c>.</param>
         /// <returns>
         /// An <see cref="ApiResult{TValue}"/> of <c>object?</c> with <see cref="System.Net.HttpStatusCode.Gone"/> (410).
         /// </returns>
-        public static ApiResult<object?> Gone(string? message = null)
-            => new(default, message, HttpStatusCode.Gone);
+        public static ApiResult<object?> Gone(string? message = null, string? type = null)
+            => new(default, message, HttpStatusCode.Gone, type);
 
         /// <summary>
-        /// Produces a <c>422 Unprocessable Entity</c> result with an optional typed value and message.
+        /// Produces a <c>422 Unprocessable Entity</c> result with an optional typed value, message, and type code.
         /// </summary>
         /// <typeparam name="TValue">The type of the validation error detail payload.</typeparam>
         /// <param name="value">An optional object describing the validation errors. May be <see langword="null"/>.</param>
         /// <param name="message">An optional message describing the validation failure.</param>
+        /// <param name="type">An optional error type code for client-side error categorization. When <see langword="null"/>, defaults to <c>"CLIENT_ERROR"</c>.</param>
         /// <returns>
         /// An <see cref="ApiResult{TValue}"/> with <see cref="System.Net.HttpStatusCode.UnprocessableEntity"/> (422).
         /// </returns>
-        public static ApiResult<TValue> UnprocessableEntity<TValue>(TValue? value, string? message = null)
-            => new(value, message, HttpStatusCode.UnprocessableEntity);
+        public static ApiResult<TValue> UnprocessableEntity<TValue>(TValue? value, string? message = null, string? type = null)
+            => new(value, message, HttpStatusCode.UnprocessableEntity, type);
 
         /// <summary>
-        /// Produces a <c>422 Unprocessable Entity</c> result with an optional message and no typed payload.
+        /// Produces a <c>422 Unprocessable Entity</c> result with an optional message, type code, and no typed payload.
         /// </summary>
         /// <param name="message">An optional message describing the validation failure.</param>
+        /// <param name="type">An optional error type code for client-side error categorization. When <see langword="null"/>, defaults to <c>"CLIENT_ERROR"</c>.</param>
         /// <returns>
         /// An <see cref="ApiResult{TValue}"/> of <c>object?</c> with <see cref="System.Net.HttpStatusCode.UnprocessableEntity"/> (422).
         /// </returns>
-        public static ApiResult<object?> UnprocessableEntity(string? message = null)
-            => new(default, message, HttpStatusCode.UnprocessableEntity);
+        public static ApiResult<object?> UnprocessableEntity(string? message = null, string? type = null)
+            => new(default, message, HttpStatusCode.UnprocessableEntity, type);
 
         /// <summary>
-        /// Produces a <c>429 Too Many Requests</c> result with an optional message.
+        /// Produces a <c>429 Too Many Requests</c> result with an optional message and type code.
         /// </summary>
         /// <param name="message">An optional message describing the rate limit.</param>
+        /// <param name="type">An optional error type code for client-side error categorization. When <see langword="null"/>, defaults to <c>"CLIENT_ERROR"</c>.</param>
         /// <returns>
         /// An <see cref="ApiResult{TValue}"/> of <c>object?</c> with <see cref="System.Net.HttpStatusCode.TooManyRequests"/> (429).
         /// </returns>
-        public static ApiResult<object?> TooManyRequests(string? message = null)
-            => new(default, message, HttpStatusCode.TooManyRequests);
+        public static ApiResult<object?> TooManyRequests(string? message = null, string? type = null)
+            => new(default, message, HttpStatusCode.TooManyRequests, type);
 
         /// <summary>
-        /// Produces a <c>500 Internal Server Error</c> result with an optional typed value and message.
+        /// Produces a <c>500 Internal Server Error</c> result with an optional typed value, message, and type code.
         /// </summary>
         /// <typeparam name="TValue">The type of the error detail payload, if any.</typeparam>
         /// <param name="value">An optional object describing the error details. May be <see langword="null"/>.</param>
         /// <param name="message">An optional message describing the server error.</param>
+        /// <param name="type">An optional error type code for client-side error categorization. When <see langword="null"/>, defaults to <c>"SERVER_ERROR"</c>.</param>
         /// <returns>
         /// An <see cref="ApiResult{TValue}"/> with <see cref="System.Net.HttpStatusCode.InternalServerError"/> (500).
         /// </returns>
-        public static ApiResult<TValue> InternalServerError<TValue>(TValue? value, string? message = null)
-            => new(value, message, HttpStatusCode.InternalServerError);
+        public static ApiResult<TValue> InternalServerError<TValue>(TValue? value, string? message = null, string? type = null)
+            => new(value, message, HttpStatusCode.InternalServerError, type);
 
         /// <summary>
-        /// Produces a <c>500 Internal Server Error</c> result with an optional message and no typed payload.
+        /// Produces a <c>500 Internal Server Error</c> result with an optional message, type code, and no typed payload.
         /// </summary>
         /// <param name="message">An optional message describing the server error.</param>
+        /// <param name="type">An optional error type code for client-side error categorization. When <see langword="null"/>, defaults to <c>"SERVER_ERROR"</c>.</param>
         /// <returns>
         /// An <see cref="ApiResult{TValue}"/> of <c>object?</c> with <see cref="System.Net.HttpStatusCode.InternalServerError"/> (500).
         /// </returns>
-        public static ApiResult<object?> InternalServerError(string? message = null)
-            => new(default, message, HttpStatusCode.InternalServerError);
+        public static ApiResult<object?> InternalServerError(string? message = null, string? type = null)
+            => new(default, message, HttpStatusCode.InternalServerError, type);
 
         /// <summary>
-        /// Produces a <c>501 Not Implemented</c> result with an optional message.
+        /// Produces a <c>501 Not Implemented</c> result with an optional message and type code.
         /// </summary>
         /// <param name="message">An optional message describing what is not implemented.</param>
+        /// <param name="type">An optional error type code for client-side error categorization. When <see langword="null"/>, defaults to <c>"SERVER_ERROR"</c>.</param>
         /// <returns>
         /// An <see cref="ApiResult{TValue}"/> of <c>object?</c> with <see cref="System.Net.HttpStatusCode.NotImplemented"/> (501).
         /// </returns>
-        public static ApiResult<object?> NotImplemented(string? message = null)
-            => new(default, message, HttpStatusCode.NotImplemented);
+        public static ApiResult<object?> NotImplemented(string? message = null, string? type = null)
+            => new(default, message, HttpStatusCode.NotImplemented, type);
 
         /// <summary>
-        /// Produces a <c>502 Bad Gateway</c> result with an optional message.
+        /// Produces a <c>502 Bad Gateway</c> result with an optional message and type code.
         /// </summary>
         /// <param name="message">An optional message describing the gateway error.</param>
+        /// <param name="type">An optional error type code for client-side error categorization. When <see langword="null"/>, defaults to <c>"SERVER_ERROR"</c>.</param>
         /// <returns>
         /// An <see cref="ApiResult{TValue}"/> of <c>object?</c> with <see cref="System.Net.HttpStatusCode.BadGateway"/> (502).
         /// </returns>
-        public static ApiResult<object?> BadGateway(string? message = null)
-            => new(default, message, HttpStatusCode.BadGateway);
+        public static ApiResult<object?> BadGateway(string? message = null, string? type = null)
+            => new(default, message, HttpStatusCode.BadGateway, type);
 
         /// <summary>
-        /// Produces a <c>503 Service Unavailable</c> result with an optional message.
+        /// Produces a <c>503 Service Unavailable</c> result with an optional message and type code.
         /// </summary>
         /// <param name="message">An optional message describing the service unavailability.</param>
+        /// <param name="type">An optional error type code for client-side error categorization. When <see langword="null"/>, defaults to <c>"SERVER_ERROR"</c>.</param>
         /// <returns>
         /// An <see cref="ApiResult{TValue}"/> of <c>object?</c> with <see cref="System.Net.HttpStatusCode.ServiceUnavailable"/> (503).
         /// </returns>
-        public static ApiResult<object?> ServiceUnavailable(string? message = null)
-            => new(default, message, HttpStatusCode.ServiceUnavailable);
+        public static ApiResult<object?> ServiceUnavailable(string? message = null, string? type = null)
+            => new(default, message, HttpStatusCode.ServiceUnavailable, type);
 
         /// <summary>
-        /// Produces a <c>504 Gateway Timeout</c> result with an optional message.
+        /// Produces a <c>504 Gateway Timeout</c> result with an optional message and type code.
         /// </summary>
         /// <param name="message">An optional message describing the timeout.</param>
+        /// <param name="type">An optional error type code for client-side error categorization. When <see langword="null"/>, defaults to <c>"SERVER_ERROR"</c>.</param>
         /// <returns>
         /// An <see cref="ApiResult{TValue}"/> of <c>object?</c> with <see cref="System.Net.HttpStatusCode.GatewayTimeout"/> (504).
         /// </returns>
-        public static ApiResult<object?> GatewayTimeout(string? message = null)
-            => new(default, message, HttpStatusCode.GatewayTimeout);
+        public static ApiResult<object?> GatewayTimeout(string? message = null, string? type = null)
+            => new(default, message, HttpStatusCode.GatewayTimeout, type);
 
         /// <summary>
         /// Produces a <see cref="ProblemDetails"/> result.
