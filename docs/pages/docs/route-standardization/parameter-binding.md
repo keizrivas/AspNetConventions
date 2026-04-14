@@ -1,12 +1,12 @@
 # Parameter Binding
 
-How AspNetConventions handles parameter transformation and model binding across different binding sources.
+How **AspNetConventions** handles parameter transformation and model binding across different binding sources.
 
 ---
 
 ## Basic Parameter Binding {#basic-parameter-binding}
 
-Parameter names are transformed in the URL, but **model binding always uses the original name**. AspNetConventions registers internal binding aliases, making the resolution transparent.
+Parameter names are transformed in the URL, but **model binding always uses the original name**. **AspNetConventions** registers internal binding aliases, making the resolution transparent.
 
 ```csharp
 // Route: GET /api/orders/get-by-user/{user-id}
@@ -55,7 +55,7 @@ Constraints survive transformation — only the parameter name is rewritten:
 
 ## Complex Types {#complex-types}
 
-When you bind a complex type (a class with multiple properties), AspNetConventions transforms **all property names recursively** to match your configured case style.
+When you bind a complex type (a class with multiple properties), **AspNetConventions** transforms **all property names recursively** to match your configured case style.
 
 ### How It Works {#how-it-works}
 
@@ -216,7 +216,7 @@ x-request-id: abc-123
 
 ## Custom Binding Names {#custom-binding-names}
 
-Some binding attributes allow you to explicitly define the parameter name via `IModelNameProvider`. When an explicit name is provided, AspNetConventions transforms it according to your configured casing style.
+Some binding attributes allow you to explicitly define the parameter name via `IModelNameProvider`. When an explicit name is provided, **AspNetConventions** transforms it according to your configured casing style.
 
 ```csharp
 // Route: /api/profile/theme-generator/{accent-color}

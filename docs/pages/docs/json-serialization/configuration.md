@@ -10,7 +10,7 @@ Controls JSON serialization behaviour application-wide, covering both API respon
 
 | Property | Type | Default | Description |
 |---|---|---|---|
-| `IsEnabled` | `bool` | `true` | Enables or disables AspNetConventions JSON configuration. When `false`, the application's default serializer settings are used unchanged |
+| `IsEnabled` | `bool` | `true` | Enables or disables **AspNetConventions** JSON configuration. When `false`, the application's default serializer settings are used unchanged |
 | `CaseStyle` | `CasingStyle` | `CamelCase` | JSON property naming style applied globally |
 | `CaseConverter` | `ICaseConverter?` | `null` | Custom case converter for property names. Takes precedence over `CaseStyle` when set |
 
@@ -54,7 +54,7 @@ Controls JSON serialization behaviour application-wide, covering both API respon
 
 ### ConfigureAdapter {#configureadapter}
 
-By default, AspNetConventions uses `SystemTextJsonAdapter` backed by `System.Text.Json`. Use `ConfigureAdapter<TAdapter, TOptions>()` to swap in a different serializer adapter:
+By default, **AspNetConventions** uses `SystemTextJsonAdapter` backed by `System.Text.Json`. Use `ConfigureAdapter<TAdapter, TOptions>()` to swap in a different serializer adapter:
 
 ```csharp
 /// <summary>

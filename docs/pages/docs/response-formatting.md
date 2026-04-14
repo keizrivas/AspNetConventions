@@ -235,10 +235,10 @@ The `type` field in your error responses can be customized to reflect your busin
 **Example:** `"ORDER_NOT_FOUND"` tells the client exactly which resource is missing, rather than a generic `"NOT_FOUND"`.
 
 ::: callout info
-The `type` field is only visible in **validation failure** and **exception** responses. See [`DefaultApiResponseBuilder`](./custom-response-builders.md#iresponsebuilder) and [`DefaultApiErrorResponseBuilder`](./custom-response-builders.md#ierrorresponsebuilder) for more information about response formats.
+The `type` field is only visible in **validation failure** and **exception** responses. See [`DefaultApiResponseBuilder`](./response-formatting/custom-response-builders.md#iresponsebuilder) and [`DefaultApiErrorResponseBuilder`](./response-formatting/custom-response-builders.md#ierrorresponsebuilder) for more information about response formats.
 :::
 
-To return custom `type` codes directly from your endpoints, use [`ApiResults.Custom()`](./api-results.md#custom)—it works for both **success** and **error** responses. For automatic exception handling with custom `type` codes, see [Custom Exception Mapping](../exception-handling/exception-mappers.md#creating-a-custom-mapper).
+To return custom `type` codes directly from your endpoints, use [`ApiResults.Custom()`](./response-formatting/api-results.md#custom)—it works for both **success** and **error** responses. For automatic exception handling with custom `type` codes, see [Custom Exception Mapping](./exception-handling/exception-mappers.md#creating-a-custom-mapper).
 
 ---
 
@@ -256,7 +256,7 @@ Every response automatically includes a `metadata` block that provides essential
 }
 ```
 
-See [Response Metadata](./metadata.md#response-metadata) for more information.
+See [Response Metadata](./response-formatting/metadata.md#response-metadata) for more information.
 
 ---
 
@@ -287,15 +287,15 @@ When returning large result sets, **AspNetConventions** automatically includes p
 }
 ```
 
-See [Pagination Metadata](./metadata.md#pagination-metadata) for more information.
+See [Pagination Metadata](./response-formatting/metadata.md#pagination-metadata) for more information.
 
 ---
 
 ## ApiResults {#apiresults}
 
-While ASP.NET Core provides built-in response methods like `Ok()`, `BadRequest()`, and `Problem()` for MVC, and `Results.Ok()`, `Results.BadRequest()`, `Results.Created()` for Minimal APIs, **AspNetConventions** offers an enhanced alternative: The [`ApiResults`](./api-results.md) helper class.
+While ASP.NET Core provides built-in response methods like `Ok()`, `BadRequest()`, and `Problem()` for MVC, and `Results.Ok()`, `Results.BadRequest()`, `Results.Created()` for Minimal APIs, **AspNetConventions** offers an enhanced alternative: The [`ApiResults`](./response-formatting/api-results.md) helper class.
 
-[`ApiResults`](./api-results.md) builds on top of these standard methods, providing a unified factory for creating strongly-typed responses with additional capabilities:
+[`ApiResults`](./response-formatting/api-results.md) builds on top of these standard methods, providing a unified factory for creating strongly-typed responses with additional capabilities:
 
 | Feature | Standard ASP.NET Core | With ApiResults |
 | --- | --- | --- |
@@ -316,4 +316,4 @@ return ApiResults.Paginate(users, totalRecords, pageNumber, pageSize);
 return ApiResults.BadRequest(ModelState);
 ```
 
-See [ApiResults Reference](./api-results.md) for complete documentation.
+See [ApiResults Reference](./response-formatting/api-results.md) for complete documentation.

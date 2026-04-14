@@ -4,7 +4,7 @@
 
 ## MVC Controllers {#mvc-controllers}
 
-When using MVC Controllers, the library integrates [`.AddAspNetConventions()`](./index.md#addaspnetconventions) with the `IMvcBuilder` to inject global action filters and route token transformers. This ensures that every controller and action follows your specified naming conventions without requiring manual `[Route]` overrides on every method.
+When using MVC Controllers, the library integrates [`.AddAspNetConventions()`](../getting-started.md#addaspnetconventions) with the `IMvcBuilder` to inject global action filters and route token transformers. This ensures that every controller and action follows your specified naming conventions without requiring manual `[Route]` overrides on every method.
 
 ### Your Code {#your-code}
 
@@ -56,7 +56,7 @@ See [`RouteConventionOptions`](../route-standardization/configuration.md#routeco
 
 ## Minimal APIs {#minimal-apis}
 
-For Minimal APIs, the library provides a [`.UseAspNetConventions()`](./index.md#useaspnetconventions) extension for `WebApplication` that returns a `RouteGroupBuilder`. Map your endpoints on the returned group to apply conventions to a specific branch of your API tree or the entire application.
+For Minimal APIs, the library provides a [`.UseAspNetConventions()`](../getting-started.md#useaspnetconventions) extension for `WebApplication` that returns a `RouteGroupBuilder`. Map your endpoints on the returned group to apply conventions to a specific branch of your API tree or the entire application.
 
 ### Your Code {#your-code}
 
@@ -111,7 +111,7 @@ See [`MinimalApiRouteOptions`](../route-standardization/configuration.md#minimal
 
 ## Razor Pages {#razor-pages}
 
-Razor Pages often suffer from inconsistent URL structures due to folder nesting. AspNetConventions automatically transforms physical file paths and route parameters into a consistent casing style, making your UI routes match your API routes.
+Razor Pages often suffer from inconsistent URL structures due to folder nesting. **AspNetConventions** automatically transforms physical file paths and route parameters into a consistent casing style, making your UI routes match your API routes.
 
 ### Your Code {#your-code}
 
@@ -224,13 +224,13 @@ See [`ResponseFormattingOptions`](../response-formatting/configuration.md#respon
 
 Explore the deep-dive documentation for each specific feature to customize the behavior to your needs:
 
-[<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-link-icon lucide-link"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg> **Route Standardization**](../route-standardization/index.md){.text-color .link style="min-width: 300px;"}
+[<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-link-icon lucide-link"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg> **Route Standardization**](../route-standardization.md){.text-color .link style="min-width: 300px;"}
 
-[<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-shield-alert-icon lucide-shield-alert"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg> **Exception Handling**](../exception-handling/index.md){.text-color .link style="min-width: 300px;"}
+[<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-shield-alert-icon lucide-shield-alert"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg> **Exception Handling**](../exception-handling.md){.text-color .link style="min-width: 300px;"}
 
-[<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-file-braces-corner-icon lucide-file-braces-corner"><path d="M14 22h4a2 2 0 0 0 2-2V8a2.4 2.4 0 0 0-.706-1.706l-3.588-3.588A2.4 2.4 0 0 0 14 2H6a2 2 0 0 0-2 2v6"/><path d="M14 2v5a1 1 0 0 0 1 1h5"/><path d="M5 14a1 1 0 0 0-1 1v2a1 1 0 0 1-1 1 1 1 0 0 1 1 1v2a1 1 0 0 0 1 1"/><path d="M9 22a1 1 0 0 0 1-1v-2a1 1 0 0 1 1-1 1 1 0 0 1-1-1v-2a1 1 0 0 0-1-1"/></svg> **Response Formatting**](../response-formatting/index.md){.text-color .link style="min-width: 300px;"}
+[<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-file-braces-corner-icon lucide-file-braces-corner"><path d="M14 22h4a2 2 0 0 0 2-2V8a2.4 2.4 0 0 0-.706-1.706l-3.588-3.588A2.4 2.4 0 0 0 14 2H6a2 2 0 0 0-2 2v6"/><path d="M14 2v5a1 1 0 0 0 1 1h5"/><path d="M5 14a1 1 0 0 0-1 1v2a1 1 0 0 1-1 1 1 1 0 0 1 1 1v2a1 1 0 0 0 1 1"/><path d="M9 22a1 1 0 0 0 1-1v-2a1 1 0 0 1 1-1 1 1 0 0 1-1-1v-2a1 1 0 0 0-1-1"/></svg> **Response Formatting**](../response-formatting.md){.text-color .link style="min-width: 300px;"}
 
-[<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-braces-icon lucide-braces"><path d="M8 3H7a2 2 0 0 0-2 2v5a2 2 0 0 1-2 2 2 2 0 0 1 2 2v5c0 1.1.9 2 2 2h1"/><path d="M16 21h1a2 2 0 0 0 2-2v-5c0-1.1.9-2 2-2a2 2 0 0 1-2-2V5a2 2 0 0 0-2-2h-1"/></svg> **JSON Serialization**](../json-serialization/index.md){.text-color .link style="min-width: 300px;"}
+[<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-braces-icon lucide-braces"><path d="M8 3H7a2 2 0 0 0-2 2v5a2 2 0 0 1-2 2 2 2 0 0 1 2 2v5c0 1.1.9 2 2 2h1"/><path d="M16 21h1a2 2 0 0 0 2-2v-5c0-1.1.9-2 2-2a2 2 0 0 1-2-2V5a2 2 0 0 0-2-2h-1"/></svg> **JSON Serialization**](../json-serialization.md){.text-color .link style="min-width: 300px;"}
 
 
 

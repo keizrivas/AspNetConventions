@@ -307,7 +307,7 @@ builder.Services.AddControllers()
 
 ## Conflict with Other Exception Middleware {#conflict-with-other-exception-middleware}
 
-**Problem:** AspNetConventions conflicts with another exception handling middleware.
+**Problem:** **AspNetConventions** conflicts with another exception handling middleware.
 
 **Solution:** Ensure proper middleware order:
 

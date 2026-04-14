@@ -1,6 +1,6 @@
 # Configuration Reference
 
-Configuration for **AspNetConventions** is centralized through the options callback. Depending on your project type, you can access these settings via the [`.AddAspNetConventions()`](./getting-started/index.md#addaspnetconventions) method on `IMvcBuilder` or the [`.UseAspNetConventions()`](./getting-started/index.md#useaspnetconventions) method for `WebApplication` setups.
+Configuration for **AspNetConventions** is centralized through the options callback. Depending on your project type, you can access these settings via the [`.AddAspNetConventions()`](./getting-started.md#addaspnetconventions) method on `IMvcBuilder` or the [`.UseAspNetConventions()`](./getting-started.md#useaspnetconventions) method for `WebApplication` setups.
 
 ---
 
@@ -24,10 +24,10 @@ var api = app.UseAspNetConventions(options =>
 ```
 ## MVC vs Minimal APIs {#mvc-vs-minimal-apis}
 
-AspNetConventions uses **different configuration contexts** depending on the type of endpoint you are working with. This separation exists because each endpoint type is integrated at a different stage of the ASP.NET pipeline.
+**AspNetConventions** uses **different configuration contexts** depending on the type of endpoint you are working with. This separation exists because each endpoint type is integrated at a different stage of the ASP.NET pipeline.
 
 **Key Difference:**
-Each method receives its **own instance of [`AspNetConventionOptions`](#aspnetconventionoptions)**, meaning configurations are **not shared automatically** between MVC and Minimal APIs.
+Each method receives its **own instance of** [`AspNetConventionOptions`](#aspnetconventionoptions), meaning configurations are **not shared automatically** between MVC and Minimal APIs.
 
 This allows you to configure each endpoint type independently.
 
