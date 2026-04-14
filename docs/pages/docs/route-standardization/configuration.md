@@ -103,7 +103,7 @@ Minimal APIs handle parameter binding strictly by name. If the library automatic
 To enable automatic casing for Minimal API route parameters, toggle this feature in your configuration:
 
 ```csharp
-app.UseAspNetConventions(options => {
+var api = app.UseAspNetConventions(options => {
     // Default is "false" to prevent binding breaks
     options.Route.MinimalApi.TransformRouteParameters = true;
 });
@@ -124,7 +124,7 @@ api.MapGet("/UserAccount/{userId}", ([FromRoute(Name = "user-id")] int userId) =
 Enable `PreserveExplicitBindingNames` to automatically skip transformation for any parameter that already has an explicit `[FromRoute(Name = "...")]`:
 
 ```csharp
-app.UseAspNetConventions(options => {
+var api = app.UseAspNetConventions(options => {
     options.Route.MinimalApi.TransformRouteParameters = true;
     options.Route.MinimalApi.PreserveExplicitBindingNames = true;
 });

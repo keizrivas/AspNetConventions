@@ -50,7 +50,7 @@ app.Run();
 
 ### Minimal APIs {#minimal-apis}
 
-Call [.UseAspNetConventions()](./index.md#useaspnetconventions) on the `WebApplication` after endpoints declaration to apply conventions.
+Call [`.UseAspNetConventions()`](./index.md#useaspnetconventions) on the `WebApplication` to get a `RouteGroupBuilder`, then map your endpoints on the returned group.
 
 ```csharp
 // Program.cs
@@ -60,10 +60,10 @@ var builder = WebApplication.CreateBuilder(args);
 
 var app = builder.Build();
 
-app.MapGet("/WeatherForecast/{City}", (string City) =>
-    Results.Ok(new { City, ZipCode = 000 }));
+var api = app.UseAspNetConventions();   // ← Here
 
-app.UseAspNetConventions();   // ← Here
+api.MapGet("/WeatherForecast/{City}", (string City) =>
+    Results.Ok(new { City, ZipCode = 000 }));
 
 app.Run();
 ```

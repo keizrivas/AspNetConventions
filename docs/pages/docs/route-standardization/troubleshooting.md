@@ -161,7 +161,7 @@ builder.Services.AddRazorPages()
 var app = builder.Build();
 
 // Minimal APIs
-app.UseAspNetConventions(); // Must be called before MapGet, etc.
+var api = app.UseAspNetConventions(); // Returns RouteGroupBuilder — map endpoints on it
 ```
 
 ---

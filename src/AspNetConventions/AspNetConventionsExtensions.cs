@@ -61,17 +61,20 @@ namespace AspNetConventions
         /// Configures the application to use AspNetConventions for Minimal APIs.
         /// </summary>
         /// <param name="app">The <see cref="WebApplication"/> to configure.</param>
-        /// <param name="prefix">The pattern that prefixes all endpoints in the API group.</param>
+        /// <param name="prefix">
+        /// An optional route prefix applied to all endpoints registered on the returned group.
+        /// Defaults to <c>""</c>, which creates a root-level group with no path prefix.
+        /// </param>
         /// <param name="configure">An optional action to configure conventions. If null, default settings are used.</param>
         /// <returns>A <see cref="RouteGroupBuilder"/> for the configured API group, enabling endpoint chaining.</returns>
-        /// <exception cref="ArgumentNullException">Thrown when <paramref name="app"/> or <paramref name="prefix"/> is null.</exception>
+        /// <exception cref="ArgumentNullException">Thrown when <paramref name="app"/> is null.</exception>
         public static RouteGroupBuilder UseAspNetConventions(
             this WebApplication app,
-            string prefix,
+            string prefix = "",
             Action<AspNetConventionOptions>? configure = null)
         {
             ArgumentNullException.ThrowIfNull(app);
-            ArgumentNullException.ThrowIfNull(prefix);
+            prefix ??= string.Empty;
 
             // Build and validate options
             var options = new AspNetConventionOptions();

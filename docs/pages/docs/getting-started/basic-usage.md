@@ -56,18 +56,18 @@ See [`RouteConventionOptions`](../route-standardization/configuration.md#routeco
 
 ## Minimal APIs {#minimal-apis}
 
-For Minimal APIs, the library provides an [.UseAspNetConventions()](./index.md#useaspnetconventions) extension for `WebApplication`. This allows to apply conventions to a specific branch of your API tree or the entire application.
+For Minimal APIs, the library provides a [`.UseAspNetConventions()`](./index.md#useaspnetconventions) extension for `WebApplication` that returns a `RouteGroupBuilder`. Map your endpoints on the returned group to apply conventions to a specific branch of your API tree or the entire application.
 
 ### Your Code {#your-code}
 
 ```csharp
+var api = app.UseAspNetConventions();
+
 api.MapGet("/WeatherForecast/{city}", (string city) =>
     Results.Ok(new { city }));
 
 api.MapGet("/GetUserById/{userId}", (int userId) =>
     Results.Ok(new { id = userId }));
-
-app.UseAspNetConventions();
 ```
 
 ### Route Transformation {#route-transformation}

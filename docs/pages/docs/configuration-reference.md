@@ -17,7 +17,7 @@ builder.Services
 ```
 For **Minimal APIs**:
 ```csharp
-app.UseAspNetConventions(options =>
+var api = app.UseAspNetConventions(options =>
     {
         // Convention options for Minimal API here...
     });
@@ -44,7 +44,7 @@ builder.Services
 
 var app = builder.Build();
 
-app.UseAspNetConventions(options =>
+var api = app.UseAspNetConventions(options =>
 {
     // Applies only to Minimal APIs
     options.Json.CaseStyle = CasingStyle.CamelCase;

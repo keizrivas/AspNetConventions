@@ -10,12 +10,14 @@ Every response includes a `metadata` block that provides essential request conte
 
 ### Metadata Fields {#metadata-fields}
 
-| Field | Source | Description |
-|-------|--------|-------------|
-| `requestType` | `HttpContext.Request.Method` | HTTP method (`GET`, `POST`, `PUT`, `DELETE`, etc.) |
-| `path` | `HttpContext.Request.Path` | Request URL path (e.g., `/api/users/123`) |
-| `timestamp` | `DateTime.UtcNow` | **ISO 8601 UTC** timestamp of response generation |
-| `traceId` | `Activity.Current?.Id` or `HttpContext.TraceIdentifier` | Unique identifier for end-to-end request tracing across services |
+`Metadata` is a `Dictionary<string, object?>` — each standard field is stored under a well-known key constant defined on the `Metadata` class. Keys follow the configured JSON naming policy (e.g., camelCase, kebab-case) automatically.
+
+| Field (JSON) | Const key | Source | Description |
+|---|---|---|---|
+| `requestType` | `Metadata.RequestTypeKey` | `HttpContext.Request.Method` | HTTP method (`GET`, `POST`, `PUT`, `DELETE`, etc.) |
+| `path` | `Metadata.PathKey` | `HttpContext.Request.Path` | Request URL path (e.g., `/api/users/123`) |
+| `timestamp` | `Metadata.TimestampKey` | `DateTime.UtcNow` | **ISO 8601 UTC** timestamp of response generation |
+| `traceId` | `Metadata.TraceIdKey` | `Activity.Current?.Id` or `HttpContext.TraceIdentifier` | Unique identifier for end-to-end request tracing across services |
 
 ### Example Metadata Block {#example-metadata-block}
 
@@ -28,9 +30,32 @@ Every response includes a `metadata` block that provides essential request conte
 }
 ```
 
+### Extending Metadata {#extending-metadata}
+
+Because `Metadata` is a plain dictionary, you can add, remove, or replace any entry before the response is built using the `CustomizeMetadata` hook:
+
+```csharp
+options.Response.Hooks.CustomizeMetadata = (metadata, request) =>
+{
+    // Add custom entries
+    metadata["userId"] = request.UserId;
+    metadata["tenantId"] = request.HttpContext.Items["TenantId"];
+
+    // Remove a standard entry
+    metadata.Remove(Metadata.PathKey);
+
+    // Replace a standard entry
+    metadata[Metadata.TraceIdKey] = MyCorrelationIdProvider.Get(request.HttpContext);
+};
+```
+
+The hook receives the `Metadata` dictionary after the standard fields (`requestType`, `path`, `timestamp`, `traceId`) have been populated. Use the `Metadata.*Key` constants to safely reference standard fields without hard-coding strings.
+
+See [`ResponseFormattingHooks`](./configuration.md#responseformattinghooks) for more information.
+
 ### Configuration {#configuration}
 
-You can disable metadata entirely or customize specific fields:
+You can disable metadata entirely:
 
 ```csharp
 options.Response.IncludeMetadata = false;
@@ -77,6 +102,8 @@ When returning paginated results using [`ApiResults.Paginate()`](./api-results.m
 | `pageSize` | `pageSize` parameter | Number of items per page |
 | `totalPages` | `Math.Ceiling(totalRecords / pageSize)` | Total number of pages available |
 | `totalRecords` | `totalRecords` parameter | Total count of items across all pages |
+| `hasNextPage` | derived | `true` if a next page exists. Only included when `IncludeNavigationFlags = true` |
+| `hasPreviousPage` | derived | `true` if a previous page exists. Only included when `IncludeNavigationFlags = true` |
 | `links` | [`PaginationLinks`](#paginationlinks) object | Navigation URLs for pagination traversal |
 
 ### PaginationLinks {#paginationlinks}
@@ -118,7 +145,20 @@ The `CollectionResult<T>` is a wrapper class that combines a collection of items
     "previousPageUrl": null
   }
 }
+```
 
+With `IncludeNavigationFlags = true`:
+
+```json
+{
+  "pageNumber": 1,
+  "pageSize": 25,
+  "totalPages": 20,
+  "totalRecords": 500,
+  "hasNextPage": true,
+  "hasPreviousPage": false,
+  "links": { ... }
+}
 ```
 
 ### Configuration {#configuration}
@@ -128,6 +168,7 @@ Customize pagination behavior in your configuration:
 ```csharp
 options.Response.Pagination.IncludeMetadata = true;
 options.Response.Pagination.IncludeLinks = false;
+options.Response.Pagination.IncludeNavigationFlags = true;
 options.Response.Pagination.PageNumberParameterName = "p";
 options.Response.Pagination.PageSizeParameterName = "limit";
 ```
