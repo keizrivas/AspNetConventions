@@ -29,18 +29,30 @@ IMvcBuilder AddAspNetConventions(
 ---
 
 ### UseAspNetConventions {#useaspnetconventions}
-This method enables conventions for Minimal APIs. It attaches to the `WebApplication` to inject global filters and configuration logic.
+This method enables conventions for Minimal APIs. It returns a `RouteGroupBuilder` — map your endpoints on the returned group so that response formatting, route transformation, and exception handling are applied to them.
 
 ```csharp
-WebApplication UseAspNetConventions(
+RouteGroupBuilder UseAspNetConventions(
     this WebApplication app,
+    string prefix = "",
     Action<AspNetConventionOptions>? configure = null)
 ```
 
-| Parameter | type | Description |
+| Parameter | Type | Description |
 |---|---|---|
-| app | `WebApplication` | The current web application instance. |
-| configure | `Action<[AspNetConventionsOptions]>?` | An optional action to configure conventions via [AspNetConventionsOptions](../configuration-reference.md#aspnetconventionoptions) object. |
+| `app` | `WebApplication` | The current web application instance. |
+| `prefix` | `string` | An optional route prefix applied to all endpoints registered on the returned group. Defaults to `""` (root, no prefix). |
+| `configure` | `Action<AspNetConventionsOptions>?` | An optional action to configure conventions via [AspNetConventionsOptions](../configuration-reference.md#aspnetconventionoptions). |
+
+**Usage:**
+```csharp
+var api = app.UseAspNetConventions();
+
+api.MapGet("/users", GetUsers);
+api.MapPost("/users", CreateUser);
+
+app.Run();
+```
 
 ## Zero Configuration {#zero-configuration}
 **AspNetConventions** is designed with a "sensible defaults" philosophy. You can automatically achieve consistent standardization across your entire project without writing a single line of configuration code.

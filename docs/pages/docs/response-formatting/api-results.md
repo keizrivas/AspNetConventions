@@ -27,6 +27,7 @@ Instead of manually constructing responses with status codes and messages, `ApiR
 - **Type safety** — Generic methods ensure compile-time type checking
 - **Implicit conversion** — [`ApiResult<T>`](./configuration.md#apiresultlttgt) converts automatically to `ActionResult` or `IResult`
 - **Message support** — Optional messages for additional context
+- **Error type codes** — Optional `type` parameter for client-side error categorization without custom mappers
 - **Pagination built-in** — `Paginate()` method for collection responses
 
 ```csharp
@@ -284,7 +285,7 @@ ApiResults.BadRequest(ModelStateDictionary modelState, string? message = null, s
 ApiResults.BadRequest<TValue>(TValue? value, string? message = null, string? type = null)
 
 // Message only
-ApiResults.BadRequest(string? message = null)
+ApiResults.BadRequest(string? message = null, string? type = null)
 ```
 
 **Example:**
@@ -327,7 +328,7 @@ return ApiResults.BadRequest("Invalid request parameters.");
 Returns a `401 Unauthorized` response.
 
 ```csharp
-ApiResults.Unauthorized(string? message = null)
+ApiResults.Unauthorized(string? message = null, string? type = null)
 ```
 
 **Example:**
@@ -340,7 +341,7 @@ return ApiResults.Unauthorized("Authentication required.");
 Returns a `403 Forbidden` response.
 
 ```csharp
-ApiResults.Forbidden(string? message = null)
+ApiResults.Forbidden(string? message = null, string? type = null)
 ```
 
 **Example:**
@@ -354,10 +355,10 @@ Returns a `404 Not Found` response.
 
 ```csharp
 // Message only
-ApiResults.NotFound(string? message = null)
+ApiResults.NotFound(string? message = null, string? type = null)
 
 // With value
-ApiResults.NotFound<TValue>(TValue? value, string? message = null)
+ApiResults.NotFound<TValue>(TValue? value, string? message = null, string? type = null)
 ```
 
 **Example:**
@@ -371,7 +372,7 @@ return ApiResults.NotFound(new { resourceType = "User", id = 123 }, "Resource no
 Returns a `405 Method Not Allowed` response.
 
 ```csharp
-ApiResults.MethodNotAllowed(string? message = null)
+ApiResults.MethodNotAllowed(string? message = null, string? type = null)
 ```
 
 ### RequestTimeout {#requesttimeout}
@@ -379,7 +380,7 @@ ApiResults.MethodNotAllowed(string? message = null)
 Returns a `408 Request Timeout` response.
 
 ```csharp
-ApiResults.RequestTimeout(string? message = null)
+ApiResults.RequestTimeout(string? message = null, string? type = null)
 ```
 
 ### Conflict {#conflict}
@@ -387,8 +388,8 @@ ApiResults.RequestTimeout(string? message = null)
 Returns a `409 Conflict` response.
 
 ```csharp
-ApiResults.Conflict<TValue>(TValue? value, string? message = null)
-ApiResults.Conflict(string? message = null)
+ApiResults.Conflict<TValue>(TValue? value, string? message = null, string? type = null)
+ApiResults.Conflict(string? message = null, string? type = null)
 ```
 
 **Example:**
@@ -401,7 +402,7 @@ return ApiResults.Conflict("A user with this email already exists.");
 Returns a `410 Gone` response.
 
 ```csharp
-ApiResults.Gone(string? message = null)
+ApiResults.Gone(string? message = null, string? type = null)
 ```
 
 ### UnprocessableEntity {#unprocessableentity}
@@ -409,8 +410,8 @@ ApiResults.Gone(string? message = null)
 Returns a `422 Unprocessable Entity` response.
 
 ```csharp
-ApiResults.UnprocessableEntity<TValue>(TValue? value, string? message = null)
-ApiResults.UnprocessableEntity(string? message = null)
+ApiResults.UnprocessableEntity<TValue>(TValue? value, string? message = null, string? type = null)
+ApiResults.UnprocessableEntity(string? message = null, string? type = null)
 ```
 
 **Example:**
@@ -423,7 +424,7 @@ return ApiResults.UnprocessableEntity("The request was valid but could not be pr
 Returns a `429 Too Many Requests` response.
 
 ```csharp
-ApiResults.TooManyRequests(string? message = null)
+ApiResults.TooManyRequests(string? message = null, string? type = null)
 ```
 
 **Example:**
@@ -440,8 +441,8 @@ return ApiResults.TooManyRequests("Rate limit exceeded. Try again later.");
 Returns a `500 Internal Server Error` response.
 
 ```csharp
-ApiResults.InternalServerError<TValue>(TValue? value, string? message = null)
-ApiResults.InternalServerError(string? message = null)
+ApiResults.InternalServerError<TValue>(TValue? value, string? message = null, string? type = null)
+ApiResults.InternalServerError(string? message = null, string? type = null)
 ```
 
 ### NotImplemented {#notimplemented}
@@ -449,7 +450,7 @@ ApiResults.InternalServerError(string? message = null)
 Returns a `501 Not Implemented` response.
 
 ```csharp
-ApiResults.NotImplemented(string? message = null)
+ApiResults.NotImplemented(string? message = null, string? type = null)
 ```
 
 ### BadGateway {#badgateway}
@@ -457,7 +458,7 @@ ApiResults.NotImplemented(string? message = null)
 Returns a `502 Bad Gateway` response.
 
 ```csharp
-ApiResults.BadGateway(string? message = null)
+ApiResults.BadGateway(string? message = null, string? type = null)
 ```
 
 ### ServiceUnavailable {#serviceunavailable}
@@ -465,7 +466,7 @@ ApiResults.BadGateway(string? message = null)
 Returns a `503 Service Unavailable` response.
 
 ```csharp
-ApiResults.ServiceUnavailable(string? message = null)
+ApiResults.ServiceUnavailable(string? message = null, string? type = null)
 ```
 
 ### GatewayTimeout {#gatewaytimeout}
@@ -473,7 +474,7 @@ ApiResults.ServiceUnavailable(string? message = null)
 Returns a `504 Gateway Timeout` response.
 
 ```csharp
-ApiResults.GatewayTimeout(string? message = null)
+ApiResults.GatewayTimeout(string? message = null, string? type = null)
 ```
 
 ---

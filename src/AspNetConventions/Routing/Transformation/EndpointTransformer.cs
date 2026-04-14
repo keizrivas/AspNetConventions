@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using AspNetConventions.Configuration.Options;
 using AspNetConventions.Core.Abstractions.Contracts;
 using AspNetConventions.Routing.Models;
+using Microsoft.AspNetCore.Http.Metadata;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.Routing.Patterns;
 
@@ -38,6 +40,45 @@ namespace AspNetConventions.Routing.Transformation
                 return null;
             }
 
+            // Skip templates that exceed the configured maximum length
+            if (template.Length > _options.Route.MaxRouteTemplateLength)
+            {
+                return null;
+            }
+
+            // Skip excluded route patterns (supports * wildcard)
+            if (_options.Route.MinimalApi.ExcludeRoutePatterns.Count > 0)
+            {
+                foreach (var pattern in _options.Route.MinimalApi.ExcludeRoutePatterns)
+                {
+                    if (MatchesRoutePattern(template, pattern))
+                    {
+                        return null;
+                    }
+                }
+            }
+
+            // Skip endpoints with excluded tags
+            if (_options.Route.MinimalApi.ExcludeTags.Count > 0)
+            {
+                foreach (var metadata in routeEndpointBuilder.Metadata)
+                {
+                    if (metadata is ITagsMetadata tagsMetadata)
+                    {
+                        foreach (var tag in tagsMetadata.Tags)
+                        {
+                            foreach (var excluded in _options.Route.MinimalApi.ExcludeTags)
+                            {
+                                if (string.Equals(excluded, tag, StringComparison.OrdinalIgnoreCase))
+                                {
+                                    return null;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
             // Determine if route should be transformed
             var shouldTransformRoute = _options.Route.Hooks.ShouldTransformRoute
                 ?.Invoke(template, modelContext) ?? true;
@@ -48,6 +89,22 @@ namespace AspNetConventions.Routing.Transformation
             }
 
             var newTemplate = RouteTransformer.TransformRouteTemplate(template, _caseConverter);
+
+            // Pre-populate cache with false for parameters that have an explicit binding name,
+            // so both TransformRouteParameters and the segment loop skip them consistently.
+            if (_options.Route.MinimalApi.TransformRouteParameters
+                && _options.Route.MinimalApi.PreserveExplicitBindingNames)
+            {
+                foreach (var metadata in routeEndpointBuilder.Metadata)
+                {
+                    if (metadata is IFromRouteMetadata fromRoute
+                        && !string.IsNullOrEmpty(fromRoute.Name))
+                    {
+                        var parameterContext = new RouteParameterContext(modelContext, fromRoute.Name);
+                        _parameterTransformCache[parameterContext] = false;
+                    }
+                }
+            }
 
             // Transform parameters in route
             if (options.Route.MinimalApi.TransformRouteParameters)
@@ -122,6 +179,20 @@ namespace AspNetConventions.Routing.Transformation
             _options.Route.Hooks.AfterRouteTransform?.Invoke(newTemplate, template, modelContext);
 
             return newPattern;
+        }
+
+        /// <summary>
+        /// Matches a route template against a pattern that may contain <c>*</c> wildcards.
+        /// </summary>
+        private static bool MatchesRoutePattern(string template, string pattern)
+        {
+            if (!pattern.Contains('*'))
+            {
+                return string.Equals(template, pattern, StringComparison.OrdinalIgnoreCase);
+            }
+
+            var regexPattern = "^" + Regex.Escape(pattern).Replace(@"\*", ".*") + "$";
+            return Regex.IsMatch(template, regexPattern, RegexOptions.IgnoreCase);
         }
     }
 }

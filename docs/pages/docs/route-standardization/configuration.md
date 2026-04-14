@@ -66,7 +66,6 @@ See [Custom Case Converter](./index.md#custom-case-converter) for more informati
 | `RemoveActionPrefixes` | `HashSet<string>` | `[]` | Action name prefixes stripped before the route is generated (e.g. `"Get"`, `"Post"`) |
 | `RemoveActionSuffixes` | `HashSet<string>` | `[]` | Action name suffixes stripped before the route is generated (e.g. `"Async"`) |
 | `ExcludeControllers` | `HashSet<string>` | `[]` | Controller names (without `"Controller"` suffix) excluded from transformation |
-| `ExcludeActions` | `HashSet<string>` | `[]` | Action method names excluded from transformation |
 | `ExcludeAreas` | `HashSet<string>` | `[]` | Area names excluded from transformation |
 
 **Example:**
@@ -93,6 +92,7 @@ options.Route.Controllers.ExcludeAreas.Add("Admin");
 |---|---|---|---|
 | `IsEnabled` | `bool` | `true` | Enables or disables route transformations for Minimal API endpoints |
 | `TransformRouteParameters` | `bool` | `false` | Transforms route parameter names to the configured casing style |
+| `PreserveExplicitBindingNames` | `bool` | `false` | When `true`, parameters with an explicit `[FromRoute(Name = "...")]` binding name are not transformed |
 | `ExcludeRoutePatterns` | `HashSet<string>` | `[]` | Route patterns excluded from transformation. Supports wildcards |
 | `ExcludeTags` | `HashSet<string>` | `[]` | Endpoint tags excluded from transformation |
 
@@ -103,14 +103,14 @@ Minimal APIs handle parameter binding strictly by name. If the library automatic
 To enable automatic casing for Minimal API route parameters, toggle this feature in your configuration:
 
 ```csharp
-app.UseAspNetConventions(options => {
+var api = app.UseAspNetConventions(options => {
     // Default is "false" to prevent binding breaks
     options.Route.MinimalApi.TransformRouteParameters = true;
 });
 ```
 
-**The Solution: Explicit Binding** 
-When transformation is enabled, you must use the `[FromRoute(Name = "...")]` attribute to manually map the transformed segment name back to your C# parameter:
+**Option 1: Explicit Binding** 
+Use the `[FromRoute(Name = "...")]` attribute to manually map the transformed segment name back to your C# parameter:
 
 ```csharp
 // The URL becomes: /user-account/{user-id}
@@ -119,11 +119,22 @@ api.MapGet("/UserAccount/{userId}", ([FromRoute(Name = "user-id")] int userId) =
     return Results.Ok(new { userId });
 });
 ```
+
+**Option 2: Preserve Explicit Binding Names**
+Enable `PreserveExplicitBindingNames` to automatically skip transformation for any parameter that already has an explicit `[FromRoute(Name = "...")]`:
+
+```csharp
+var api = app.UseAspNetConventions(options => {
+    options.Route.MinimalApi.TransformRouteParameters = true;
+    options.Route.MinimalApi.PreserveExplicitBindingNames = true;
+});
+```
 :::
 
 **Example:**
 ```csharp
 options.Route.MinimalApi.TransformRouteParameters = true;
+options.Route.MinimalApi.PreserveExplicitBindingNames = true;
 options.Route.MinimalApi.ExcludeRoutePatterns.Add("/health");
 options.Route.MinimalApi.ExcludeRoutePatterns.Add("/metrics/*");
 options.Route.MinimalApi.ExcludeTags.Add("internal");
@@ -230,3 +241,4 @@ The `RouteParameterContext` provides information about the parameter being trans
 | `RazorPages.PreserveExplicitBindingNames` | `false` |
 | `MinimalApi.IsEnabled` | `true` |
 | `MinimalApi.TransformRouteParameters` | `false` |
+| `MinimalApi.PreserveExplicitBindingNames` | `false` |

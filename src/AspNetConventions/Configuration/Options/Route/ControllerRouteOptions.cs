@@ -8,7 +8,7 @@ namespace AspNetConventions.Configuration.Options.Route
     /// </summary>
     /// <remarks>
     /// These options control how MVC controller routes are transformed and named, including parameter name
-    /// transformations, action naming conventions, and exclusion lists for controllers, actions, and areas.
+    /// transformations, action naming conventions, and exclusion lists for controllers and areas.
     /// </remarks>
     public class ControllerRouteOptions : ICloneable
     {
@@ -55,12 +55,6 @@ namespace AspNetConventions.Configuration.Options.Route
         public HashSet<string> ExcludeControllers { get; private set; } = [];
 
         /// <summary>
-        /// Gets the collection of actions to exclude from route transformation.
-        /// </summary>
-        /// <value>Collection of action method names that will not have their routes transformed.</value>
-        public HashSet<string> ExcludeActions { get; private set; } = [];
-
-        /// <summary>
         /// Gets the collection of areas to exclude from route transformation.
         /// </summary>
         /// <value>Collection of area names that will not have their routes transformed.</value>
@@ -76,7 +70,6 @@ namespace AspNetConventions.Configuration.Options.Route
             cloned.RemoveActionPrefixes = [.. RemoveActionPrefixes];
             cloned.RemoveActionSuffixes = [.. RemoveActionSuffixes];
             cloned.ExcludeControllers = [.. ExcludeControllers];
-            cloned.ExcludeActions = [.. ExcludeActions];
             cloned.ExcludeAreas = [.. ExcludeAreas];
             return cloned;
         }

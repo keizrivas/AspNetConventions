@@ -69,12 +69,12 @@ POST /api/user-profile/create-account
 == tab "Minimal APIs"
 
 ```csharp
-app.UseAspNetConventions();
+var api = app.UseAspNetConventions();
 
-app.MapGet("Inventory/GetOrder/{orderId}", (int orderId) =>
+api.MapGet("Inventory/GetOrder/{orderId}", (int orderId) =>
     Results.Ok(new { order = orderId }));
 
-app.MapPost("Inventory/CreateOrder/{storeId}", (int storeId) =>
+api.MapPost("Inventory/CreateOrder/{storeId}", (int storeId) =>
     Results.Created());
 ```
 

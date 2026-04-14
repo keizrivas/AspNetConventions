@@ -60,6 +60,7 @@ Controls how paginated and collection responses are formatted.
 |---|---|---|---|
 | `IncludeMetadata` | `bool` | `true` | Include pagination metadata (`currentPage`, `pageSize`, `totalPages`, etc.) in responses |
 | `IncludeLinks` | `bool` | `true` | Include pagination links (`first`, `last`, `next`, `prev`) in responses |
+| `IncludeNavigationFlags` | `bool` | `false` | Include `hasNextPage` and `hasPreviousPage` boolean flags in pagination metadata |
 | `PageNumberParameterName` | `string` | `"page"` | Query parameter name for page number in generated links |
 | `PageSizeParameterName` | `string` | `"pageSize"` | Query parameter name for page size in generated links |
 | `DefaultPageSize` | `int` | `25` | Default page size when not specified in the request |
@@ -67,6 +68,7 @@ Controls how paginated and collection responses are formatted.
 **Example:**
 ```csharp
 options.Response.Pagination.IncludeLinks = true;
+options.Response.Pagination.IncludeNavigationFlags = true;
 options.Response.Pagination.PageNumberParameterName = "p";
 options.Response.Pagination.PageSizeParameterName = "size";
 options.Response.Pagination.DefaultPageSize = 50;
@@ -136,6 +138,7 @@ Hooks provide fine-grained control over the response formatting pipeline. All ho
 | `ShouldWrapResponseAsync` | `(`{.code-left}[`ApiResult`{.code-left .code-right}](#apiresult)`, `{.code-left .code-right}[`RequestDescriptor`{.code-left .code-right}](#requestdescriptor)`) → Task<bool>`{.code-right} | Return `false` to skip wrapping for a specific response |
 | `BeforeResponseWrapAsync` | `(`{.code-left}[`ApiResult`{.code-left .code-right}](#apiresult)`, `{.code-left .code-right}[`RequestDescriptor`{.code-left .code-right}](#requestdescriptor)`) → Task`{.code-right} | Called before a response is wrapped. Use for logging or pre-processing |
 | `AfterResponseWrapAsync` | `(object?, `{.code-left}[`ApiResult`{.code-left .code-right}](#apiresult)`, `{.code-left .code-right}[`RequestDescriptor`{.code-left .code-right}](#requestdescriptor)`) → Task`{.code-right} | Called after a response is wrapped. Receives the wrapped response object |
+| `CustomizeMetadata` | `(`{.code-left}[`Metadata`](./metadata.md#metadata-fields)`, `{.code-left .code-right}[`RequestDescriptor`{.code-left .code-right}](#requestdescriptor)`) → void`{.code-right} | Called after standard metadata fields are populated. Add, remove, or replace entries before the response is built |
 
 
 
@@ -175,6 +178,15 @@ options.Response.Hooks.BeforeResponseWrapAsync = async (apiResult, request) =>
             apiResult.Type,
             apiResult.Message);
     }
+};
+
+options.Response.Hooks.CustomizeMetadata = (metadata, request) =>
+{
+    // Add custom entries
+    metadata["userId"] = request.UserId;
+
+    // Remove a standard entry
+    metadata.Remove(Metadata.PathKey);
 };
 ```
 
@@ -252,6 +264,7 @@ Provides a comprehensive snapshot of the current HTTP request and its associated
 | `Response.IncludeMetadata` | `true` |
 | `Pagination.IncludeMetadata` | `true` |
 | `Pagination.IncludeLinks` | `true` |
+| `Pagination.IncludeNavigationFlags` | `false` |
 | `Pagination.PageNumberParameterName` | `"page"` |
 | `Pagination.PageSizeParameterName` | `"pageSize"` |
 | `Pagination.DefaultPageSize` | `25` |

@@ -21,7 +21,7 @@ builder.Services.AddControllers()
     });
 
 // Registered in UseAspNetConventions
-app.UseAspNetConventions(options =>
+var api = app.UseAspNetConventions(options =>
 {
     options.ExceptionHandling.Mappers.Add(new MyMapper());  // Correct
 });
@@ -184,16 +184,15 @@ return new ExceptionDescriptor
 
 **Problem:** MVC Controller exceptions are handled, but Minimal API exceptions aren't.
 
-**Solution:** Ensure `UseAspNetConventions()` is called:
+**Solution:** Ensure `UseAspNetConventions()` is called before mapping endpoints:
 
 ```csharp
 var app = builder.Build();
 
-// Must be called for Minimal APIs
+// Must be called for Minimal APIs — map endpoints on the returned group
+var api = app.UseAspNetConventions();
 
-app.MapGet("/api/test", () => throw new Exception("test"));
-
-app.UseAspNetConventions();
+api.MapGet("/api/test", () => throw new Exception("test"));
 
 app.Run();
 ```
@@ -320,7 +319,7 @@ var app = builder.Build();
 
 app.UseAuthentication();
 app.UseAuthorization();
-app.UseAspNetConventions();  // Add here
+var api = app.UseAspNetConventions();  // Add here
 
 // Don't add UseExceptionHandler after this
 // app.UseExceptionHandler("/error");  // Remove this

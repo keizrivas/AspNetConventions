@@ -164,17 +164,17 @@ using AspNetConventions.Http;
 var builder = WebApplication.CreateBuilder(args);
 var app = builder.Build();
 
-app.UseAspNetConventions();
+var api = app.UseAspNetConventions();
 
 // GET /api/users
-app.MapGet("/api/users", (IUserService userService, int page = 1, int pageSize = 10) =>
+api.MapGet("/api/users", (IUserService userService, int page = 1, int pageSize = 10) =>
 {
     var (users, total) = userService.GetPaged(page, pageSize);
     return ApiResults.Paginate(users, total, page, pageSize);
 });
 
 // GET /api/users/{id}
-app.MapGet("/api/users/{id}", (int id, IUserService userService) =>
+api.MapGet("/api/users/{id}", (int id, IUserService userService) =>
 {
     var user = userService.GetById(id);
     if (user is null)

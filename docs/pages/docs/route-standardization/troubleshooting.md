@@ -48,7 +48,7 @@ options.Route.MinimalApi.IsEnabled = true;  // for Minimal APIs
 ```csharp
 // Check exclusion lists
 options.Route.Controllers.ExcludeControllers // contains your controller?
-options.Route.Controllers.ExcludeActions     // contains your action?
+options.Route.Controllers.ExcludeAreas       // contains your area?
 options.Route.MinimalApi.ExcludeTags         // contains your endpoint's tag?
 options.Route.MinimalApi.ExcludeRoutePatterns // matches your route?
 ```
@@ -161,7 +161,7 @@ builder.Services.AddRazorPages()
 var app = builder.Build();
 
 // Minimal APIs
-app.UseAspNetConventions(); // Must be called before MapGet, etc.
+var api = app.UseAspNetConventions(); // Returns RouteGroupBuilder — map endpoints on it
 ```
 
 ---

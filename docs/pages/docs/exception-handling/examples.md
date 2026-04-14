@@ -309,8 +309,15 @@ builder.Services.AddScoped<IOrderService, OrderService>();
 
 var app = builder.Build();
 
+var api = app.UseAspNetConventions(options =>
+{
+    // Exception handling configuration
+    options.Exceptions.Mappers.Add(new EntityNotFoundExceptionMapper());
+    // Other mappers..
+});
+
 // GET /api/orders/{id}
-app.MapGet("/api/orders/{id}", (int id, IOrderService orderService) =>
+api.MapGet("/api/orders/{id}", (int id, IOrderService orderService) =>
 {
     var order = orderService.GetById(id)
         ?? throw new EntityNotFoundException("Order", id);
@@ -319,7 +326,7 @@ app.MapGet("/api/orders/{id}", (int id, IOrderService orderService) =>
 });
 
 // POST /api/orders
-app.MapPost("/api/orders", (CreateOrderRequest request, IOrderService orderService) =>
+api.MapPost("/api/orders", (CreateOrderRequest request, IOrderService orderService) =>
 {
     var errors = orderService.ValidateOrder(request);
     if (errors.Any())
@@ -333,20 +340,13 @@ app.MapPost("/api/orders", (CreateOrderRequest request, IOrderService orderServi
 });
 
 // DELETE /api/orders/{id}
-app.MapDelete("/api/orders/{id}", (int id, IOrderService orderService) =>
+api.MapDelete("/api/orders/{id}", (int id, IOrderService orderService) =>
 {
     var order = orderService.GetById(id)
         ?? throw new EntityNotFoundException("Order", id);
 
     orderService.Delete(id);
     return Results.NoContent();
-});
-
-app.UseAspNetConventions(options =>
-{
-    // Exception handling configuration
-    options.Exceptions.Mappers.Add(new EntityNotFoundExceptionMapper());
-    // Other mappers..
 });
 
 app.Run();

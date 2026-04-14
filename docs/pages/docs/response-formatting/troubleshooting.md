@@ -20,11 +20,9 @@ options.Response.IsEnabled = true;  // default
 ```csharp
 var app = builder.Build();
 
+var api = app.UseAspNetConventions();
 
-app.MapGet("/api/test", () => Results.Ok("test"));
-
-// Make sure this is called after endpoints declaration
-app.UseAspNetConventions();
+api.MapGet("/api/test", () => Results.Ok("test"));
 
 app.Run();
 ```
@@ -84,18 +82,16 @@ return ApiResults.Ok(user);
 
 **Problem:** MVC Controller responses are wrapped, but Minimal API responses are not.
 
-**Cause:** The `UseAspNetConventions()` middleware is not in the pipeline.
+**Cause:** `UseAspNetConventions()` was not called, or endpoints were mapped on `app` directly instead of on the returned group.
 
-**Solution:** Call `UseAspNetConventions()` after `Build()` and before mapping endpoints:
+**Solution:** Call `UseAspNetConventions()` after `Build()` and map endpoints on the returned `RouteGroupBuilder`:
 
 ```csharp
 var app = builder.Build();
 
+var api = app.UseAspNetConventions();
 
-app.MapGet("/api/test", () => Results.Ok("test"));
-
-// Must be called after MapGet, MapPost, etc.
-app.UseAspNetConventions();
+api.MapGet("/api/test", () => Results.Ok("test"));
 
 app.Run();
 ```
@@ -122,7 +118,7 @@ var app = builder.Build();
 
 // Or ensure routing is added
 app.UseRouting();
-app.UseAspNetConventions();
+var api = app.UseAspNetConventions();
 ```
 
 If you don't need traceId, disable metadata:
