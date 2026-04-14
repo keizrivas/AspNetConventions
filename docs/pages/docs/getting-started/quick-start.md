@@ -29,7 +29,7 @@ Install-Package AspNetConventions
 
 ### MVC Controllers {#mvc-controllers}
 
-Call [`.AddAspNetConventions()`](./index.md#addaspnetconventions) on the `IMvcBuilder` returned by `.AddControllers()` or `.AddControllersWithViews()`:
+Call [`.AddAspNetConventions()`](../getting-started.md#addaspnetconventions) on the `IMvcBuilder` returned by `.AddControllers()` or `.AddControllersWithViews()`:
 
 ```csharp
 // Program.cs
@@ -50,7 +50,7 @@ app.Run();
 
 ### Minimal APIs {#minimal-apis}
 
-Call [`.UseAspNetConventions()`](./index.md#useaspnetconventions) on the `WebApplication` to get a `RouteGroupBuilder`, then map your endpoints on the returned group.
+Call [`.UseAspNetConventions()`](../getting-started.md#useaspnetconventions) on the `WebApplication` to get a `RouteGroupBuilder`, then map your endpoints on the returned group.
 
 ```csharp
 // Program.cs
@@ -72,7 +72,7 @@ app.Run();
 
 ### Razor Pages {#razor-pages}
 
-Call [`.AddAspNetConventions()`](./index.md#addaspnetconventions) on the `IMvcBuilder` returned by `.AddRazorPages()` or `.AddControllersWithViews()`:
+Call [`.AddAspNetConventions()`](../getting-started.md#addaspnetconventions) on the `IMvcBuilder` returned by `.AddRazorPages()` or `.AddControllersWithViews()`:
 
 ```csharp
 // Program.cs

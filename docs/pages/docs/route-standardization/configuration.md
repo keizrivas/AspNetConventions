@@ -48,7 +48,7 @@ builder.Services.AddControllers()
 | `PascalCase` | `3` | `/GetUserById` | `{UserId}` |
 
 
-See [Custom Case Converter](./index.md#custom-case-converter) for more information about override the default `CasingStyle` options.
+See [Custom Case Converter](../route-standardization.md#custom-case-converter) for more information about override the default `CasingStyle` options.
 
 ---
 

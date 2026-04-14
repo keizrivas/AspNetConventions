@@ -7,7 +7,7 @@ export default {
     light: "assets/images/logo_light.svg",
     dark: "assets/images/logo_dark.svg",
     alt: "AspNetConventions",
-    href: "/"
+    href: "https://keizrivas.github.io/AspNetConventions/"
   },
   favicon: "assets/favicon.ico",
   src: "pages",

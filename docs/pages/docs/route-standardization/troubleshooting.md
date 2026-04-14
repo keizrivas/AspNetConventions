@@ -145,7 +145,7 @@ Or use tag helpers which handle this automatically:
 
 **Problem:** `Url.Action()` or tag helpers generate URLs with PascalCase names.
 
-**Cause:** AspNetConventions may not be properly registered.
+**Cause:** **AspNetConventions** may not be properly registered.
 
 **Solution:** Ensure proper registration order:
 

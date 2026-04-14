@@ -176,13 +176,13 @@ public ActionResult GetOrder(int OrderId)
    - The alias maps it to the `OrderId` parameter
    - Your method receives `OrderId = 123`
 
-This works seamlessly for all binding sources, see [Supported Binding Sources](./parameter-binding.md#supported-binding-sources) for more information. 
+This works seamlessly for all binding sources, see [Supported Binding Sources](./route-standardization/parameter-binding.md#supported-binding-sources) for more information. 
 
 ---
 
 ## URL Generation {#url-generation}
 
-AspNetConventions also handles **outbound URL generation**. When you generate URLs using ASP.NET Core's built-in helpers, the transformed routes are used automatically.
+**AspNetConventions** also handles **outbound URL generation**. When you generate URLs using ASP.NET Core's built-in helpers, the transformed routes are used automatically.
 
 ```csharp
 // In a controller
@@ -226,7 +226,7 @@ options.Route.Hooks.AfterRouteTransform = (newRoute, originalRoute, model) =>
     Console.WriteLine($"Transformed: {originalRoute} → {newRoute}");
 ```
 
-For the complete list of available hooks and their signatures, see [`RouteConventionHooks`](./configuration.md#routeconventionhooks).
+For the complete list of available hooks and their signatures, see [`RouteConventionHooks`](./route-standardization/configuration.md#routeconventionhooks).
 
 ### Debugging Transformations {#debugging-transformations}
 

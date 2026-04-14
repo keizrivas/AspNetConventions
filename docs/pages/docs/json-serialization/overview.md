@@ -1,12 +1,12 @@
 # Global JSON Config
 
-AspNetConventions provides a unified, implementation-agnostic JSON configuration layer for your entire ASP.NET Core application. Set the serialization casing style, control property ordering, rename properties, and suppress sensitive fields — all in one place, covering both API responses and model serialization.
+**AspNetConventions** provides a unified, implementation-agnostic JSON configuration layer for your entire ASP.NET Core application. Set the serialization casing style, control property ordering, rename properties, and suppress sensitive fields — all in one place, covering both API responses and model serialization.
 
 ---
 
 ## How It Works {#how-it-works}
 
-The JSON configuration in AspNetConventions is **serializer-agnostic**: it does not depend on `System.Text.Json` or `Newtonsoft.Json` directly. You configure your conventions through the AspNetConventions fluent API, and the library translates those conventions into the appropriate settings for the serializer your application uses, applying them globally at startup.
+The JSON configuration in **AspNetConventions** is **serializer-agnostic**: it does not depend on `System.Text.Json` or `Newtonsoft.Json` directly. You configure your conventions through the **AspNetConventions** fluent API, and the library translates those conventions into the appropriate settings for the serializer your application uses, applying them globally at startup.
 
 This means you can switch the underlying serializer without rewriting your conventions configuration.
 
@@ -287,9 +287,9 @@ public enum CasingStyle
 
 ## Architecture / How It Works Internally {#architecture-how-it-works-internally}
 
-At startup, AspNetConventions builds a **type metadata registry** from your `ConfigureTypes` configuration. This registry maps each `Type` to a set of property descriptors (name overrides, order, ignore conditions).
+At startup, **AspNetConventions** builds a **type metadata registry** from your `ConfigureTypes` configuration. This registry maps each `Type` to a set of property descriptors (name overrides, order, ignore conditions).
 
-When the application initializes the serializer, AspNetConventions translates the registry into the appropriate serializer-specific options. For `System.Text.Json`, this means registering custom `JsonConverter` instances or `JsonSerializerOptions` policies. For `Newtonsoft.Json`, equivalent contract resolvers are produced.
+When the application initializes the serializer, **AspNetConventions** translates the registry into the appropriate serializer-specific options. For `System.Text.Json`, this means registering custom `JsonConverter` instances or `JsonSerializerOptions` policies. For `Newtonsoft.Json`, equivalent contract resolvers are produced.
 
 Because the registry is built once at startup and applied to the serializer options object, **there is no per-serialization lookup overhead**.
 
@@ -334,4 +334,4 @@ Each call to `cfg.Type<T>()` for the same type merges with previous calls. Later
 
 **Q: Does this affect `System.Text.Json` attributes already on my models (e.g. `[JsonPropertyName]`)?**
 
-Attributes on your model classes take the lowest priority. AspNetConventions conventions (`.Name()`, `.Ignore()`, `.Order()`) override attribute-based settings when there is a conflict. The global `CaseStyle` is applied after attribute discovery, so attributes without an explicit `.Name()` override will have the casing style applied to their declared or attribute-specified name.
+Attributes on your model classes take the lowest priority. **AspNetConventions** conventions (`.Name()`, `.Ignore()`, `.Order()`) override attribute-based settings when there is a conflict. The global `CaseStyle` is applied after attribute discovery, so attributes without an explicit `.Name()` override will have the casing style applied to their declared or attribute-specified name.

@@ -130,7 +130,7 @@ Without any configuration, all unhandled exceptions return a `500 Internal Serve
 }
 ```
 
-Customize default error fallbacks with [`ErrorResponseOptions`](../response-formatting/configuration.md#errorresponseoptions):
+Customize default error fallbacks with [`ErrorResponseOptions`](./response-formatting/configuration.md#errorresponseoptions):
 
 ```csharp
 options.Response.ErrorResponse.DefaultStatusCode = HttpStatusCode.BadRequest;
@@ -216,7 +216,7 @@ public class HttpExceptionMapper : ExceptionMapper<HttpRequestException>
 }
 ```
 
-See [Exception Mappers](./exception-mappers.md) for complete documentation.
+See [Exception Mappers](./exception-handling/exception-mappers.md) for complete documentation.
 
 ---
 
@@ -244,4 +244,4 @@ options.Exceptions.Hooks.AfterMappingAsync = async (descriptor, mapper, request)
 };
 ```
 
-See [`ExceptionHandlingHooks`](./configuration.md#exceptionhandlinghooks) for more information.
+See [`ExceptionHandlingHooks`](./exception-handling/configuration.md#exceptionhandlinghooks) for more information.

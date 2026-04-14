@@ -113,6 +113,12 @@
   color: var(--text-color) !important;
 }
 
+a[href="http://ASP.NET"] {
+  color: var(--text-color) !important;
+  pointer-events: none;
+  font-weight: 600;
+}
+
 .link {
   display: flex;
   gap: 0.5rem;

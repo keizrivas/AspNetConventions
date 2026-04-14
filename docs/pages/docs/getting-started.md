@@ -24,7 +24,7 @@ IMvcBuilder AddAspNetConventions(
 
 | Parameter | type | Description |
 |---|---|---|
-| configure | `Action<AspNetConventionsOptions>?` | An optional action to configure conventions via [AspNetConventionsOptions](../configuration-reference.md#aspnetconventionoptions) object. |
+| configure | `Action<AspNetConventionsOptions>?` | An optional action to configure conventions via [AspNetConventionsOptions](./configuration-reference.md#aspnetconventionoptions) object. |
 
 ---
 
@@ -42,7 +42,7 @@ RouteGroupBuilder UseAspNetConventions(
 |---|---|---|
 | `app` | `WebApplication` | The current web application instance. |
 | `prefix` | `string` | An optional route prefix applied to all endpoints registered on the returned group. Defaults to `""` (root, no prefix). |
-| `configure` | `Action<AspNetConventionsOptions>?` | An optional action to configure conventions via [AspNetConventionsOptions](../configuration-reference.md#aspnetconventionoptions). |
+| `configure` | `Action<AspNetConventionsOptions>?` | An optional action to configure conventions via [AspNetConventionsOptions](./configuration-reference.md#aspnetconventionoptions). |
 
 **Usage:**
 ```csharp
@@ -66,4 +66,4 @@ Turn complex setup into a zero-effort implementation. This is all you need to do
 builder.Services.AddControllers().AddAspNetConventions();
 ```
 
-See [AspNetConventionsOptions](../configuration-reference.md#aspnetconventionoptions) for more info about default settings.
+See [AspNetConventionsOptions](./configuration-reference.md#aspnetconventionoptions) for more info about default settings.

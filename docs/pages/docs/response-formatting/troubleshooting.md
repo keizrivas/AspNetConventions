@@ -46,7 +46,7 @@ Response formatting only wraps `ObjectResult` types. File downloads, redirects, 
 
 **Problem:** Responses appear wrapped twice with nested envelopes.
 
-**Cause:** Your code is returning a pre-wrapped response, and AspNetConventions wraps it again.
+**Cause:** Your code is returning a pre-wrapped response, and **AspNetConventions** wraps it again.
 
 **Solution:** Implement `IsWrappedResponse` in your custom builder:
 
@@ -178,7 +178,7 @@ public ActionResult Create([FromBody] CreateRequest request)
 
 **Problem:** File downloads or redirects are being processed by response formatting.
 
-**Answer:** This shouldn't happen. AspNetConventions only wraps `ObjectResult` types. If you're seeing issues:
+**Answer:** This shouldn't happen. **AspNetConventions** only wraps `ObjectResult` types. If you're seeing issues:
 
 1. **Verify the result type:**
 ```csharp
