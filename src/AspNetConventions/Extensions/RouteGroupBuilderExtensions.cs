@@ -1,7 +1,6 @@
 using System;
 using System.Text.Json;
 using AspNetConventions.Configuration.Options;
-using AspNetConventions.ExceptionHandling;
 using AspNetConventions.ExceptionHandling.Abstractions;
 using AspNetConventions.ExceptionHandling.Handlers;
 using AspNetConventions.Routing.Transformation;

@@ -1,5 +1,4 @@
 using System.Net;
-using System.Text.Json.Serialization;
 using AspNetConventions.Core.Enums;
 using AspNetConventions.Http.Models;
 

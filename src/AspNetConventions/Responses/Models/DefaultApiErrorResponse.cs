@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Net;
-using System.Text.Json.Serialization;
 using AspNetConventions.Core.Abstractions.Models;
 
 namespace AspNetConventions.Responses.Models

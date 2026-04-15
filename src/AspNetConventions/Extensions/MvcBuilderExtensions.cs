@@ -8,12 +8,10 @@ using AspNetConventions.ExceptionHandling.Handlers;
 using AspNetConventions.Responses.Filters;
 using AspNetConventions.Routing.Conventions;
 using AspNetConventions.Routing.Providers;
-using AspNetConventions.Routing.Transformation;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Metadata;
-using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
@@ -194,7 +192,7 @@ namespace AspNetConventions.Extensions
                     }
 
                     // Set json serializer options
-                    if(options.Json.GetSerializerOptions() is JsonSerializerOptions serializerOptions)
+                    if (options.Json.GetSerializerOptions() is JsonSerializerOptions serializerOptions)
                     {
                         jsonOptions.JsonSerializerOptions.ApplyFrom(serializerOptions);
                     }

@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using AspNetConventions.ExceptionHandling.Models;
 using AspNetConventions.Http.Services;
 
 namespace AspNetConventions.Http.Models
@@ -42,9 +41,9 @@ namespace AspNetConventions.Http.Models
 
             return new Metadata
             {
-                [PathKey]        = requestDescriptor.Path,
-                [TimestampKey]   = requestDescriptor.Timestamp,
-                [TraceIdKey]     = requestDescriptor.TraceId,
+                [PathKey] = requestDescriptor.Path,
+                [TimestampKey] = requestDescriptor.Timestamp,
+                [TraceIdKey] = requestDescriptor.TraceId,
                 [RequestTypeKey] = requestDescriptor.Method,
             };
         }

@@ -135,7 +135,7 @@ namespace AspNetConventions.Routing.Conventions
                 if (template.Contains("[action]", StringComparison.OrdinalIgnoreCase))
                 {
                     var actionName = StripActionPrefixesAndSuffixes(action.ActionName);
-                    var converted  = Options.Route.GetCaseConverter().Convert(actionName);
+                    var converted = Options.Route.GetCaseConverter().Convert(actionName);
                     template = template.Replace("[action]", converted, StringComparison.OrdinalIgnoreCase);
                 }
 

@@ -36,12 +36,12 @@ namespace AspNetConventions.Serialization.Converters
         /// </param>
         public MetadataJsonConverter(JsonNamingPolicy? policy)
         {
-            _transformKey   = key => policy?.ConvertName(key) ?? key;
+            _transformKey = key => policy?.ConvertName(key) ?? key;
             _requestTypeKey = _transformKey(Metadata.RequestTypeKey);
-            _timestampKey   = _transformKey(Metadata.TimestampKey);
-            _traceIdKey     = _transformKey(Metadata.TraceIdKey);
-            _pathKey        = _transformKey(Metadata.PathKey);
-            _exceptionKey   = _transformKey(Metadata.ExceptionKey);
+            _timestampKey = _transformKey(Metadata.TimestampKey);
+            _traceIdKey = _transformKey(Metadata.TraceIdKey);
+            _pathKey = _transformKey(Metadata.PathKey);
+            _exceptionKey = _transformKey(Metadata.ExceptionKey);
         }
 
         /// <inheritdoc />
@@ -89,11 +89,11 @@ namespace AspNetConventions.Serialization.Converters
         private string GetJsonKey(string key) => key switch
         {
             Metadata.RequestTypeKey => _requestTypeKey,
-            Metadata.TimestampKey   => _timestampKey,
-            Metadata.TraceIdKey     => _traceIdKey,
-            Metadata.PathKey        => _pathKey,
-            Metadata.ExceptionKey   => _exceptionKey,
-            _                       => _customKeyCache.GetOrAdd(key, _transformKey)
+            Metadata.TimestampKey => _timestampKey,
+            Metadata.TraceIdKey => _traceIdKey,
+            Metadata.PathKey => _pathKey,
+            Metadata.ExceptionKey => _exceptionKey,
+            _ => _customKeyCache.GetOrAdd(key, _transformKey)
         };
     }
 }

@@ -111,7 +111,7 @@ namespace AspNetConventions.Serialization.Adapters
             var options = new JsonSerializerOptions
             {
                 PropertyNamingPolicy = namingPolicy,
-                DictionaryKeyPolicy  = namingPolicy,
+                DictionaryKeyPolicy = namingPolicy,
                 PropertyNameCaseInsensitive = _options.CaseInsensitive,
                 AllowTrailingCommas = _options.AllowTrailingCommas,
                 DefaultIgnoreCondition = MapIgnoreCondition(),
@@ -163,7 +163,7 @@ namespace AspNetConventions.Serialization.Adapters
 
         ValueTask IJsonSerializerAdapter.SerializeAsync<TValue>(Stream stream, TValue value, CancellationToken cancellationToken)
         {
-           return SerializeAsync(stream, value, cancellationToken);
+            return SerializeAsync(stream, value, cancellationToken);
         }
 
         /// <summary>

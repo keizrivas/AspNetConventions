@@ -81,8 +81,8 @@ namespace AspNetConventions.Core.Hooks
             {
                 ShouldWrapResponseAsync = ShouldWrapResponseAsync,
                 BeforeResponseWrapAsync = BeforeResponseWrapAsync,
-                AfterResponseWrapAsync  = AfterResponseWrapAsync,
-                CustomizeMetadata       = CustomizeMetadata,
+                AfterResponseWrapAsync = AfterResponseWrapAsync,
+                CustomizeMetadata = CustomizeMetadata,
             };
         }
     }
