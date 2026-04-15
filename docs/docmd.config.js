@@ -124,10 +124,6 @@ export default {
           title: "Examples",
           path: "docs/route-standardization/examples"
         },
-        {
-          title: "Troubleshooting",
-          path: "docs/route-standardization/troubleshooting"
-        }
       ]
     },
     {
@@ -159,10 +155,6 @@ export default {
           title: "Examples",
           path: "docs/response-formatting/examples"
         },
-        {
-          title: "Troubleshooting",
-          path: "docs/response-formatting/troubleshooting"
-        }
       ]
     },
     {
@@ -186,16 +178,35 @@ export default {
           title: "Examples",
           path: "docs/exception-handling/examples"
         },
-        {
-          title: "Troubleshooting",
-          path: "docs/exception-handling/troubleshooting"
-        }
       ]
     },
     {
       title: "JSON Serialization",
-      path: "docs/json-serialization",
-      icon: "braces"
+      icon: "braces",
+      collapsible: true,
+      children: [
+        {
+          title: "Overview",
+          path: "docs/json-serialization"
+        },
+        {
+          title: "Features",
+          path: "docs/json-serialization/features"
+        },
+        {
+          title: "Configuration",
+          path: "docs/json-serialization/configuration"
+        },
+        {
+          title: "Examples",
+          path: "docs/json-serialization/examples"
+        }
+      ]
+    },
+    {
+      title: "Troubleshooting",
+      path: "docs/troubleshooting",
+      icon: "circle-help"
     },
     {
       title: "NuGet",
