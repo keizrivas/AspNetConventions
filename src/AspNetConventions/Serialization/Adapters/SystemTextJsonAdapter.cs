@@ -12,6 +12,7 @@ using AspNetConventions.Core.Enums;
 using AspNetConventions.Core.Enums.Json;
 using AspNetConventions.Http.Models;
 using AspNetConventions.Responses.Models;
+using AspNetConventions.Serialization.Configuration;
 using AspNetConventions.Serialization.Converters;
 using AspNetConventions.Serialization.Policies;
 using AspNetConventions.Serialization.Resolvers;
@@ -65,17 +66,29 @@ namespace AspNetConventions.Serialization.Adapters
                 return _jsonSerializerOptions;
             }
 
-            var ignoreRules = new JsonIgnoreRules();
+            // Framework defaults + user-defined rules in one unified builder.
+            var typeBuilder = new JsonTypesConfigurationBuilder();
 
-            // Default ignore rules
-            ignoreRules.IgnoreProperty<ApiResponse>(e => e.Metadata, JsonIgnoreCondition.WhenWritingNull);
-            ignoreRules.IgnoreProperty<DefaultApiResponse>(e => e.Pagination, JsonIgnoreCondition.WhenWritingNull);
-            ignoreRules.IgnoreProperty<PaginationMetadata>(e => e.Links, JsonIgnoreCondition.WhenWritingNull);
-            ignoreRules.IgnoreProperty<PaginationMetadata>(e => e.HasNextPage, JsonIgnoreCondition.WhenWritingNull);
-            ignoreRules.IgnoreProperty<PaginationMetadata>(e => e.HasPreviousPage, JsonIgnoreCondition.WhenWritingNull);
+            // Internal framework defaults
+            typeBuilder
+                .Type<ApiResponse>(t => t.Property(x => x.Metadata)
+                    .Ignore(JsonIgnoreCondition.WhenWritingNull))
+                .Type<DefaultApiResponse>(t => t.Property(x => x.Pagination)
+                    .Ignore(JsonIgnoreCondition.WhenWritingNull))
+                .Type<PaginationMetadata>(t =>
+                {
+                    t.Property(x => x.Links).Ignore(JsonIgnoreCondition.WhenWritingNull);
+                    t.Property(x => x.HasNextPage).Ignore(JsonIgnoreCondition.WhenWritingNull);
+                    t.Property(x => x.HasPreviousPage).Ignore(JsonIgnoreCondition.WhenWritingNull);
+                });
 
-            // Allow user to configure additional ignore rules
-            _options.ConfigureIgnoreRules?.Invoke(ignoreRules);
+            // User-defined rules (applied after defaults so they can override)
+            _options.ConfigureTypes?.Invoke(typeBuilder);
+
+            foreach (var assembly in _options.AssembliesToScan)
+            {
+                typeBuilder.ScanAssembly(assembly);
+            }
 
             var namingPolicy = GetNamingPolicy();
             var options = new JsonSerializerOptions
@@ -88,7 +101,7 @@ namespace AspNetConventions.Serialization.Adapters
                 WriteIndented = _options.WriteIndented,
                 NumberHandling = MapNumberHandling(),
                 MaxDepth = Math.Max(_options.MaxDepth, 0),
-                TypeInfoResolver = new JsonTypeInfoResolver(ignoreRules.CreateSnapshot())
+                TypeInfoResolver = new JsonTypeInfoResolver(typeBuilder.CreateSnapshot())
             };
 
             // Add metadata converter to ensure Metadata keys always follow PropertyNamingPolicy,

@@ -9,49 +9,81 @@ using System.Text.Json.Serialization.Metadata;
 namespace AspNetConventions.Serialization.Resolvers
 {
     /// <summary>
-    /// Resolves JSON type information with custom ignore rules.
+    /// Resolves JSON type information with per-type, global, and type-level configuration rules.
     /// </summary>
-    /// <param name="rules">The snapshot of JSON ignore rules to apply during type information resolution.</param>
-    internal sealed class JsonTypeInfoResolver(JsonIgnoreRulesSnapshot rules) : DefaultJsonTypeInfoResolver
+    /// <param name="rules">
+    /// The immutable snapshot of all rules collected at startup via
+    /// <c>ConfigureTypes</c> and <c>ScanAssemblies</c>.
+    /// </param>
+    internal sealed class JsonTypeInfoResolver(JsonTypeRulesSnapshot rules) : DefaultJsonTypeInfoResolver
     {
-        private readonly JsonIgnoreRulesSnapshot _rules = rules ?? throw new ArgumentNullException(nameof(rules));
+        private readonly JsonTypeRulesSnapshot _rules = rules ?? throw new ArgumentNullException(nameof(rules));
 
+        // Static cache: type + naming policy → (JSON name → CLR name).
+        // Populated once per type and never mutated after that.
         private static readonly ConcurrentDictionary<string, Dictionary<string, string>>
             _jsonToDeclaredName = new();
 
         /// <summary>
-        /// Gets JSON type information for the specified type with custom ignore rules applied.
+        /// Gets JSON type information for the specified type with all configured rules applied.
         /// </summary>
-        /// <param name="type">The type to get JSON type information for.</param>
-        /// <param name="options">The JSON serializer options.</param>
-        /// <returns>The JSON type information with custom ignore rules applied.</returns>
         public override JsonTypeInfo GetTypeInfo(Type type, JsonSerializerOptions options)
         {
             var info = base.GetTypeInfo(type, options);
 
+            // Only apply property-level rules to JSON objects.
             if (info.Kind != JsonTypeInfoKind.Object)
             {
                 return info;
             }
 
-            // Build reverse map: JSON name -> CLR property name
+            // Build (and cache) reverse map: JSON name → CLR property name.
             var cacheKey = $"{type.FullName}|{options.PropertyNamingPolicy?.GetType().FullName ?? "none"}";
             var jsonToDeclaredName = _jsonToDeclaredName.GetOrAdd(
                 cacheKey,
                 _ => BuildJsonToDeclaredName(type, options));
 
-            // Apply ignore rules
             foreach (var property in info.Properties)
             {
-                var originalPropertyName = jsonToDeclaredName.TryGetValue(property.Name, out var csharpName)
-                    ? csharpName
+                var clrName = jsonToDeclaredName.TryGetValue(property.Name, out var mapped)
+                    ? mapped
                     : property.Name;
 
-                var condition = ResolveCondition(type, originalPropertyName, property.Name);
+                // TypeIgnoreRules: highest priority, checked first.
+                var typeIgnoreCondition = ResolveTypeIgnoreCondition(property.PropertyType);
+                if (typeIgnoreCondition.HasValue)
+                {
+                    var propType = property.PropertyType;
+                    var cond = typeIgnoreCondition.Value;
+                    property.ShouldSerialize = (_, value) =>
+                        ShouldSerializeProperty(value, propType, cond);
+                    continue;
+                }
+
+                // Per-type per-property rule.
+                var typeRule = ResolvePropertyRule(type, clrName);
+
+                if (typeRule is not null)
+                {
+                    if (typeRule.Name is not null)
+                    {
+                        property.Name = typeRule.Name;
+                    }
+
+                    if (typeRule.Order.HasValue)
+                    {
+                        property.Order = typeRule.Order.Value;
+                    }
+                }
+
+                // Ignore condition.
+                var condition = typeRule?.Ignore
+                    ?? ResolveGlobalIgnoreCondition(clrName, property.Name);
+
                 if (condition.HasValue)
                 {
                     var propertyType = property.PropertyType;
-                    property.ShouldSerialize = (obj, value) =>
+                    property.ShouldSerialize = (_, value) =>
                         ShouldSerializeProperty(value, propertyType, condition.Value);
                 }
             }
@@ -60,29 +92,94 @@ namespace AspNetConventions.Serialization.Resolvers
         }
 
         /// <summary>
-        /// Builds a reverse mapping from JSON property names to CLR property names.
+        /// Walks the inheritance chain (and interfaces) of <paramref name="type"/> looking for
+        /// a per-property rule registered for <paramref name="clrPropertyName"/>.
         /// </summary>
-        /// <param name="type">The type to analyze.</param>
-        /// <param name="options">The JSON serializer options containing naming policy.</param>
-        /// <returns>A dictionary mapping JSON property names to their original CLR property names.</returns>
+        private JsonPropertyTypeRule? ResolvePropertyRule(Type type, string clrPropertyName)
+        {
+            for (var current = type; current != null; current = current.BaseType)
+            {
+                var key = current.IsGenericType ? current.GetGenericTypeDefinition() : current;
+
+                if (_rules.PropertyRules.TryGetValue(key, out var props) &&
+                    props.TryGetValue(clrPropertyName, out var rule))
+                {
+                    return rule;
+                }
+            }
+
+            foreach (var iface in type.GetInterfaces())
+            {
+                var key = iface.IsGenericType ? iface.GetGenericTypeDefinition() : iface;
+
+                if (_rules.PropertyRules.TryGetValue(key, out var props) &&
+                    props.TryGetValue(clrPropertyName, out var rule))
+                {
+                    return rule;
+                }
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Checks <c>TypeIgnoreRules</c> by walking the VALUE TYPE's inheritance chain.
+        /// Returns on the first match.
+        /// </summary>
+        private JsonIgnoreCondition? ResolveTypeIgnoreCondition(Type propertyValueType)
+        {
+            for (var current = propertyValueType; current != null; current = current.BaseType)
+            {
+                var key = current.IsGenericType ? current.GetGenericTypeDefinition() : current;
+
+                if (_rules.TypeIgnoreRules.TryGetValue(key, out var rule))
+                {
+                    return rule;
+                }
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Checks <c>GlobalPropertyIgnoreRules</c>.
+        /// Tries the CLR name first (e.g. <c>StatusCode</c>) so callers can use C# names,
+        /// then falls back to the JSON name (e.g. <c>status_code</c>).
+        /// </summary>
+        private JsonIgnoreCondition? ResolveGlobalIgnoreCondition(
+            string clrPropertyName,
+            string jsonPropertyName)
+        {
+            if (_rules.GlobalPropertyIgnoreRules.TryGetValue(clrPropertyName, out var rule) ||
+                _rules.GlobalPropertyIgnoreRules.TryGetValue(jsonPropertyName, out rule))
+            {
+                return rule;
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Builds a reverse mapping from JSON property names to CLR property names for
+        /// <paramref name="type"/>, respecting <see cref="JsonPropertyNameAttribute"/> and
+        /// the active naming policy.
+        /// </summary>
         private static Dictionary<string, string> BuildJsonToDeclaredName(
             Type type,
             JsonSerializerOptions options)
         {
             var map = new Dictionary<string, string>(StringComparer.Ordinal);
-            var properties = type.GetProperties(
-                BindingFlags.Public | BindingFlags.Instance);
 
-            foreach (var prop in properties)
+            foreach (var prop in type.GetProperties(BindingFlags.Public | BindingFlags.Instance))
             {
                 var attr = prop.GetCustomAttribute<JsonPropertyNameAttribute>();
                 string jsonName;
 
-                if (attr != null)
+                if (attr is not null)
                 {
                     jsonName = attr.Name;
                 }
-                else if (options.PropertyNamingPolicy != null)
+                else if (options.PropertyNamingPolicy is not null)
                 {
                     jsonName = options.PropertyNamingPolicy.ConvertName(prop.Name);
                 }
@@ -95,74 +192,6 @@ namespace AspNetConventions.Serialization.Resolvers
             }
 
             return map;
-        }
-
-        /// <summary>
-        /// Resolves the JSON ignore condition for a property based on configured rules.
-        /// </summary>
-        /// <param name="type">The type containing the property.</param>
-        /// <param name="originalPropertyName">The original CLR property name.</param>
-        /// <param name="jsonPropertyName">The JSON property name after naming policy transformation.</param>
-        /// <returns>The ignore condition to apply, or null if no rule matches.</returns>
-        private JsonIgnoreCondition? ResolveCondition(
-        Type type,
-        string originalPropertyName,
-        string jsonPropertyName)
-        {
-            // 1. Walk inheritance chain (most specific → least specific)
-            for (var current = type; current != null; current = current.BaseType)
-            {
-                var lookupType = current.IsGenericType
-                    ? current.GetGenericTypeDefinition()
-                    : current;
-
-                if (_rules.PropertyTypeRules.TryGetValue(lookupType, out var props) &&
-                    props.TryGetValue(originalPropertyName, out var rule))
-                {
-                    return rule;
-                }
-            }
-
-            // 2. Interfaces
-            foreach (var iface in type.GetInterfaces())
-            {
-                var ifaceType = iface.IsGenericType
-                    ? iface.GetGenericTypeDefinition()
-                    : iface;
-
-                if (_rules.PropertyTypeRules.TryGetValue(ifaceType, out var props) &&
-                    props.TryGetValue(originalPropertyName, out var rule))
-                {
-                    return rule;
-                }
-            }
-
-            // 3. Global property rules
-            if (_rules.GlobalPropertyRules.TryGetValue(jsonPropertyName, out var globalRule))
-            {
-                return globalRule;
-            }
-
-            // 4. Assembly rule
-            if (_rules.AssemblyRules.TryGetValue(type.Assembly, out var assemblyRule))
-            {
-                return assemblyRule;
-            }
-
-            // 5. Type rules (walk base types again)
-            for (var current = type; current != null; current = current.BaseType)
-            {
-                var lookupType = current.IsGenericType
-                    ? current.GetGenericTypeDefinition()
-                    : current;
-
-                if (_rules.TypeRules.TryGetValue(lookupType, out var typeRule))
-                {
-                    return typeRule;
-                }
-            }
-
-            return null;
         }
 
         /// <summary>
