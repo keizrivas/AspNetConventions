@@ -71,10 +71,27 @@ namespace AspNetConventions.Serialization.Adapters
 
             // Internal framework defaults
             typeBuilder
-                .Type<ApiResponse>(t => t.Property(x => x.Metadata)
-                    .Ignore(JsonIgnoreCondition.WhenWritingNull))
-                .Type<DefaultApiResponse>(t => t.Property(x => x.Pagination)
-                    .Ignore(JsonIgnoreCondition.WhenWritingNull))
+                .Type<ApiResponse>(t =>
+                {
+                    t.Property(x => x.Status).Order(1);
+                    t.Property(x => x.StatusCode).Order(2);
+                    t.Property(x => x.Message).Order(4);
+                    t.Property(x => x.Metadata)
+                        .Order(6)
+                        .Ignore(JsonIgnoreCondition.WhenWritingNull);
+                })
+                .Type<DefaultApiResponse>(t =>
+                {
+                    t.Property(x => x.Data).Order(5);
+                    t.Property(x => x.Pagination)
+                        .Order(7)
+                        .Ignore(JsonIgnoreCondition.WhenWritingNull);
+                })
+                .Type<DefaultApiErrorResponse>(t =>
+                {
+                    t.Property(x => x.Type).Order(3);
+                    t.Property(x => x.Errors).Order(5);
+                })
                 .Type<PaginationMetadata>(t =>
                 {
                     t.Property(x => x.Links).Ignore(JsonIgnoreCondition.WhenWritingNull);

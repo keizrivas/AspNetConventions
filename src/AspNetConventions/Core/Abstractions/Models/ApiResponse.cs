@@ -30,25 +30,21 @@ namespace AspNetConventions.Core.Abstractions.Models
         /// <summary>
         /// Gets or sets the response status.
         /// </summary>
-        [JsonPropertyOrder(1)]
         public ResponseStatus Status { get; }
 
         /// <summary>
         /// Gets or sets the HTTP status code.
         /// </summary>
-        [JsonPropertyOrder(2)]
         public int StatusCode { get; } = (int)HttpStatusCode.OK;
 
         /// <summary>
         /// Gets or sets an optional message.
         /// </summary>
-        [JsonPropertyOrder(4)]
         public string? Message { get; set; }
 
         /// <summary>
         /// Gets or sets response metadata.
         /// </summary>
-        [JsonPropertyOrder(6)]
         public Metadata? Metadata { get; set; }
 
     }
