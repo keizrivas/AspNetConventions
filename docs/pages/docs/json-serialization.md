@@ -57,9 +57,9 @@ No attributes on your models. No scattered options. One place.
 - **Per-type property rules** — Rename, reorder, or ignore specific properties on specific types using strongly-typed expressions
 - **Open generic type support** — Define rules once for `ApiResponse<T>`, apply them to all closed variants at runtime
 - **Class-based configuration** — Separate type configurations into dedicated classes, keeping `Program.cs` clean
-- **Assembly scanning** — Auto-discover and register all configuration classes in one or more assemblies (FluentValidation-style)
+- **Assembly scanning** — Auto-discover and register all configuration classes in one or more assemblies.
 - **Global ignore rules** — Suppress a property type (`IgnoreType<T>`) or a property name (`IgnorePropertyName`) across all types at once
-- **Zero per-request overhead** — All rules are compiled into a `DefaultJsonTypeInfoResolver` snapshot at startup; `System.Text.Json` caches `JsonTypeInfo` per type
+- **Zero per-request overhead** — All rules are compiled into a snapshot at startup.
 - **Pluggable adapter** — Swap the underlying serializer via `ConfigureAdapter<TAdapter, TOptions>`
 
 ---
@@ -166,7 +166,7 @@ Startup
   ├─ JsonTypesConfigurationBuilder.CreateSnapshot() → immutable JsonTypeRulesSnapshot
   │
   └─ JsonTypeInfoResolver(snapshot) registered as DefaultJsonTypeInfoResolver
-        └─ System.Text.Json caches JsonTypeInfo per type — zero per-request cost
+        └─ Zero per-request cost
 ```
 
 ---

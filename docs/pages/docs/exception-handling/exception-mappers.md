@@ -43,58 +43,6 @@ builder.Services.AddControllers()
         options.Exceptions.Mappers.Add(new OrderNotFoundExceptionMapper());
     });
 ```
-
----
-
-## ExceptionMapper&lt;T&gt; Base Class {#exceptionmapper-base-class}
-
-The [`ExceptionMapper`{.code-left}](./configuration.md#iexceptionmapper)`<TException>`{.code-right} base class provides:
-
-```csharp
-public abstract class ExceptionMapper<TException> : IExceptionMapper
-    where TException : Exception
-{
-    // Override this to customize type matching
-    public virtual bool CanMapException(Exception exception, RequestDescriptor request)
-    {
-        return exception is TException;
-    }
-
-    // Implement this to transform the exception
-    public abstract ExceptionDescriptor MapException(
-        TException exception,
-        RequestDescriptor request);
-}
-```
-
-### CanMapException {#canmapexception}
-
-Override `CanMapException` for custom matching logic:
-
-```csharp
-public class HttpExceptionMapper : ExceptionMapper<HttpRequestException>
-{
-    public override bool CanMapException(Exception exception, RequestDescriptor request)
-    {
-        // Match any HttpRequestException, including derived types
-        return exception is HttpRequestException;
-    }
-
-    public override ExceptionDescriptor MapException(
-        HttpRequestException exception,
-        RequestDescriptor request)
-    {
-        return new ExceptionDescriptor
-        {
-            Type = "HTTP_REQUEST_FAILED",
-            StatusCode = HttpStatusCode.BadGateway,
-            Message = "External service request failed.",
-            LogLevel = LogLevel.Error
-        };
-    }
-}
-```
-
 ---
 
 ## Building ExceptionDescriptor {#building-exceptiondescriptor}

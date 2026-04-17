@@ -1,6 +1,10 @@
 # Features
 
-**AspNetConventions** provides a unified, fluent JSON configuration layer on top of `System.Text.Json`. You configure casing, property rules, and ignore conditions in one place at startup; the library translates them into a `DefaultJsonTypeInfoResolver` that is applied globally.
+**AspNetConventions** provides a serializer-agnostic, fluent JSON configuration layer. All casing, property rules, and ignore conditions are declared once at startup through the library's own abstractions; the active serializer adapter translates them into its native format at initialization time.
+
+::: callout info Newtonsoft.Json support
+The current built-in adapter targets `System.Text.Json` (included with .NET, no extra dependency). Support for **Newtonsoft.Json** is planned for a future release. The public configuration API will remain unchanged — only the adapter needs to be swapped.
+:::
 
 ---
 
@@ -28,6 +32,49 @@ This applies to all serialized objects — API response payloads, model objects,
 
 ---
 
+## Custom Case Converter {#custom-case-converter}
+
+When none of the built-in `CasingStyle` options fit your convention, implement `ICaseConverter` and assign it to `options.Json.CaseConverter`. It overrides `CaseStyle` when set.
+
+The built-in `SnakeCaseConverter` treats digit runs as part of the surrounding word, so `Iso2` serializes as `"iso2"` and `Base64` as `"base64"`. The example below adds **number-aware boundaries**: a transition from letters to digits (or digits to letters) is treated as a word break, just like an uppercase letter after a lowercase one.
+
+```csharp
+using AspNetConventions.Core.Abstractions.Contracts;
+using AspNetConventions.Core.Converters;
+
+public class NumberSensitiveSnakeCaseConverter : ICaseConverter
+{
+    public string Convert(string value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+            return string.Empty;
+
+        var words = CaseTokenizer.Tokenize(value.AsSpan(), numberBoundaries: true);
+        return string.Join("_", words.Select(w =>
+            value.Substring(w.Start, w.Length).ToLowerInvariant()));
+    }
+}
+```
+
+Register it:
+
+```csharp
+options.Json.CaseConverter = new NumberSensitiveSnakeCaseConverter();
+```
+
+| Input | Output |
+|---|---|
+| `Iso2` | `"iso_2"` |
+| `iso3` | `"iso_3"` |
+| `Base64` | `"base_64"` |
+| `Sha256Hash` | `"sha_256_hash"` |
+| `OAuth2Token` | `"o_auth_2_token"` |
+| `UserId` | `"user_id"` |
+
+`CaseConverter` also controls dictionary key casing and route parameter naming, so a single implementation applies consistently across all three.
+
+---
+
 ## Per-Type Property Configuration {#per-type-property-configuration}
 
 Use `options.Json.ConfigureTypes` to apply fine-grained rules to specific types using strongly-typed expressions.
@@ -40,7 +87,7 @@ options.Json.ConfigureTypes = cfg =>
         type.Property(x => x.Id).Order(0);
         type.Property(x => x.UserName).Name("username");
         type.Property(x => x.Password).Ignore();
-        type.Property(x => x.MiddleName).Ignore(JsonIgnoreCondition.WhenWritingNull);
+        type.Property(x => x.MiddleName).Ignore(IgnoreCondition.WhenWritingNull);
     });
 };
 ```
@@ -78,7 +125,7 @@ cfg.Type<UserResponse>(type =>
 
 ### Ignoring Properties {#ignoring-properties}
 
-Exclude a property from serialization using a `JsonIgnoreCondition`:
+Exclude a property from serialization using a `IgnoreCondition`:
 
 ```csharp
 cfg.Type<User>(type =>
@@ -87,16 +134,16 @@ cfg.Type<User>(type =>
     type.Property(x => x.Password).Ignore();
 
     // Omitted when null
-    type.Property(x => x.MiddleName).Ignore(JsonIgnoreCondition.WhenWritingNull);
+    type.Property(x => x.MiddleName).Ignore(IgnoreCondition.WhenWritingNull);
 
     // Omitted when equal to the type's default (0, false, null)
-    type.Property(x => x.LoginAttempts).Ignore(JsonIgnoreCondition.WhenWritingDefault);
+    type.Property(x => x.LoginAttempts).Ignore(IgnoreCondition.WhenWritingDefault);
 });
 ```
 
-`Ignore()` without arguments defaults to `JsonIgnoreCondition.Always`.
+`Ignore()` without arguments defaults to `IgnoreCondition.Always`.
 
-| `JsonIgnoreCondition` | Behaviour |
+| `IgnoreCondition` | Behaviour |
 |---|---|
 | `Always` *(default for `.Ignore()`)* | Property is never serialized |
 | `WhenWritingNull` | Property is omitted when its value is `null` |
@@ -148,7 +195,7 @@ options.Json.ConfigureTypes = cfg =>
     cfg.IgnoreType<Metadata>();
 
     // Hides nullable or non-nullable DateTimeOffset properties everywhere
-    cfg.IgnoreType<DateTimeOffset>(JsonIgnoreCondition.WhenWritingDefault);
+    cfg.IgnoreType<DateTimeOffset>(IgnoreCondition.WhenWritingDefault);
 };
 ```
 
@@ -165,7 +212,7 @@ options.Json.ConfigureTypes = cfg =>
     cfg.IgnorePropertyName("StatusCode");
 
     // Hides "internalRef" everywhere, only when null
-    cfg.IgnorePropertyName("internalRef", JsonIgnoreCondition.WhenWritingNull);
+    cfg.IgnorePropertyName("internalRef", IgnoreCondition.WhenWritingNull);
 };
 ```
 
@@ -195,7 +242,7 @@ public class OrderConfiguration : JsonTypeConfiguration<Order>
     {
         rule.Property(x => x.OrderId).Name("id").Order(0);
         rule.Property(x => x.InternalReference).Ignore();
-        rule.Property(x => x.Notes).Ignore(JsonIgnoreCondition.WhenWritingNull);
+        rule.Property(x => x.Notes).Ignore(IgnoreCondition.WhenWritingNull);
     }
 }
 ```
@@ -253,18 +300,18 @@ Rules are stored under `ApiResponse<>` (the open generic definition) and matched
 
 ## Custom Serializer Adapter {#custom-serializer-adapter}
 
-By default, **AspNetConventions** uses `SystemTextJsonAdapter` backed by `System.Text.Json`. Use `ConfigureAdapter<TAdapter, TOptions>` to plug in a different serializer or to access low-level `System.Text.Json` settings not exposed by the standard API:
+Use `ConfigureAdapter<TAdapter, TOptions>` to swap the active serializer adapter or to reach low-level settings of the current adapter that are not exposed through the standard `options.Json.*` API:
 
 ```csharp
+// Reach native System.Text.Json settings not covered by the standard API
 options.Json.ConfigureAdapter<SystemTextJsonAdapter, JsonSerializerOptions>(serializerOptions =>
 {
-    // Direct access to JsonSerializerOptions
     serializerOptions.Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping;
     serializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
 });
 ```
 
-`ConfigureAdapter` is an escape hatch for settings outside the **AspNetConventions** abstraction. Prefer the typed `options.Json.*` properties for anything available through the standard API.
+`ConfigureAdapter` is an escape hatch. Prefer the typed `options.Json.*` properties for anything available through the standard API; fall back to `ConfigureAdapter` only for adapter-specific settings.
 
 ---
 
@@ -272,7 +319,7 @@ options.Json.ConfigureAdapter<SystemTextJsonAdapter, JsonSerializerOptions>(seri
 
 `JsonSerializationHooks` provides four extension points across two phases:
 
-**Startup-time hooks** (run once per type, then cached by `System.Text.Json`):
+**Startup-time hooks** (run once per type at initialization, then cached by the adapter):
 
 ```csharp
 // Skip rule processing for internal types
@@ -296,7 +343,7 @@ options.Json.Hooks.ShouldSerializeProperty = (instance, value, clrName, type) =>
     value is not string s || s.Length > 0;
 ```
 
-Property **names** are baked into the cached `JsonTypeInfo` at startup, so they cannot be changed per request through hooks. For per-request name changes, use a custom `ICaseConverter` backed by a scoped service.
+Property **names** are resolved at startup and cached by the adapter, so they cannot be changed per request through hooks. For per-request name changes, use a custom `ICaseConverter` backed by a scoped service.
 
 See [`JsonSerializationHooks`](./configuration.md#jsonserializationhooks) for the full reference.
 

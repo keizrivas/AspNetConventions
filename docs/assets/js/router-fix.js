@@ -15,10 +15,16 @@
         _pendingHash = idx !== -1 ? href.slice(idx) : null;
     }, true);
 
+    // Close the mobile sidebar on every SPA navigation.
+    function closeMobileSidebar() {
+        document.querySelector('.sidebar')?.classList.remove('mobile-expanded');
+    }
+
     // Restore a hash that the router dropped, then scroll to the target.
     var _push = history.pushState.bind(history);
     history.pushState = function (state, title, url) {
         _push.call(history, state, title, url);
+        closeMobileSidebar();
         var hash = _pendingHash;
         _pendingHash = null;
         if (hash) restoreHash(hash);

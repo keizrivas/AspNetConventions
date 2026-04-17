@@ -110,7 +110,7 @@ customHead: |
         A powerful and zero boilerplate solution for consistent standardization in modern ASP.NET apps.
       </p>
       <div class="flex flex-wrap justify-center items-center gap-4">
-        <a href="/docs" class="group relative inline-flex items-center justify-center overflow-hidden rounded-full duration-500 font-medium text-white bg-slate-950 dark:text-slate-950 dark:bg-white h-12 px-6">
+        <a href="/AspNetConventions/docs" class="group relative inline-flex items-center justify-center overflow-hidden rounded-full duration-500 font-medium text-white bg-slate-950 dark:text-slate-950 dark:bg-white h-12 px-6">
           <div class="relative inline-flex translate-x-0 items-center transition group-hover:-translate-x-6">
             <div class="absolute translate-x-0 opacity-100 transition group-hover:-translate-x-6 group-hover:opacity-0">
               <i data-lucide="book_open_text" class="w-4.5 h-4.5"></i>

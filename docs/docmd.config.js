@@ -71,6 +71,7 @@ export default {
     llms: {}
   },
   customJs: [
+    '/assets/js/theme.js',
     '/assets/js/router-fix.js',
   ],
   navigation: [
@@ -120,10 +121,6 @@ export default {
           title: "Parameter Binding",
           path: "docs/route-standardization/parameter-binding"
         },
-        {
-          title: "Examples",
-          path: "docs/route-standardization/examples"
-        },
       ]
     },
     {
@@ -151,10 +148,6 @@ export default {
           title: "Metadata",
           path: "docs/response-formatting/metadata"
         },
-        {
-          title: "Examples",
-          path: "docs/response-formatting/examples"
-        },
       ]
     },
     {
@@ -174,10 +167,6 @@ export default {
           title: "Exception Mappers",
           path: "docs/exception-handling/exception-mappers"
         },
-        {
-          title: "Examples",
-          path: "docs/exception-handling/examples"
-        },
       ]
     },
     {
@@ -190,23 +179,24 @@ export default {
           path: "docs/json-serialization"
         },
         {
-          title: "Features",
-          path: "docs/json-serialization/features"
-        },
-        {
           title: "Configuration",
           path: "docs/json-serialization/configuration"
         },
         {
-          title: "Examples",
-          path: "docs/json-serialization/examples"
-        }
+          title: "Features",
+          path: "docs/json-serialization/features"
+        },
       ]
     },
     {
       title: "Troubleshooting",
       path: "docs/troubleshooting",
       icon: "circle-help"
+    },
+    {
+      title: "Extension methods",
+      path: "docs/extension-methods",
+      icon: "puzzle"
     },
     {
       title: "NuGet",

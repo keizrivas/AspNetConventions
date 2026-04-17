@@ -5,7 +5,13 @@
   --primary-color: #ad46ff !important;
   --link-color: #ad46ff !important;
   --accent-color: #ad46ff !important;
+  
   --border-radius: 8px;
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+
   --font-family-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
   --font-family-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
 }

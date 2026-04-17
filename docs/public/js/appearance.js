@@ -13,9 +13,8 @@ export default {
             return;
         }
 
-        this.theme = this.isDark() ? "dark" : "light";
-        if(this.theme === "dark"){
-            return;
+        if(this.mode === "system"){
+            this.theme = this.isDark() ? "dark" : "light";
         }
 
         this.SetBrowserTheme(this.theme);
@@ -25,8 +24,10 @@ export default {
         return window.matchMedia('(prefers-color-scheme: dark)').matches;
     },
     SetBrowserTheme(theme){
-        document.body.setAttribute('data-theme', theme);
         document.documentElement.setAttribute('data-theme', theme);
+        if (document.body) {
+            document.body.setAttribute('data-theme', theme);
+        }
     },
     SwitchTheme(){
         var theme = this.theme === "dark"
