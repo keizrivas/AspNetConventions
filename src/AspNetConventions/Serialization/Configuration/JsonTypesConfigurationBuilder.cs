@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
-using System.Text.Json.Serialization;
+using AspNetConventions.Core.Enums.Json;
 using AspNetConventions.Serialization.Resolvers;
 
 namespace AspNetConventions.Serialization.Configuration
@@ -15,11 +15,11 @@ namespace AspNetConventions.Serialization.Configuration
         private readonly Dictionary<Type, Dictionary<string, JsonPropertyTypeRule>> _propertyRules = [];
 
         // JSON property name (case-insensitive) → ignore condition
-        private readonly Dictionary<string, JsonIgnoreCondition> _globalPropertyIgnoreRules
+        private readonly Dictionary<string, IgnoreCondition> _globalPropertyIgnoreRules
             = new(StringComparer.OrdinalIgnoreCase);
 
         // type → ignore condition (applies to all properties when that type is serialized)
-        private readonly Dictionary<Type, JsonIgnoreCondition> _typeIgnoreRules = [];
+        private readonly Dictionary<Type, IgnoreCondition> _typeIgnoreRules = [];
 
         public IJsonTypesConfigurationBuilder Type<T>(Action<IJsonTypeRuleBuilder<T>> configure)
         {
@@ -49,7 +49,7 @@ namespace AspNetConventions.Serialization.Configuration
         }
 
         public IJsonTypesConfigurationBuilder IgnoreType<T>(
-            JsonIgnoreCondition condition = JsonIgnoreCondition.Always)
+            IgnoreCondition condition = IgnoreCondition.Always)
         {
             _typeIgnoreRules[typeof(T)] = condition;
             return this;
@@ -57,7 +57,7 @@ namespace AspNetConventions.Serialization.Configuration
 
         public IJsonTypesConfigurationBuilder IgnorePropertyName(
             string name,
-            JsonIgnoreCondition condition = JsonIgnoreCondition.Always)
+            IgnoreCondition condition = IgnoreCondition.Always)
         {
             ArgumentException.ThrowIfNullOrEmpty(name);
             _globalPropertyIgnoreRules[name] = condition;
@@ -104,9 +104,9 @@ namespace AspNetConventions.Serialization.Configuration
 
             return new JsonTypeRulesSnapshot(
                 PropertyRules: propertyRulesSnapshot,
-                GlobalPropertyIgnoreRules: new Dictionary<string, JsonIgnoreCondition>(
+                GlobalPropertyIgnoreRules: new Dictionary<string, IgnoreCondition>(
                     _globalPropertyIgnoreRules, StringComparer.OrdinalIgnoreCase),
-                TypeIgnoreRules: new Dictionary<Type, JsonIgnoreCondition>(_typeIgnoreRules)
+                TypeIgnoreRules: new Dictionary<Type, IgnoreCondition>(_typeIgnoreRules)
             );
         }
 

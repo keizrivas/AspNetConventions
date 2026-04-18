@@ -1,4 +1,4 @@
-using System.Text.Json.Serialization;
+using AspNetConventions.Core.Enums.Json;
 
 namespace AspNetConventions.Serialization.Configuration
 {
@@ -12,10 +12,10 @@ namespace AspNetConventions.Serialization.Configuration
         /// </summary>
         /// <param name="condition">
         /// The condition under which the property should be ignored.
-        /// Defaults to <see cref="JsonIgnoreCondition.Always"/>.
+        /// Defaults to <see cref="IgnoreCondition.Always"/>.
         /// </param>
         /// <returns>The current builder instance for chaining.</returns>
-        IJsonPropertyRuleBuilder Ignore(JsonIgnoreCondition condition = JsonIgnoreCondition.Always);
+        IJsonPropertyRuleBuilder Ignore(IgnoreCondition condition = IgnoreCondition.Always);
 
         /// <summary>
         /// Overrides the JSON property name produced by the active naming policy.

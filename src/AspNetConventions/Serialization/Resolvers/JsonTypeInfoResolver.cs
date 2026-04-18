@@ -5,6 +5,8 @@ using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Text.Json.Serialization.Metadata;
+using AspNetConventions.Core.Enums.Json;
+using AspNetConventions.Core.Hooks;
 
 namespace AspNetConventions.Serialization.Resolvers
 {
@@ -15,9 +17,15 @@ namespace AspNetConventions.Serialization.Resolvers
     /// The immutable snapshot of all rules collected at startup via
     /// <c>ConfigureTypes</c> and <c>ScanAssemblies</c>.
     /// </param>
-    internal sealed class JsonTypeInfoResolver(JsonTypeRulesSnapshot rules) : DefaultJsonTypeInfoResolver
+    /// <param name="hooks">
+    /// Optional hooks for extending the resolution pipeline with custom logic.
+    /// </param>
+    internal sealed class JsonTypeInfoResolver(
+        JsonTypeRulesSnapshot rules,
+        JsonSerializationHooks? hooks = null) : DefaultJsonTypeInfoResolver
     {
         private readonly JsonTypeRulesSnapshot _rules = rules ?? throw new ArgumentNullException(nameof(rules));
+        private readonly JsonSerializationHooks? _hooks = hooks;
 
         // Static cache: type + naming policy → (JSON name → CLR name).
         // Populated once per type and never mutated after that.
@@ -33,6 +41,12 @@ namespace AspNetConventions.Serialization.Resolvers
 
             // Only apply property-level rules to JSON objects.
             if (info.Kind != JsonTypeInfoKind.Object)
+            {
+                return info;
+            }
+
+            // ShouldSerializeType hook
+            if (_hooks?.ShouldSerializeType != null && !_hooks.ShouldSerializeType(type))
             {
                 return info;
             }
@@ -76,16 +90,52 @@ namespace AspNetConventions.Serialization.Resolvers
                     }
                 }
 
+                // ResolvePropertyName hook
+                if (_hooks?.ResolvePropertyName != null)
+                {
+                    var overrideName = _hooks.ResolvePropertyName(clrName, type);
+                    if (overrideName is not null)
+                    {
+                        property.Name = overrideName;
+                    }
+                }
+
                 // Ignore condition.
                 var condition = typeRule?.Ignore
                     ?? ResolveGlobalIgnoreCondition(clrName, property.Name);
 
-                if (condition.HasValue)
+                // ShouldSerializeProperty hook
+                if (_hooks?.ShouldSerializeProperty != null || condition.HasValue)
                 {
                     var propertyType = property.PropertyType;
-                    property.ShouldSerialize = (_, value) =>
-                        ShouldSerializeProperty(value, propertyType, condition.Value);
+                    var capturedClrName = clrName;
+                    var capturedCondition = condition;
+                    var capturedType = type;
+
+                    property.ShouldSerialize = (instance, value) =>
+                    {
+                        // Ignore condition takes priority over the global hook.
+                        if (capturedCondition.HasValue &&
+                            !ShouldSerializeProperty(value, propertyType, capturedCondition.Value))
+                        {
+                            return false;
+                        }
+
+                        return _hooks?.ShouldSerializeProperty == null
+                            || _hooks.ShouldSerializeProperty(instance, value, capturedClrName, capturedType);
+                    };
                 }
+            }
+
+            // OnTypeResolved hook
+            if (_hooks?.OnTypeResolved != null)
+            {
+                var names = new List<string>(info.Properties.Count);
+                foreach (var p in info.Properties)
+                {
+                    names.Add(p.Name);
+                }
+                _hooks.OnTypeResolved(type, names);
             }
 
             return info;
@@ -126,7 +176,7 @@ namespace AspNetConventions.Serialization.Resolvers
         /// Checks <c>TypeIgnoreRules</c> by walking the VALUE TYPE's inheritance chain.
         /// Returns on the first match.
         /// </summary>
-        private JsonIgnoreCondition? ResolveTypeIgnoreCondition(Type propertyValueType)
+        private IgnoreCondition? ResolveTypeIgnoreCondition(Type propertyValueType)
         {
             for (var current = propertyValueType; current != null; current = current.BaseType)
             {
@@ -146,7 +196,7 @@ namespace AspNetConventions.Serialization.Resolvers
         /// Tries the CLR name first (e.g. <c>StatusCode</c>) so callers can use C# names,
         /// then falls back to the JSON name (e.g. <c>status_code</c>).
         /// </summary>
-        private JsonIgnoreCondition? ResolveGlobalIgnoreCondition(
+        private IgnoreCondition? ResolveGlobalIgnoreCondition(
             string clrPropertyName,
             string jsonPropertyName)
         {
@@ -204,14 +254,14 @@ namespace AspNetConventions.Serialization.Resolvers
         private static bool ShouldSerializeProperty(
             object? value,
             Type propertyType,
-            JsonIgnoreCondition condition)
+            IgnoreCondition condition)
         {
             return condition switch
             {
-                JsonIgnoreCondition.Never => true,
-                JsonIgnoreCondition.WhenWritingDefault => !IsDefaultValue(value, propertyType),
-                JsonIgnoreCondition.WhenWritingNull => value is not null,
-                JsonIgnoreCondition.Always => false,
+                IgnoreCondition.Never => true,
+                IgnoreCondition.WhenWritingDefault => !IsDefaultValue(value, propertyType),
+                IgnoreCondition.WhenWritingNull => value is not null,
+                IgnoreCondition.Always => false,
                 _ => true
             };
         }

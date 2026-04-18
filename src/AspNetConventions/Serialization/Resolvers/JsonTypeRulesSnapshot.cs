@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.Text.Json.Serialization;
+using AspNetConventions.Core.Enums.Json;
 
 namespace AspNetConventions.Serialization.Resolvers
 {
@@ -21,7 +21,7 @@ namespace AspNetConventions.Serialization.Resolvers
     /// </param>
     internal sealed record JsonTypeRulesSnapshot(
         IReadOnlyDictionary<Type, IReadOnlyDictionary<string, JsonPropertyTypeRule>> PropertyRules,
-        IReadOnlyDictionary<string, JsonIgnoreCondition> GlobalPropertyIgnoreRules,
-        IReadOnlyDictionary<Type, JsonIgnoreCondition> TypeIgnoreRules
+        IReadOnlyDictionary<string, IgnoreCondition> GlobalPropertyIgnoreRules,
+        IReadOnlyDictionary<Type, IgnoreCondition> TypeIgnoreRules
     );
 }

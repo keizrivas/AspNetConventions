@@ -78,14 +78,14 @@ namespace AspNetConventions.Serialization.Adapters
                     t.Property(x => x.Message).Order(4);
                     t.Property(x => x.Metadata)
                         .Order(6)
-                        .Ignore(JsonIgnoreCondition.WhenWritingNull);
+                        .Ignore(IgnoreCondition.WhenWritingNull);
                 })
                 .Type<DefaultApiResponse>(t =>
                 {
                     t.Property(x => x.Data).Order(5);
                     t.Property(x => x.Pagination)
                         .Order(7)
-                        .Ignore(JsonIgnoreCondition.WhenWritingNull);
+                        .Ignore(IgnoreCondition.WhenWritingNull);
                 })
                 .Type<DefaultApiErrorResponse>(t =>
                 {
@@ -94,9 +94,9 @@ namespace AspNetConventions.Serialization.Adapters
                 })
                 .Type<PaginationMetadata>(t =>
                 {
-                    t.Property(x => x.Links).Ignore(JsonIgnoreCondition.WhenWritingNull);
-                    t.Property(x => x.HasNextPage).Ignore(JsonIgnoreCondition.WhenWritingNull);
-                    t.Property(x => x.HasPreviousPage).Ignore(JsonIgnoreCondition.WhenWritingNull);
+                    t.Property(x => x.Links).Ignore(IgnoreCondition.WhenWritingNull);
+                    t.Property(x => x.HasNextPage).Ignore(IgnoreCondition.WhenWritingNull);
+                    t.Property(x => x.HasPreviousPage).Ignore(IgnoreCondition.WhenWritingNull);
                 });
 
             // User-defined rules (applied after defaults so they can override)
@@ -118,7 +118,7 @@ namespace AspNetConventions.Serialization.Adapters
                 WriteIndented = _options.WriteIndented,
                 NumberHandling = MapNumberHandling(),
                 MaxDepth = Math.Max(_options.MaxDepth, 0),
-                TypeInfoResolver = new JsonTypeInfoResolver(typeBuilder.CreateSnapshot())
+                TypeInfoResolver = new JsonTypeInfoResolver(typeBuilder.CreateSnapshot(), _options.Hooks)
             };
 
             // Add metadata converter to ensure Metadata keys always follow PropertyNamingPolicy,
@@ -232,7 +232,7 @@ namespace AspNetConventions.Serialization.Adapters
         /// <summary>
         /// Get the JsonNamingPolicy from this configuration.
         /// </summary>
-        private JsonNamingPolicy? GetNamingPolicy()
+        private CustomJsonNamingPolicy? GetNamingPolicy()
         {
             // Use custom converter if provided
             if (_options.CaseConverter != null)
@@ -241,16 +241,17 @@ namespace AspNetConventions.Serialization.Adapters
             }
 
             // Map CasingStyle to System.Text.Json naming policy
-            var defaultJsonNamingPolicy = JsonNamingPolicy.CamelCase;
-            return _options.CaseStyle switch
+            var defaultJsonNamingPolicy = CaseConverterFactory.CreateCamelCase();
+            var namingPolicy = _options.CaseStyle switch
             {
                 CasingStyle.CamelCase => defaultJsonNamingPolicy,
-                CasingStyle.SnakeCase => JsonNamingPolicy.SnakeCaseLower,
-                CasingStyle.KebabCase => JsonNamingPolicy.KebabCaseLower,
-                CasingStyle.PascalCase => new CustomJsonNamingPolicy(
-                    CaseConverterFactory.CreatePascalCase()),
+                CasingStyle.SnakeCase => CaseConverterFactory.CreateSnakeCase(),
+                CasingStyle.KebabCase => CaseConverterFactory.CreateKebabCase(),
+                CasingStyle.PascalCase => CaseConverterFactory.CreatePascalCase(),
                 _ => defaultJsonNamingPolicy
             };
+
+            return new CustomJsonNamingPolicy(namingPolicy);
         }
 
         private JsonIgnoreCondition MapIgnoreCondition()
@@ -259,7 +260,7 @@ namespace AspNetConventions.Serialization.Adapters
             {
                 IgnoreCondition.Never => JsonIgnoreCondition.Never,
                 IgnoreCondition.Always => JsonIgnoreCondition.Always,
-                IgnoreCondition.WhenWritingNull => JsonIgnoreCondition.WhenWritingNull,
+                IgnoreCondition.WhenWritingNull => IgnoreCondition.WhenWritingNull,
                 IgnoreCondition.WhenWritingDefault => JsonIgnoreCondition.WhenWritingDefault,
                 _ => JsonIgnoreCondition.Never
             };

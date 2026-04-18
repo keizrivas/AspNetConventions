@@ -1,4 +1,4 @@
-using System.Text.Json.Serialization;
+using AspNetConventions.Core.Enums.Json;
 
 namespace AspNetConventions.Serialization.Resolvers
 {
@@ -9,7 +9,7 @@ namespace AspNetConventions.Serialization.Resolvers
     /// <param name="Name">The JSON name for the property.</param>
     /// <param name="Order">The serialization order for the property.</param>
     internal sealed record JsonPropertyTypeRule(
-        JsonIgnoreCondition? Ignore = null,
+        IgnoreCondition? Ignore = null,
         string? Name = null,
         int? Order = null
     );

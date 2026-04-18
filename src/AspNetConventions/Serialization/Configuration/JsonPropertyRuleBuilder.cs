@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.Text.Json.Serialization;
+using AspNetConventions.Core.Enums.Json;
 using AspNetConventions.Serialization.Resolvers;
 
 namespace AspNetConventions.Serialization.Configuration
@@ -26,7 +26,7 @@ namespace AspNetConventions.Serialization.Configuration
             }
         }
 
-        public IJsonPropertyRuleBuilder Ignore(JsonIgnoreCondition condition = JsonIgnoreCondition.Always)
+        public IJsonPropertyRuleBuilder Ignore(IgnoreCondition condition = IgnoreCondition.Always)
         {
             _typeRules[_propertyName] = _typeRules[_propertyName] with { Ignore = condition };
             return this;

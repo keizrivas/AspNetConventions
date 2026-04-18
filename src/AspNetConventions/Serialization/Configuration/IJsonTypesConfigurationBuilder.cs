@@ -1,5 +1,5 @@
 using System;
-using System.Text.Json.Serialization;
+using AspNetConventions.Core.Enums.Json;
 
 namespace AspNetConventions.Serialization.Configuration
 {
@@ -34,11 +34,11 @@ namespace AspNetConventions.Serialization.Configuration
         /// </summary>
         /// <typeparam name="T">The type whose properties should be ignored.</typeparam>
         /// <param name="condition">
-        /// The ignore condition to apply. Defaults to <see cref="JsonIgnoreCondition.Always"/>.
+        /// The ignore condition to apply. Defaults to <see cref="IgnoreCondition.Always"/>.
         /// </param>
         /// <returns>The current builder instance for chaining.</returns>
         IJsonTypesConfigurationBuilder IgnoreType<T>(
-            JsonIgnoreCondition condition = JsonIgnoreCondition.Always);
+            IgnoreCondition condition = IgnoreCondition.Always);
 
         /// <summary>
         /// Applies an ignore condition to any property whose JSON name matches
@@ -50,11 +50,11 @@ namespace AspNetConventions.Serialization.Configuration
         /// </remarks>
         /// <param name="name">The JSON property name to match (case-insensitive).</param>
         /// <param name="condition">
-        /// The ignore condition to apply. Defaults to <see cref="JsonIgnoreCondition.Always"/>.
+        /// The ignore condition to apply. Defaults to <see cref="IgnoreCondition.Always"/>.
         /// </param>
         /// <returns>The current builder instance for chaining.</returns>
         IJsonTypesConfigurationBuilder IgnorePropertyName(
             string name,
-            JsonIgnoreCondition condition = JsonIgnoreCondition.Always);
+            IgnoreCondition condition = IgnoreCondition.Always);
     }
 }
