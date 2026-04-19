@@ -55,7 +55,7 @@ No attributes on your models. No scattered options. One place.
 
 - **Global casing style** — Apply camelCase, snake_case, kebab-case, or PascalCase to all JSON property names application-wide
 - **Per-type property rules** — Rename, reorder, or ignore specific properties on specific types using strongly-typed expressions
-- **Open generic type support** — Define rules once for `ApiResponse<T>`, apply them to all closed variants at runtime
+- **Open generic type support** — Define rules once for e.g. `MyClass<T>`, apply them to all closed variants at runtime
 - **Class-based configuration** — Separate type configurations into dedicated classes, keeping `Program.cs` clean
 - **Assembly scanning** — Auto-discover and register all configuration classes in one or more assemblies.
 - **Global ignore rules** — Suppress a property type (`IgnoreType<T>`) or a property name (`IgnorePropertyName`) across all types at once
@@ -114,7 +114,7 @@ cfg.Type<OrderSummary>(type =>
     type.Property(x => x.OrderId).Name("id").Order(0);
     type.Property(x => x.CustomerName).Order(1);
     type.Property(x => x.InternalReference).Ignore();
-    type.Property(x => x.Notes).Ignore(JsonIgnoreCondition.WhenWritingNull);
+    type.Property(x => x.Notes).Ignore(IgnoreCondition.WhenWritingNull);
 });
 ```
 

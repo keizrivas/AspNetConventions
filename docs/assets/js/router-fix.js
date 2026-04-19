@@ -28,6 +28,12 @@
         var hash = _pendingHash;
         _pendingHash = null;
         if (hash) restoreHash(hash);
+        // Notify other scripts that the SPA has navigated and the new
+        // page content is ready. Use the same delay the scroll logic uses
+        // so listeners receive the event after the DOM has been updated.
+        setTimeout(function () {
+            document.dispatchEvent(new CustomEvent('docmd:navigate'));
+        }, DELAY);
     };
 
     function restoreHash(hash) {
@@ -39,6 +45,9 @@
     window.addEventListener('popstate', function () {
         var hash = window.location.hash;
         if (hash) setTimeout(function () { scrollToHash(hash); }, DELAY);
+        setTimeout(function () {
+            document.dispatchEvent(new CustomEvent('docmd:navigate'));
+        }, DELAY);
     });
 
     // Handle initial page load with a hash in the URL.

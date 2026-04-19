@@ -5,6 +5,9 @@
   --primary-color: #ad46ff !important;
   --link-color: #ad46ff !important;
   --accent-color: #ad46ff !important;
+  --text-color: #030712;
+  --sidebar-text: #030712;
+  --code-bg : #f3f4f6;
   
   --border-radius: 8px;
   --radius-sm: 6px;
@@ -348,4 +351,8 @@ code {
 
 .hljs {
   border: 1px solid rgba(0, 0, 0, 0.15);
+}
+
+.description-cell {
+  min-width: 450px;
 }

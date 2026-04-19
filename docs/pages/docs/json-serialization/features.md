@@ -3,14 +3,14 @@
 **AspNetConventions** provides a serializer-agnostic, fluent JSON configuration layer. All casing, property rules, and ignore conditions are declared once at startup through the library's own abstractions; the active serializer adapter translates them into its native format at initialization time.
 
 ::: callout info Newtonsoft.Json support
-The current built-in adapter targets `System.Text.Json` (included with .NET, no extra dependency). Support for **Newtonsoft.Json** is planned for a future release. The public configuration API will remain unchanged — only the adapter needs to be swapped.
+The current built-in adapter targets `System.Text.Json` (included with .NET, no extra dependency). Support for **Newtonsoft.Json** is planned for a future release.
 :::
 
 ---
 
 ## Casing Style {#casing-style}
 
-Set the JSON property naming convention for all serialized types:
+Set the JSON property naming convention for all serialized types using [`CasingStyle`](./configuration.md#casingstyle):
 
 ```csharp
 builder.Services
@@ -34,7 +34,7 @@ This applies to all serialized objects — API response payloads, model objects,
 
 ## Custom Case Converter {#custom-case-converter}
 
-When none of the built-in `CasingStyle` options fit your convention, implement `ICaseConverter` and assign it to `options.Json.CaseConverter`. It overrides `CaseStyle` when set.
+When none of the built-in [`CasingStyle`](./configuration.md#casingstyle) options fit your convention, implement `ICaseConverter` and assign it to [`options.Json.CaseConverter`](./configuration.md#jsonserializationoptions). It overrides [`CaseStyle`](./configuration.md#casingstyle) when set.
 
 The built-in `SnakeCaseConverter` treats digit runs as part of the surrounding word, so `Iso2` serializes as `"iso2"` and `Base64` as `"base64"`. The example below adds **number-aware boundaries**: a transition from letters to digits (or digits to letters) is treated as a word break, just like an uppercase letter after a lowercase one.
 
@@ -73,11 +73,13 @@ options.Json.CaseConverter = new NumberSensitiveSnakeCaseConverter();
 
 `CaseConverter` also controls dictionary key casing and route parameter naming, so a single implementation applies consistently across all three.
 
+See [`JsonSerializationOptions.CaseConverter`](./configuration.md#jsonserializationoptions) and [`RouteConventionOptions.CaseConverter`](../route-standardization/configuration.md#routeconventionoptions) for more information.
+
 ---
 
 ## Per-Type Property Configuration {#per-type-property-configuration}
 
-Use `options.Json.ConfigureTypes` to apply fine-grained rules to specific types using strongly-typed expressions.
+Use [`options.Json.ConfigureTypes`](./configuration.md#ijsontypesconfigurationbuilder) to apply fine-grained rules to specific types using strongly-typed expressions.
 
 ```csharp
 options.Json.ConfigureTypes = cfg =>
@@ -85,7 +87,7 @@ options.Json.ConfigureTypes = cfg =>
     cfg.Type<User>(type =>
     {
         type.Property(x => x.Id).Order(0);
-        type.Property(x => x.UserName).Name("username");
+        type.Property(x => x.UserName).Name("username").Order(1);
         type.Property(x => x.Password).Ignore();
         type.Property(x => x.MiddleName).Ignore(IgnoreCondition.WhenWritingNull);
     });
@@ -94,24 +96,25 @@ options.Json.ConfigureTypes = cfg =>
 
 ### Renaming Properties {#renaming-properties}
 
-Override the serialized name of a specific property. The explicit name takes full precedence over the global `CaseStyle`:
+Override the serialized name of a specific property. The explicit name takes full precedence over the global [`CaseStyle`](./configuration.md#casingstyle):
 
 ```csharp
 cfg.Type<Product>(type =>
 {
     type.Property(x => x.InternalSku).Name("sku");
     type.Property(x => x.DisplayName).Name("name");
+    type.Property(x => x.ListPriceCents).Name("price");
 });
 ```
 
 **Result:**
 ```json
-{ "sku": "ABC-001", "name": "Widget Pro" }
+{ "sku": "ABC-001", "name": "Widget Pro", "price": 2999 }
 ```
 
 ### Ordering Properties {#ordering-properties}
 
-Control the order in which properties appear in the serialized output. Lower values are written first. Properties without an explicit order follow in their natural declaration order:
+Control the order in which properties appear in the serialized output. Lower values are written first:
 
 ```csharp
 cfg.Type<UserResponse>(type =>
@@ -123,9 +126,20 @@ cfg.Type<UserResponse>(type =>
 });
 ```
 
+**Best Practice: Order Every Property**
+This behaviour is inherited from `System.Text.Json` / [`SystemTextJsonAdapter`](./configuration.md#configureadapter) (Default adapter).
+For **deterministic, predictable output,** assign an explicit `Order()` to every property:
+
+| Scenario | Recommendation |
+| --- | --- |
+| Full control over property order | Assign explicit order to every property |
+| Pin one property to the top | Use `Order(-1)` for that property |
+| Pin one property to the bottom | Use `Order(int.MaxValue)` |
+| Unordered, rely on declaration order | Avoid mixing ordered and unordered properties |
+
 ### Ignoring Properties {#ignoring-properties}
 
-Exclude a property from serialization using a `IgnoreCondition`:
+Exclude a property from serialization using a [`IgnoreCondition`](./configuration.md#ignorecondition):
 
 ```csharp
 cfg.Type<User>(type =>
@@ -141,34 +155,34 @@ cfg.Type<User>(type =>
 });
 ```
 
-`Ignore()` without arguments defaults to `IgnoreCondition.Always`.
-
-| `IgnoreCondition` | Behaviour |
-|---|---|
-| `Always` *(default for `.Ignore()`)* | Property is never serialized |
-| `WhenWritingNull` | Property is omitted when its value is `null` |
-| `WhenWritingDefault` | Property is omitted when its value equals the type's default (`0`, `false`, `null`) |
-| `Never` | Property is always serialized |
+`Ignore()` without arguments defaults to [`IgnoreCondition`{.code-left}](./configuration.md#ignorecondition)`.Always`{.code-right}.
 
 ### Chaining Rules {#chaining-rules}
 
-All `IJsonPropertyRuleBuilder` methods return `this` and can be chained:
+All [`IJsonPropertyRuleBuilder`](./configuration.md#ijsonpropertyrulebuilder) methods return `this` and can be chained in any combination:
 
 ```csharp
-type.Property(x => x.OrderId).Name("id").Order(0);
+cfg.Type<OrderSummary>(type =>
+{
+    type.Property(x => x.OrderId).Name("id").Order(0);
+    type.Property(x => x.CustomerName).Order(1);
+    type.Property(x => x.TotalAmount).Name("total").Order(2);
+    type.Property(x => x.Notes).Order(3).Ignore(IgnoreCondition.WhenWritingNull);
+    type.Property(x => x.InternalReference).Ignore();
+});
 ```
 
 ---
 
 ## Open Generic Type Configuration {#open-generic-type-configuration}
 
-Rules for open generic types (e.g. `ApiResponse<T>`) apply to every closed variant at runtime. Pass a closed instantiation as the template for expression-based property selection:
+Rules for open generic types (e.g. `MyApiResponse<T>`) apply to every closed variant at runtime. Pass a closed instantiation as the template for expression-based property selection:
 
 ```csharp
 options.Json.ConfigureTypes = cfg =>
 {
-    // Rules apply to ApiResponse<string>, ApiResponse<User>, ApiResponse<anything>
-    cfg.OpenGenericType<ApiResponse<object>>(type =>
+    // Rules apply to MyApiResponse<string>, MyApiResponse<User>, MyApiResponse<anything>
+    cfg.OpenGenericType<MyApiResponse<object>>(type =>
     {
         type.Property(x => x.Data).Order(3);
         type.Property(x => x.InternalToken).Ignore();
@@ -176,7 +190,7 @@ options.Json.ConfigureTypes = cfg =>
 };
 ```
 
-The expression is resolved against the template type; the rule is stored under the open generic definition (`ApiResponse<>`) and matched against all closed variants at serialization time.
+The expression is resolved against the template type; the rule is stored under the open generic definition (`MyApiResponse<>`) and matched against all closed variants at serialization time.
 
 ---
 
@@ -222,7 +236,7 @@ The match is **case-insensitive** and tries the CLR name first, then the JSON-tr
 
 ## Class-Based Configuration {#class-based-configuration}
 
-For applications with many types to configure, inline delegates in `ConfigureTypes` can grow unwieldy. **AspNetConventions** supports a class-based approach using `JsonTypeConfiguration<T>`:
+For applications with many types to configure, inline delegates in `ConfigureTypes` can grow unwieldy. **AspNetConventions** supports a class-based approach using [`JsonTypeConfiguration<T>`](./configuration.md#jsontypeconfiguration) :
 
 ```csharp
 public class UserConfiguration : JsonTypeConfiguration<User>
@@ -256,13 +270,13 @@ options.Json.ConfigureTypes = cfg =>
 };
 ```
 
-Or, preferably, register them all at once via **assembly scanning**.
+Or, preferably, register them all at once via [**assembly scanning**](#assembly-scanning).
 
 ---
 
 ## Assembly Scanning {#assembly-scanning}
 
-`ScanAssemblies` discovers all non-abstract, non-generic subclasses of `JsonTypeConfigurationBase` (which includes both `JsonTypeConfiguration<T>` and `JsonOpenGenericTypeConfiguration<T>`) and registers their rules automatically:
+`ScanAssemblies` discovers all non-abstract, non-generic subclasses of `JsonTypeConfigurationBase` (which includes both [`JsonTypeConfiguration<T>`](./configuration.md#jsontypeconfiguration) and [`JsonOpenGenericTypeConfiguration<T>`](./configuration.md#jsonopengenrictypeconfiguration)) and registers their rules automatically:
 
 ```csharp
 options.Json.ScanAssemblies(typeof(UserConfiguration).Assembly);
@@ -274,19 +288,19 @@ options.Json.ScanAssemblies(
 );
 ```
 
-No manual registration needed. Add a new `JsonTypeConfiguration<T>` class in a scanned assembly and it is picked up at the next startup.
+No manual registration needed. Add a new [`JsonTypeConfiguration<T>`](./configuration.md#jsontypeconfiguration) class in a scanned assembly and it is picked up at the next startup.
 
 ---
 
 ## Open Generic Type Configuration (Class-Based) {#open-generic-type-configuration-class-based}
 
-Use `JsonOpenGenericTypeConfiguration<T>` to define class-based rules for open generic types:
+Use [`JsonOpenGenericTypeConfiguration<T>`](./configuration.md#jsonopengenrictypeconfiguration) to define class-based rules for open generic types:
 
 ```csharp
 // T must be a closed generic — used only as a property-selection template
-public class ApiResponseConfiguration : JsonOpenGenericTypeConfiguration<ApiResponse<object>>
+public class MyApiResponseConfiguration : JsonOpenGenericTypeConfiguration<MyApiResponse<object>>
 {
-    public override void Configure(IJsonTypeRuleBuilder<ApiResponse<object>> rule)
+    public override void Configure(IJsonTypeRuleBuilder<MyApiResponse<object>> rule)
     {
         rule.Property(x => x.Data).Order(3);
         rule.Property(x => x.TraceId).Ignore();
@@ -294,24 +308,7 @@ public class ApiResponseConfiguration : JsonOpenGenericTypeConfiguration<ApiResp
 }
 ```
 
-Rules are stored under `ApiResponse<>` (the open generic definition) and matched against `ApiResponse<User>`, `ApiResponse<Order>`, etc. at runtime.
-
----
-
-## Custom Serializer Adapter {#custom-serializer-adapter}
-
-Use `ConfigureAdapter<TAdapter, TOptions>` to swap the active serializer adapter or to reach low-level settings of the current adapter that are not exposed through the standard `options.Json.*` API:
-
-```csharp
-// Reach native System.Text.Json settings not covered by the standard API
-options.Json.ConfigureAdapter<SystemTextJsonAdapter, JsonSerializerOptions>(serializerOptions =>
-{
-    serializerOptions.Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping;
-    serializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
-});
-```
-
-`ConfigureAdapter` is an escape hatch. Prefer the typed `options.Json.*` properties for anything available through the standard API; fall back to `ConfigureAdapter` only for adapter-specific settings.
+Rules are stored under `MyApiResponse<>` (the open generic definition) and matched against `MyApiResponse<User>`, `MyApiResponse<Order>`, etc. at runtime.
 
 ---
 
@@ -362,3 +359,72 @@ See [`JsonSerializationHooks`](./configuration.md#jsonserializationhooks) for th
 | `PaginationMetadata` | `HasPreviousPage` | `WhenWritingNull` |
 
 These defaults keep response payloads lean: navigation links and pagination flags are only included when the response is actually paginated, and metadata blocks are omitted on responses that don't populate them.
+
+## Examples {#examples}
+
+Complete working examples demonstrating JSON Serialization configuration.
+
+### Customizing ApiResponse {#customizing-apiresponse}
+
+`ApiResponse` is the abstract base for all standard response envelopes. It exposes `Status`, `StatusCode`, `Message`, and `Metadata`. The example below drops `StatusCode` from the output and moves `Message` to the end, only when present:
+
+```csharp
+options.Json.ConfigureTypes = cfg =>
+{
+    cfg.Type<DefaultApiResponse>(type =>
+    {
+        type.Property(x => x.Status).Order(0);
+        type.Property(x => x.StatusCode).Ignore();
+        type.Property(x => x.Data).Order(1);
+        type.Property(x => x.Pagination).Order(2);
+        type.Property(x => x.Metadata).Order(3);
+        type.Property(x => x.Message).Order(4).Ignore(IgnoreCondition.WhenWritingNull);
+    });
+};
+```
+
+**Serialized output (success, no message):**
+```json
+{
+  "status": "success",
+  "data": { "id": 1, "name": "Alice" }
+}
+```
+
+---
+
+### Customizing PaginationLinks {#customizing-paginationlinks}
+
+`PaginationLinks` holds the navigation URLs for paginated responses. You can rename the properties to a shorter, client-friendly contract:
+
+```csharp
+options.Json.ConfigureTypes = cfg =>
+{
+    cfg.Type<PaginationLinks>(type =>
+    {
+        type.Property(x => x.FirstPageUrl).Name("first");
+        type.Property(x => x.LastPageUrl).Name("last");
+        type.Property(x => x.NextPageUrl).Name("next");
+        type.Property(x => x.PreviousPageUrl).Name("prev");
+    });
+};
+```
+
+**Serialized output:**
+```json
+{
+  "status": "success",
+  "data": [...],
+  "pagination": {
+    "pageNumber": 1,
+    "pageSize": 25,
+    "totalPages": 40,
+    "totalRecords": 1000,
+    "links": {
+      "first": "/api/orders?page-number=1&page-size=25",
+      "last": "/api/orders?page-number=40&page-size=25",
+      "next": "/api/orders?page-number=2&page-size=25",
+      "prev": null
+    }
+  }
+}

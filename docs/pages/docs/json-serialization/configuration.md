@@ -11,19 +11,12 @@ Complete reference for all JSON Serialization configuration options.
 
 Controls JSON serialization behaviour application-wide, covering both API response output and model serialization. The default underlying serializer is `System.Text.Json`.
 
-### Core Properties {#core-properties}
-
 | Property | Type | Default | Description |
 |---|---|---|---|
 | `IsEnabled` | `bool` | `true` | Enables or disables **AspNetConventions** JSON configuration. When `false`, the application's default serializer settings are used unchanged |
 | `CaseStyle` | [`CasingStyle`](#casingstyle) | `CamelCase` | JSON property naming style applied globally |
 | `CaseConverter` | `ICaseConverter?` | `null` | Custom case converter for property names. Takes precedence over `CaseStyle` when set |
-| `ConfigureTypes` | `Action<IJsonTypesConfigurationBuilder>?` | `null` | Delegate for registering per-type and global JSON serialization rules |
-
-### Serializer Behaviour Properties {#serializer-behaviour-properties}
-
-| Property | Type | Default | Description |
-|---|---|---|---|
+| `ConfigureTypes` | `Action<`{.code-left}[`IJsonTypesConfigurationBuilder`{.code-left .code-right}](#ijsontypesconfigurationbuilder)`>?`{.code-right} | `null` | Delegate for registering per-type and global JSON serialization rules |
 | `WriteIndented` | `bool` | `false` | When `true`, JSON output is pretty-printed with indentation |
 | `CaseInsensitive` | `bool` | `false` | When `true`, property name matching during deserialization is case-insensitive |
 | `AllowTrailingCommas` | `bool` | `false` | When `true`, trailing commas in JSON input are tolerated during deserialization |
@@ -31,11 +24,6 @@ Controls JSON serialization behaviour application-wide, covering both API respon
 | `UseStringEnumConverter` | `bool` | `true` | When `true`, enum values are serialized as strings using the active naming policy. When `false`, enums are serialized as integers |
 | `NumberHandling` | [`NumberHandling`](#numberhandling) | `Strict` | Controls how numbers are read and written |
 | `IgnoreCondition` | [`IgnoreCondition`](#ignorecondition) | `Never` | Global default ignore condition applied to all properties |
-
-### Advanced Properties {#advanced-properties}
-
-| Property | Type | Default | Description |
-|---|---|---|---|
 | `Converters` | `IReadOnlyList<object>` | `[]` | Custom `JsonConverter` instances added to the serializer |
 | `Hooks` | [`JsonSerializationHooks`](#jsonserializationhooks) | `new()` | Hooks for intercepting the serialization pipeline |
 
@@ -45,25 +33,31 @@ Controls JSON serialization behaviour application-wide, covering both API respon
 public void ScanAssemblies(params Assembly[] assemblies)
 ```
 
-Scans the specified assemblies for all concrete, non-generic subclasses of `JsonTypeConfigurationBase` (which includes `JsonTypeConfiguration<T>` and `JsonOpenGenericTypeConfiguration<T>`) and registers their rules automatically.
+Scans the specified assemblies for all concrete, non-generic subclasses of `JsonTypeConfigurationBase` (which includes [`JsonTypeConfiguration<T>`](#jsontypeconfiguration) and [`JsonOpenGenericTypeConfiguration<T>`](#jsonopengenrictypeconfiguration)) and registers their rules automatically.
 
+**Usage:**
 ```csharp
 options.Json.ScanAssemblies(typeof(UserConfiguration).Assembly);
 ```
 
 ### ConfigureAdapter {#configureadapter}
 
+Use `ConfigureAdapter<TAdapter, TOptions>` to swap the active serializer adapter or to reach low-level settings of the current adapter that are not exposed through the standard `options.Json.*` API:
+
 ```csharp
 public void ConfigureAdapter<TAdapter, TOptions>(Action<TOptions>? configure = null)
     where TAdapter : IJsonSerializerAdapter
 ```
 
-Configures a custom serializer adapter. The built-in default is `SystemTextJsonAdapter`:
+Configures a custom serializer adapter. The built-in default is `SystemTextJsonAdapter`.
 
+**Usage:**
 ```csharp
+// Reach native System.Text.Json settings not covered by the standard API
 options.Json.ConfigureAdapter<SystemTextJsonAdapter, JsonSerializerOptions>(serializerOptions =>
 {
     serializerOptions.Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping;
+    serializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
 });
 ```
 
@@ -73,25 +67,25 @@ options.Json.ConfigureAdapter<SystemTextJsonAdapter, JsonSerializerOptions>(seri
 public object GetSerializerOptions()
 ```
 
-Returns the underlying serializer options object from the configured adapter. Useful for directly inspecting the final `JsonSerializerOptions` at startup.
+Returns the underlying serializer options object from the configured adapter. Useful for directly inspecting the final serializer options at startup.
 
 ---
 
 ## IJsonTypesConfigurationBuilder {#ijsontypesconfigurationbuilder}
 
 **Namespace:** `AspNetConventions.Serialization.Configuration`
-**Accessed via:** `options.Json.ConfigureTypes = cfg => { ... }`
+**Accessed via:** [`options`{.code-left}](../configuration-reference.md#aspnetconventionoptions)`.`{.code-left .code-right}[`Json`{.code-left .code-right}](#jsonserializationoptions)`.ConfigureTypes = cfg => { ... }`{.code-right}
 
 Provides the fluent API for registering rules across multiple types.
 
 | Method | Returns | Description |
 |---|---|---|
-| `Type<T>(Action<IJsonTypeRuleBuilder<T>>)` | `IJsonTypesConfigurationBuilder` | Registers per-property rules for a specific closed type |
-| `OpenGenericType<T>(Action<IJsonTypeRuleBuilder<T>>)` | `IJsonTypesConfigurationBuilder` | Registers per-property rules for an open generic type; `T` must itself be a generic type |
-| `IgnoreType<T>(JsonIgnoreCondition)` | `IJsonTypesConfigurationBuilder` | Suppresses every property whose **value type** is `T` (or a subtype). Defaults to `Always`. Highest priority rule |
-| `IgnorePropertyName(string, JsonIgnoreCondition)` | `IJsonTypesConfigurationBuilder` | Suppresses any property matching the given name across all types. Case-insensitive. Defaults to `Always` |
+| `Type<T>(Action<`{.code-left}[`IJsonTypeRuleBuilder`{.code-left .code-right}](#ijsontyperulebuilder)`<T>>)`{.code-right} | [`IJsonTypesConfigurationBuilder`](#ijsontypesconfigurationbuilder) | Registers per-property rules for a specific closed type |
+| `OpenGenericType<T>(Action<`{.code-left}[`IJsonTypeRuleBuilder`{.code-left .code-right}](#ijsontyperulebuilder)`<T>>)`{.code-right} | [`IJsonTypesConfigurationBuilder`](#ijsontypesconfigurationbuilder) | Registers per-property rules for an open generic type; `T` must itself be a generic type |
+| `IgnoreType<T>(`{.code-left}[`IgnoreCondition`{.code-left .code-right}](#ignorecondition)`)`{.code-right} | [`IJsonTypesConfigurationBuilder`](#ijsontypesconfigurationbuilder) | Suppresses every property whose **value type** is `T` (or a subtype). Defaults to `Always`. Highest priority rule |
+| `IgnorePropertyName(string, `{.code-left}[`IgnoreCondition`{.code-left .code-right}](#ignorecondition)`)`{.code-right} | [`IJsonTypesConfigurationBuilder`](#ijsontypesconfigurationbuilder) | Suppresses any property matching the given name across all types. Case-insensitive. Defaults to `Always` |
 
-All methods return `IJsonTypesConfigurationBuilder` for chaining:
+All methods return [`IJsonTypesConfigurationBuilder`](#ijsontypesconfigurationbuilder) for chaining:
 
 ```csharp
 options.Json.ConfigureTypes = cfg =>
@@ -114,7 +108,7 @@ Provides property selection for a specific type `T`.
 
 | Method | Returns | Description |
 |---|---|---|
-| `Property<TProp>(Expression<Func<T, TProp>>)` | `IJsonPropertyRuleBuilder` | Selects a property of `T` using a strongly-typed lambda expression |
+| `Property<TProp>(Expression<Func<T, TProp>>)` | [`IJsonPropertyRuleBuilder`](#ijsonpropertyrulebuilder) | Selects a property of `T` using a strongly-typed lambda expression |
 
 ```csharp
 cfg.Type<User>(type =>
@@ -130,13 +124,13 @@ cfg.Type<User>(type =>
 
 **Namespace:** `AspNetConventions.Serialization.Configuration`
 
-Configures the selected property. All methods return `IJsonPropertyRuleBuilder` for chaining.
+Configures the selected property. All methods return [`IJsonPropertyRuleBuilder`](#ijsonpropertyrulebuilder) for chaining.
 
 | Method | Returns | Description |
 |---|---|---|
-| `Ignore(JsonIgnoreCondition)` | `IJsonPropertyRuleBuilder` | Sets the ignore condition. Defaults to `JsonIgnoreCondition.Always` |
-| `Name(string)` | `IJsonPropertyRuleBuilder` | Overrides the serialized JSON property name. Takes precedence over `CaseStyle` |
-| `Order(int)` | `IJsonPropertyRuleBuilder` | Sets the serialization order. Lower values are written first |
+| `Ignore(`{.code-left}[`IgnoreCondition`{.code-left .code-right}](#ignorecondition)`)`{.code-right} | [`IJsonPropertyRuleBuilder`](#ijsonpropertyrulebuilder) | Sets the ignore condition. Defaults to [`IgnoreCondition`{.code-left}](#ignorecondition)`.Always`{.code-right} |
+| `Name(string)` | [`IJsonPropertyRuleBuilder`](#ijsonpropertyrulebuilder) | Overrides the serialized JSON property name. Takes precedence over [`CaseStyle`](#casingstyle) |
+| `Order(int)` | [`IJsonPropertyRuleBuilder`](#ijsonpropertyrulebuilder) | Sets the serialization order. Lower values are written first |
 
 **Chaining example:**
 ```csharp
@@ -170,10 +164,16 @@ public class ProductConfiguration : JsonTypeConfiguration<Product>
 }
 ```
 
-Register via `ScanAssemblies` or inline:
+Register via [`ScanAssemblies`](#scanassemblies) or inline:
 ```csharp
 // Via assembly scanning (recommended)
 options.Json.ScanAssemblies(typeof(ProductConfiguration).Assembly);
+
+// Inline — inside the ConfigureTypes delegate
+options.Json.ConfigureTypes = cfg =>
+{
+    cfg.Type<Product>(type => new ProductConfiguration().Configure(type));
+};
 ```
 
 ---
@@ -193,10 +193,10 @@ public abstract class JsonOpenGenericTypeConfiguration<T> : JsonTypeConfiguratio
 
 **Usage:**
 ```csharp
-// Rules are applied to ApiResponse<string>, ApiResponse<User>, ApiResponse<anything>, etc.
-public class ApiResponseConfiguration : JsonOpenGenericTypeConfiguration<ApiResponse<object>>
+// Rules are applied to MyApiResponse<string>, MyApiResponse<User>, MyApiResponse<anything>, etc.
+public class MyApiResponseConfiguration : JsonOpenGenericTypeConfiguration<MyApiResponse<object>>
 {
-    public override void Configure(IJsonTypeRuleBuilder<ApiResponse<object>> rule)
+    public override void Configure(IJsonTypeRuleBuilder<MyApiResponse<object>> rule)
     {
         rule.Property(x => x.Data).Order(3);
         rule.Property(x => x.DebugInfo).Ignore();
@@ -209,7 +209,7 @@ public class ApiResponseConfiguration : JsonOpenGenericTypeConfiguration<ApiResp
 ## CasingStyle {#casingstyle}
 
 **Namespace:** `AspNetConventions.Core.Enums`
-**Accessed via:** `options.Json.CaseStyle`
+**Accessed via:** [`options`{.code-left}](../configuration-reference.md#aspnetconventionoptions)`.`{.code-left .code-right}[`Json`{.code-left .code-right}](#jsonserializationoptions)`.CaseStyle`{.code-right}
 
 | Value | Index | JSON property example |
 |---|---|---|
@@ -223,7 +223,7 @@ public class ApiResponseConfiguration : JsonOpenGenericTypeConfiguration<ApiResp
 ## NumberHandling {#numberhandling}
 
 **Namespace:** `AspNetConventions.Core.Enums.Json`
-**Accessed via:** `options.Json.NumberHandling`
+**Accessed via:** [`options`{.code-left}](../configuration-reference.md#aspnetconventionoptions)`.`{.code-left .code-right}[`Json`{.code-left .code-right}](#jsonserializationoptions)`.NumberHandling`{.code-right}
 
 | Value | Description |
 |---|---|
@@ -237,7 +237,7 @@ public class ApiResponseConfiguration : JsonOpenGenericTypeConfiguration<ApiResp
 ## IgnoreCondition {#ignorecondition}
 
 **Namespace:** `AspNetConventions.Core.Enums.Json`
-**Accessed via:** `options.Json.IgnoreCondition`
+**Accessed via:** [`options`{.code-left}](../configuration-reference.md#aspnetconventionoptions)`.`{.code-left .code-right}[`Json`{.code-left .code-right}](#jsonserializationoptions)`.IgnoreCondition`{.code-right}
 
 This is the **global** default ignore condition that applies to all properties unless overridden by a more specific rule.
 
@@ -253,19 +253,19 @@ This is the **global** default ignore condition that applies to all properties u
 ## JsonSerializationHooks {#jsonserializationhooks}
 
 **Namespace:** `AspNetConventions.Core.Hooks`
-**Accessed via:** `options.Json.Hooks`
+**Accessed via:** [`options`{.code-left}](../configuration-reference.md#aspnetconventionoptions)`.`{.code-left .code-right}[`Json`{.code-left .code-right}](#jsonserializationoptions)`.Hooks`{.code-right}
 
 | Property | Delegate signature | When called | Description |
 |---|---|---|---|
 | `ShouldSerializeType` | `(Type) → bool` | Once per type at startup | Return `false` to skip all rule processing for a type |
 | `ResolvePropertyName` | `(string clrName, Type) → string?` | Once per property at startup | Return a non-null string to override the serialized JSON name. Return `null` to keep the default |
-| `ShouldSerializeProperty` | `(object instance, object? value, string clrName, Type) → bool` | Every serialization | Return `false` to suppress a property from the output. Called synchronously by `System.Text.Json` — keep it fast |
+| `ShouldSerializeProperty` | `(object instance, object? value, string clrName, Type) → bool` | Every serialization | Return `false` to suppress a property from the output. Called synchronously by the adapter on every serialization — keep it fast |
 | `OnTypeResolved` | `(Type, IReadOnlyList<string> jsonNames) → void` | Once per type at startup | Receives the final list of JSON property names. Use for logging or diagnostics |
 
 ::: callout info Startup vs. per-serialization
-`ShouldSerializeType`, `ResolvePropertyName`, and `OnTypeResolved` run when `System.Text.Json` builds the `JsonTypeInfo` for a type — once per type per application lifetime, then cached.
+`ShouldSerializeType`, `ResolvePropertyName`, and `OnTypeResolved` run once per type at initialization, then cached by the adapter.
 
-`ShouldSerializeProperty` runs on **every serialization**. It is the only hook that can make per-call decisions (e.g. based on the current value or instance state). Property **names** cannot be changed per request because they are baked into the cached `JsonTypeInfo`. For per-request name changes, use a custom [`ICaseConverter`](../configuration-reference.md) backed by a scoped service.
+`ShouldSerializeProperty` runs on **every serialization**. It is the only hook that can make per-call decisions (e.g. based on the current value or instance state). Property **names** cannot be changed per request because they are resolved at startup and cached by the adapter. For per-request name changes, use a custom [`ICaseConverter`](../configuration-reference.md) backed by a scoped service.
 :::
 
 **Examples:**
@@ -295,7 +295,7 @@ options.Json.Hooks.OnTypeResolved = (type, jsonNames) =>
 | Option | Default |
 |---|---|
 | `Json.IsEnabled` | `true` |
-| `Json.CaseStyle` | `CamelCase` |
+| `Json.CaseStyle` | [`CamelCase`](#casingstyle) |
 | `Json.CaseConverter` | `null` |
 | `Json.ConfigureTypes` | `null` |
 | `Json.WriteIndented` | `false` |
@@ -303,6 +303,6 @@ options.Json.Hooks.OnTypeResolved = (type, jsonNames) =>
 | `Json.AllowTrailingCommas` | `false` |
 | `Json.MaxDepth` | `0` (serializer default: 64) |
 | `Json.UseStringEnumConverter` | `true` |
-| `Json.NumberHandling` | `Strict` |
-| `Json.IgnoreCondition` | `Never` |
+| `Json.NumberHandling` | [`Strict`](#numberhandling) |
+| `Json.IgnoreCondition` | [`Never`](#ignorecondition) |
 | `Json.Converters` | `[]` |

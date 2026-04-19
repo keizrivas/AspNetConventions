@@ -45,7 +45,7 @@
     </PackageTags>
 
     <RepositoryUrl>https://github.com/keizrivas/AspNetConventions</RepositoryUrl>
-    <PackageProjectUrl>https://github.com/keizrivas/AspNetConventions</PackageProjectUrl>
+    <PackageProjectUrl>https://keizrivas.github.io/AspNetConventions</PackageProjectUrl>
     <RepositoryType>git</RepositoryType>
 
     <PackageLicenseExpression>MIT</PackageLicenseExpression>

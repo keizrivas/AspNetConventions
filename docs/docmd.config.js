@@ -72,6 +72,7 @@ export default {
   },
   customJs: [
     '/assets/js/theme.js',
+    '/assets/js/tables.js',
     '/assets/js/router-fix.js',
   ],
   navigation: [
