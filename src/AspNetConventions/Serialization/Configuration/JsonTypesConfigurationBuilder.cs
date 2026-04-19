@@ -60,6 +60,7 @@ namespace AspNetConventions.Serialization.Configuration
             IgnoreCondition condition = IgnoreCondition.Always)
         {
             ArgumentException.ThrowIfNullOrEmpty(name);
+            ArgumentException.ThrowIfNullOrWhiteSpace(name);
             _globalPropertyIgnoreRules[name] = condition;
             return this;
         }
