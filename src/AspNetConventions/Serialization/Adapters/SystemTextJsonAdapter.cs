@@ -12,6 +12,7 @@ using AspNetConventions.Core.Enums;
 using AspNetConventions.Core.Enums.Json;
 using AspNetConventions.Http.Models;
 using AspNetConventions.Responses.Models;
+using AspNetConventions.Serialization.Configuration;
 using AspNetConventions.Serialization.Converters;
 using AspNetConventions.Serialization.Policies;
 using AspNetConventions.Serialization.Resolvers;
@@ -65,30 +66,59 @@ namespace AspNetConventions.Serialization.Adapters
                 return _jsonSerializerOptions;
             }
 
-            var ignoreRules = new JsonIgnoreRules();
+            // Framework defaults + user-defined rules in one unified builder.
+            var typeBuilder = new JsonTypesConfigurationBuilder();
 
-            // Default ignore rules
-            ignoreRules.IgnoreProperty<ApiResponse>(e => e.Metadata, JsonIgnoreCondition.WhenWritingNull);
-            ignoreRules.IgnoreProperty<DefaultApiResponse>(e => e.Pagination, JsonIgnoreCondition.WhenWritingNull);
-            ignoreRules.IgnoreProperty<PaginationMetadata>(e => e.Links, JsonIgnoreCondition.WhenWritingNull);
-            ignoreRules.IgnoreProperty<PaginationMetadata>(e => e.HasNextPage, JsonIgnoreCondition.WhenWritingNull);
-            ignoreRules.IgnoreProperty<PaginationMetadata>(e => e.HasPreviousPage, JsonIgnoreCondition.WhenWritingNull);
+            // Internal framework defaults
+            typeBuilder
+                .Type<ApiResponse>(t =>
+                {
+                    t.Property(x => x.Status).Order(1);
+                    t.Property(x => x.StatusCode).Order(2);
+                    t.Property(x => x.Message).Order(4);
+                    t.Property(x => x.Metadata)
+                        .Order(6)
+                        .Ignore(IgnoreCondition.WhenWritingNull);
+                })
+                .Type<DefaultApiResponse>(t =>
+                {
+                    t.Property(x => x.Data).Order(5);
+                    t.Property(x => x.Pagination)
+                        .Order(7)
+                        .Ignore(IgnoreCondition.WhenWritingNull);
+                })
+                .Type<DefaultApiErrorResponse>(t =>
+                {
+                    t.Property(x => x.Type).Order(3);
+                    t.Property(x => x.Errors).Order(5);
+                })
+                .Type<PaginationMetadata>(t =>
+                {
+                    t.Property(x => x.Links).Ignore(IgnoreCondition.WhenWritingNull);
+                    t.Property(x => x.HasNextPage).Ignore(IgnoreCondition.WhenWritingNull);
+                    t.Property(x => x.HasPreviousPage).Ignore(IgnoreCondition.WhenWritingNull);
+                });
 
-            // Allow user to configure additional ignore rules
-            _options.ConfigureIgnoreRules?.Invoke(ignoreRules);
+            // User-defined rules (applied after defaults so they can override)
+            _options.ConfigureTypes?.Invoke(typeBuilder);
+
+            foreach (var assembly in _options.AssembliesToScan)
+            {
+                typeBuilder.ScanAssembly(assembly);
+            }
 
             var namingPolicy = GetNamingPolicy();
             var options = new JsonSerializerOptions
             {
                 PropertyNamingPolicy = namingPolicy,
-                DictionaryKeyPolicy  = namingPolicy,
+                DictionaryKeyPolicy = namingPolicy,
                 PropertyNameCaseInsensitive = _options.CaseInsensitive,
                 AllowTrailingCommas = _options.AllowTrailingCommas,
                 DefaultIgnoreCondition = MapIgnoreCondition(),
                 WriteIndented = _options.WriteIndented,
                 NumberHandling = MapNumberHandling(),
                 MaxDepth = Math.Max(_options.MaxDepth, 0),
-                TypeInfoResolver = new JsonTypeInfoResolver(ignoreRules.CreateSnapshot())
+                TypeInfoResolver = new JsonTypeInfoResolver(typeBuilder.CreateSnapshot(), _options.Hooks)
             };
 
             // Add metadata converter to ensure Metadata keys always follow PropertyNamingPolicy,
@@ -133,7 +163,7 @@ namespace AspNetConventions.Serialization.Adapters
 
         ValueTask IJsonSerializerAdapter.SerializeAsync<TValue>(Stream stream, TValue value, CancellationToken cancellationToken)
         {
-           return SerializeAsync(stream, value, cancellationToken);
+            return SerializeAsync(stream, value, cancellationToken);
         }
 
         /// <summary>
@@ -202,7 +232,7 @@ namespace AspNetConventions.Serialization.Adapters
         /// <summary>
         /// Get the JsonNamingPolicy from this configuration.
         /// </summary>
-        private JsonNamingPolicy? GetNamingPolicy()
+        private CustomJsonNamingPolicy? GetNamingPolicy()
         {
             // Use custom converter if provided
             if (_options.CaseConverter != null)
@@ -211,16 +241,17 @@ namespace AspNetConventions.Serialization.Adapters
             }
 
             // Map CasingStyle to System.Text.Json naming policy
-            var defaultJsonNamingPolicy = JsonNamingPolicy.CamelCase;
-            return _options.CaseStyle switch
+            var defaultJsonNamingPolicy = CaseConverterFactory.CreateCamelCase();
+            var namingPolicy = _options.CaseStyle switch
             {
                 CasingStyle.CamelCase => defaultJsonNamingPolicy,
-                CasingStyle.SnakeCase => JsonNamingPolicy.SnakeCaseLower,
-                CasingStyle.KebabCase => JsonNamingPolicy.KebabCaseLower,
-                CasingStyle.PascalCase => new CustomJsonNamingPolicy(
-                    CaseConverterFactory.CreatePascalCase()),
+                CasingStyle.SnakeCase => CaseConverterFactory.CreateSnakeCase(),
+                CasingStyle.KebabCase => CaseConverterFactory.CreateKebabCase(),
+                CasingStyle.PascalCase => CaseConverterFactory.CreatePascalCase(),
                 _ => defaultJsonNamingPolicy
             };
+
+            return new CustomJsonNamingPolicy(namingPolicy);
         }
 
         private JsonIgnoreCondition MapIgnoreCondition()

@@ -359,6 +359,154 @@ public class ConditionalResponseBuilder : IResponseBuilder
 
 ---
 
+### Cursor-Based Pagination {#cursor-based-pagination}
+
+Cursor-based pagination is suited for large datasets, real-time feeds, or any collection where offset pagination breaks down (deep pages, shifting data). Instead of `pageNumber` / `pageSize`, the client receives an opaque `nextCursor` token and passes it back on the next request.
+
+Because **AspNetConventions** only includes offset-based pagination natively, cursor responses require a custom builder.
+
+**Step 1 — Define a carrier type:**
+
+```csharp
+public sealed class CursorPage<T>
+{
+    public IEnumerable<T> Items { get; init; } = [];
+    public string? NextCursor { get; init; }   // null = last page
+    public bool HasMore => NextCursor is not null;
+    public int Count { get; init; }
+}
+```
+
+**Step 2 — Implement the builder:**
+
+```csharp
+using AspNetConventions.Core.Abstractions.Contracts;
+using AspNetConventions.Http.Models;
+using AspNetConventions.Http.Services;
+
+public class CursorResponseBuilder : IResponseBuilder
+{
+    public bool IsWrappedResponse(object? value) => false;
+
+    public object BuildResponse(ApiResult apiResult, RequestDescriptor request)
+    {
+        var value = apiResult.GetValue();
+
+        // Shape cursor pages differently from regular responses
+        if (value is not null)
+        {
+            var valueType = value.GetType();
+            if (valueType.IsGenericType &&
+                valueType.GetGenericTypeDefinition() == typeof(CursorPage<>))
+            {
+                dynamic page = value;
+                return new
+                {
+                    data = page.Items,
+                    pagination = new
+                    {
+                        count      = page.Count,
+                        hasMore    = page.HasMore,
+                        nextCursor = page.NextCursor
+                    }
+                };
+            }
+        }
+
+        // Fall back to a standard envelope for non-cursor responses
+        return new
+        {
+            data    = value,
+            success = apiResult.IsSuccess,
+            code    = (int)apiResult.StatusCode
+        };
+    }
+}
+```
+
+**Step 3 — Register:**
+
+```csharp
+builder.Services.AddControllers()
+    .AddAspNetConventions(options =>
+    {
+        options.Response.ResponseBuilder = new CursorResponseBuilder();
+    });
+```
+
+**Step 4 — Use in a controller:**
+
+```csharp
+[HttpGet]
+public ApiResult<CursorPage<OrderDto>> GetOrders(
+    [FromQuery] string? cursor,
+    [FromQuery] int limit = 20)
+{
+    // Decode the cursor into a position in your dataset
+    var afterId = DecodeCursor(cursor);
+
+    var items = _db.Orders
+        .Where(o => afterId == null || o.Id > afterId)
+        .OrderBy(o => o.Id)
+        .Take(limit + 1)        // fetch one extra to detect HasMore
+        .Select(OrderDto.FromEntity)
+        .ToList();
+
+    var hasMore  = items.Count > limit;
+    var page     = items.Take(limit).ToList();
+    var nextCursor = hasMore ? EncodeCursor(page.Last().Id) : null;
+
+    return ApiResults.Ok(new CursorPage<OrderDto>
+    {
+        Items      = page,
+        NextCursor = nextCursor,
+        Count      = page.Count
+    });
+}
+
+private static int? DecodeCursor(string? cursor) =>
+    cursor is null ? null : int.Parse(
+        System.Text.Encoding.UTF8.GetString(Convert.FromBase64String(cursor)));
+
+private static string EncodeCursor(int id) =>
+    Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(id.ToString()));
+```
+
+**First page** (`GET /api/orders?limit=2`):
+```json
+{
+  "data": [
+    { "id": 1, "total": 49.99 },
+    { "id": 2, "total": 129.00 }
+  ],
+  "pagination": {
+    "count": 2,
+    "hasMore": true,
+    "nextCursor": "Mw=="
+  }
+}
+```
+
+**Last page** (`GET /api/orders?cursor=Mw==&limit=2`):
+```json
+{
+  "data": [
+    { "id": 3, "total": 19.99 }
+  ],
+  "pagination": {
+    "count": 1,
+    "hasMore": false,
+    "nextCursor": null
+  }
+}
+```
+
+::: callout info Cursor encoding
+The example uses Base64 over a plain integer for illustration. In production, encode whatever opaque value marks the position in your dataset — a timestamp, a composite key, or an encrypted value. Clients should treat it as a black box.
+:::
+
+---
+
 ### Using Dependency Injection {#using-dependency-injection}
 
 For builders that need dependencies, register them with DI:

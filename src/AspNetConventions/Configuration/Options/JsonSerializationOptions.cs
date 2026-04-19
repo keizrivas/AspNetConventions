@@ -1,18 +1,12 @@
 using System;
 using System.Collections.Generic;
-using System.Text.Json;
-using System.Text.Json.Serialization;
+using System.Reflection;
 using AspNetConventions.Core.Abstractions.Contracts;
-using AspNetConventions.Core.Abstractions.Models;
-using AspNetConventions.Core.Converters;
 using AspNetConventions.Core.Enums;
 using AspNetConventions.Core.Enums.Json;
 using AspNetConventions.Core.Hooks;
-using AspNetConventions.Http.Models;
-using AspNetConventions.Responses.Models;
 using AspNetConventions.Serialization.Adapters;
-using AspNetConventions.Serialization.Policies;
-using AspNetConventions.Serialization.Resolvers;
+using AspNetConventions.Serialization.Configuration;
 
 namespace AspNetConventions.Configuration.Options
 {
@@ -22,6 +16,7 @@ namespace AspNetConventions.Configuration.Options
     public sealed class JsonSerializationOptions : ICloneable
     {
         private IJsonSerializerAdapter? _serializerAdapter;
+        private List<Assembly> _scanAssemblies = [];
 
         // Escape hatch for serializer-specific needs
         private readonly Dictionary<IJsonSerializerAdapter, Action<object>> _adapterConfigurations = [];
@@ -42,9 +37,9 @@ namespace AspNetConventions.Configuration.Options
         public ICaseConverter? CaseConverter { get; set; }
 
         /// <summary>
-        /// Gets or sets an action to configure JSON ignore rules.
+        /// Gets or sets an action to configure per-type JSON rules.
         /// </summary>
-        public Action<JsonIgnoreRules>? ConfigureIgnoreRules { get; set; }
+        public Action<IJsonTypesConfigurationBuilder>? ConfigureTypes { get; set; }
 
         /// <summary>
         /// Gets or sets the default ignore condition.
@@ -91,6 +86,23 @@ namespace AspNetConventions.Configuration.Options
         /// Gets or sets the collection of hooks used to customize json serialization behavior.
         /// </summary>
         public JsonSerializationHooks Hooks { get; set; } = new();
+
+        /// <summary>
+        /// Scans the specified assemblies for all concrete, non-generic subclasses of
+        /// <see cref="JsonTypeConfigurationBase"/> or <see cref="JsonOpenGenericTypeConfiguration{T}"/>
+        /// and registers their rules automatically.
+        /// </summary>
+        /// <param name="assemblies">One or more assemblies to scan.</param>
+        public void ScanAssemblies(params Assembly[] assemblies)
+        {
+            ArgumentNullException.ThrowIfNull(assemblies);
+            _scanAssemblies.AddRange(assemblies);
+        }
+
+        /// <summary>
+        /// Returns the assemblies registered via <see cref="ScanAssemblies"/>.
+        /// </summary>
+        internal IReadOnlyList<Assembly> AssembliesToScan => _scanAssemblies;
 
         /// <summary>
         /// Configures a custom JSON serializer adapter with optional configuration options.
@@ -143,8 +155,9 @@ namespace AspNetConventions.Configuration.Options
         {
             var cloned = (JsonSerializationOptions)MemberwiseClone();
             cloned.Converters = [.. Converters];
-            cloned.ConfigureIgnoreRules = ConfigureIgnoreRules;
+            cloned.ConfigureTypes = ConfigureTypes;
             cloned._serializerAdapter = _serializerAdapter;
+            cloned._scanAssemblies = [.. _scanAssemblies];
             cloned.Hooks = (JsonSerializationHooks)Hooks.Clone();
 
             return cloned;

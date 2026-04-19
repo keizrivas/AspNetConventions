@@ -1,5 +1,4 @@
 using System.Net;
-using System.Text.Json.Serialization;
 using AspNetConventions.Core.Abstractions.Models;
 using AspNetConventions.Http.Models;
 
@@ -14,7 +13,6 @@ namespace AspNetConventions.Responses.Models
         /// Gets or sets the response data payload.
         /// </summary>
         /// <value>The data object to be serialized in the response. Can be null for responses without data.</value>
-        [JsonPropertyOrder(5)]
         public object? Data { get; set; }
 
         /// <summary>
@@ -24,7 +22,6 @@ namespace AspNetConventions.Responses.Models
         /// <remarks>
         /// It's typically populated when the response contains a collection of items with pagination support.
         /// </remarks>
-        [JsonPropertyOrder(7)]
         public PaginationMetadata? Pagination { get; set; }
     }
 }

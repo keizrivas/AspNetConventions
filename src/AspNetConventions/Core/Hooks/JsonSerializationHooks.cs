@@ -1,40 +1,48 @@
 using System;
-using System.Threading.Tasks;
+using System.Collections.Generic;
 
 namespace AspNetConventions.Core.Hooks
 {
     /// <summary>
-    /// Provides hooks for customizing JSON serialization behavior by allowing injection of user-defined
-    /// logic at stages of the serialization process.
+    /// Provides hooks for customizing JSON serialization behavior at configuration time and at serialization time.
     /// </summary>
-    /// <remarks>
-    /// Use this class to register delegates that are invoked to determine whether specific properties
-    /// should be serialized into JSON output.
-    /// </remarks>
     public class JsonSerializationHooks : ICloneable
     {
         /// <summary>
-        /// Represents an asynchronous callback method to determine whether a property should be serialized.
+        /// Called once per type during configuration.
+        /// Return <see langword="false"/> to skip all <b>AspNetConventions</b> rule processing for
+        /// this type; the serializer will still use its own defaults for it.
         /// </summary>
-        /// <param name="exception">The exception being serialized.</param>
-        /// <returns>A task that returns true if the property should be serialized; otherwise, false.</returns>
-        public delegate Task<bool> ShouldSerializePropertyCallbackAsync(Exception exception);
+        public Func<Type, bool>? ShouldSerializeType { get; set; }
 
         /// <summary>
-        /// Gets or sets the asynchronous callback to determine whether a property should be serialized.
+        /// Called once per property during configuration.
+        /// Return a non-<see langword="null"/> string to override the serialized JSON property name.
+        /// Return <see langword="null"/> to keep the name produced by the active naming policy and
+        /// any <c>ConfigureTypes</c> rules.
         /// </summary>
-        /// <value>A callback that returns false to skip serialization of the specified property.</value>
-        public ShouldSerializePropertyCallbackAsync? ShouldSerializePropertyAsync { get; set; }
+        public Func<string, Type, string?>? ResolvePropertyName { get; set; }
 
         /// <summary>
-        /// Creates a deep clone of <see cref="JsonSerializationHooks"/> instance.
+        /// Called on every serialization for every property.
+        /// Return <see langword="false"/> to suppress the property from the output.
         /// </summary>
-        /// <returns>A new <see cref="JsonSerializationHooks"/> instance with all nested objects cloned.</returns>
+        public Func<object, object?, string, Type, bool>? ShouldSerializeProperty { get; set; }
+
+        /// <summary>
+        /// Called once per type after its metadata has been fully resolved.
+        /// Use this hook for startup-time logging or diagnostics.
+        /// </summary>
+        public Action<Type, IReadOnlyList<string>>? OnTypeResolved { get; set; }
+
         public object Clone()
         {
             return new JsonSerializationHooks
             {
-                ShouldSerializePropertyAsync = ShouldSerializePropertyAsync,
+                ShouldSerializeType = ShouldSerializeType,
+                ResolvePropertyName = ResolvePropertyName,
+                ShouldSerializeProperty = ShouldSerializeProperty,
+                OnTypeResolved = OnTypeResolved,
             };
         }
     }

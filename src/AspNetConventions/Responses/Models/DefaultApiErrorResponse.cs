@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Net;
-using System.Text.Json.Serialization;
 using AspNetConventions.Core.Abstractions.Models;
 
 namespace AspNetConventions.Responses.Models
@@ -25,14 +24,12 @@ namespace AspNetConventions.Responses.Models
         /// Gets or sets the error type classification.
         /// </summary>
         /// <value>A string representing the category or type of error that occurred.</value>
-        [JsonPropertyOrder(3)]
         public required string Type { get; set; }
 
         /// <summary>
         /// Gets the collection of error details.
         /// </summary>
         /// <value>A read-only collection containing the specific error information.</value>
-        [JsonPropertyOrder(5)]
         public IReadOnlyCollection<object> Errors { get; }
 
         /// <summary>

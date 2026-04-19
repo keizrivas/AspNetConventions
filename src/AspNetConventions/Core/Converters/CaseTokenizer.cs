@@ -11,7 +11,16 @@ namespace AspNetConventions.Core.Converters
     /// </remarks>
     public static class CaseTokenizer
     {
-        public static IReadOnlyList<WordRange> Tokenize(ReadOnlySpan<char> span)
+        /// <summary>
+        /// Splits <paramref name="span"/> into word ranges.
+        /// </summary>
+        /// <param name="span">The character span to tokenize.</param>
+        /// <param name="numberBoundaries">
+        /// When <see langword="true"/>, transitions between letter and digit characters are treated as
+        /// word boundaries.
+        /// Defaults to <see langword="false"/> to preserve the existing behavior of all built-in converters.
+        /// </param>
+        public static IReadOnlyList<WordRange> Tokenize(ReadOnlySpan<char> span, bool numberBoundaries = false)
         {
             int start = 0;
             var words = new List<WordRange>(8);
@@ -32,11 +41,23 @@ namespace AspNetConventions.Core.Converters
                     continue;
                 }
 
-                // Uppercase boundary inside a lowercase word
-                if (i > start && char.IsUpper(currentChar) && char.IsLower(span[i - 1]))
+                if (i > start)
                 {
-                    words.Add(new WordRange(start, i - start));
-                    start = i;
+                    char prevChar = span[i - 1];
+
+                    // Uppercase boundary inside a lowercase word
+                    if (char.IsUpper(currentChar) && char.IsLower(prevChar))
+                    {
+                        words.Add(new WordRange(start, i - start));
+                        start = i;
+                    }
+                    // Letter/digit boundary (only when opt-in)
+                    else if (numberBoundaries &&
+                             (char.IsDigit(currentChar) != char.IsDigit(prevChar)))
+                    {
+                        words.Add(new WordRange(start, i - start));
+                        start = i;
+                    }
                 }
             }
 

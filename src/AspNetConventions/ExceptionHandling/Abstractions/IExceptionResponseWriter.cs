@@ -1,8 +1,6 @@
 using System;
-using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using AspNetConventions.ExceptionHandling.Handlers;
 using Microsoft.AspNetCore.Http;
 
 namespace AspNetConventions.ExceptionHandling.Abstractions

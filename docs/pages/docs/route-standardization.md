@@ -260,6 +260,7 @@ options.Route.Hooks.AfterRouteTransform = (newRoute, originalRoute, model) =>
 If the built-in case styles don't fit your needs, implement `ICaseConverter`:
 
 ```csharp
+using AspNetConventions.Extensions;
 using AspNetConventions.Core.Abstractions.Contracts;
 
 public class UpperSnakeCaseConverter : ICaseConverter
@@ -267,10 +268,7 @@ public class UpperSnakeCaseConverter : ICaseConverter
     public string Convert(string value)
     {
         // GetUserById → GET_USER_BY_ID
-        return string.Concat(
-            value.Select((c, i) =>
-                i > 0 && char.IsUpper(c) ? "_" + c : c.ToString())
-        ).ToUpperInvariant();
+        return value.ToSnakeCase().ToUpperInvariant();
     }
 }
 ```

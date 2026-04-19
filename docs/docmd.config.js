@@ -39,7 +39,7 @@ export default {
     appearance: "system",
     codeHighlight: true,
     customCss: [
-      "/assets/css/asp_net_conventions.theme.css"
+      "/assets/images/asp_net_conventions.theme.css"
     ]
   },
   minify: true,
@@ -71,6 +71,8 @@ export default {
     llms: {}
   },
   customJs: [
+    '/assets/js/theme.js',
+    '/assets/js/tables.js',
     '/assets/js/router-fix.js',
   ],
   navigation: [
@@ -120,14 +122,6 @@ export default {
           title: "Parameter Binding",
           path: "docs/route-standardization/parameter-binding"
         },
-        {
-          title: "Examples",
-          path: "docs/route-standardization/examples"
-        },
-        {
-          title: "Troubleshooting",
-          path: "docs/route-standardization/troubleshooting"
-        }
       ]
     },
     {
@@ -155,14 +149,6 @@ export default {
           title: "Metadata",
           path: "docs/response-formatting/metadata"
         },
-        {
-          title: "Examples",
-          path: "docs/response-formatting/examples"
-        },
-        {
-          title: "Troubleshooting",
-          path: "docs/response-formatting/troubleshooting"
-        }
       ]
     },
     {
@@ -182,20 +168,36 @@ export default {
           title: "Exception Mappers",
           path: "docs/exception-handling/exception-mappers"
         },
-        {
-          title: "Examples",
-          path: "docs/exception-handling/examples"
-        },
-        {
-          title: "Troubleshooting",
-          path: "docs/exception-handling/troubleshooting"
-        }
       ]
     },
     {
       title: "JSON Serialization",
-      path: "docs/json-serialization",
-      icon: "braces"
+      icon: "braces",
+      collapsible: true,
+      children: [
+        {
+          title: "Overview",
+          path: "docs/json-serialization"
+        },
+        {
+          title: "Configuration",
+          path: "docs/json-serialization/configuration"
+        },
+        {
+          title: "Features",
+          path: "docs/json-serialization/features"
+        },
+      ]
+    },
+    {
+      title: "Troubleshooting",
+      path: "docs/troubleshooting",
+      icon: "circle-help"
+    },
+    {
+      title: "Extension methods",
+      path: "docs/extension-methods",
+      icon: "puzzle"
     },
     {
       title: "NuGet",
