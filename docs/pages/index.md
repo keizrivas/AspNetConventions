@@ -9,6 +9,7 @@ components:
   css: false
   theme: false
 customHead: |
+  <script src="./assets/js/theme.js"></script>
   <link rel="stylesheet" href="./assets/css/main.css">
 ---
 
