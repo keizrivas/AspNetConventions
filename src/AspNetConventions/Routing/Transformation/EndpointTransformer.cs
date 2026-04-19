@@ -79,15 +79,6 @@ namespace AspNetConventions.Routing.Transformation
                 }
             }
 
-            // Determine if route should be transformed
-            var shouldTransformRoute = _options.Route.Hooks.ShouldTransformRoute
-                ?.Invoke(template, modelContext) ?? true;
-
-            if (!shouldTransformRoute)
-            {
-                return null;
-            }
-
             var newTemplate = RouteTransformer.TransformRouteTemplate(template, _caseConverter);
 
             // Pre-populate cache with false for parameters that have an explicit binding name,

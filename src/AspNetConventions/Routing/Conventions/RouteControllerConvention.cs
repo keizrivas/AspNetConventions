@@ -52,6 +52,22 @@ namespace AspNetConventions.Routing.Conventions
                 return;
             }
 
+            // Snapshot the original controller template before any mutation, matching
+            // GetRouteTemplate's logic of using the first selector with a non-null AttributeRouteModel.
+            string? originalControllerTemplate = null;
+            for (int i = 0; i < controller.Selectors.Count; i++)
+            {
+                if (controller.Selectors[i].AttributeRouteModel != null)
+                {
+                    originalControllerTemplate = controller.Selectors[i].AttributeRouteModel!.Template;
+                    break;
+                }
+            }
+
+            // Apply controller conventions once, before iterating actions, so subsequent
+            // action iterations do not see a partially-transformed controller template.
+            ApplyConventionToController(controller);
+
             foreach (var action in controller.Actions)
             {
                 // Set up route parameter transformer for this action
@@ -73,27 +89,36 @@ namespace AspNetConventions.Routing.Conventions
                     }
 
                     var model = RouteModelContext.FromMvcAction(selector, action);
-                    var baseTemplate = RouteTransformer.GetRouteTemplate(model) ?? string.Empty;
 
-                    // Determine if route should be transformed
-                    var shouldTransformRoute = Options.Route.Hooks.ShouldTransformRoute
-                            ?.Invoke(baseTemplate, model) ?? true;
-
-                    if (!shouldTransformRoute)
-                    {
-                        continue;
-                    }
+                    // Reconstruct the baseTemplate from the snapshotted original controller template
+                    // so that BeforeRouteTransform always receives the pre-transformation combined route.
+                    var baseTemplate = GetOriginalCombinedTemplate(originalControllerTemplate, selector.AttributeRouteModel)
+                        ?? string.Empty;
 
                     Options.Route.Hooks.BeforeRouteTransform?.Invoke(baseTemplate, model);
 
-                    // Apply conventions
-                    ApplyConventionToController(controller);
                     ApplyConventionToAction(action);
 
                     var newTemplate = RouteTransformer.GetRouteTemplate(model) ?? string.Empty;
                     Options.Route.Hooks.AfterRouteTransform?.Invoke(newTemplate, baseTemplate, model);
                 }
             }
+        }
+
+        /// <summary>
+        /// Combines the original (pre-mutation) controller template with the action selector template,
+        /// mirroring the logic in <see cref="RouteTransformer.GetRouteTemplate"/> but using a snapshot
+        /// of the controller template so hooks always receive the untransformed combined route.
+        /// </summary>
+        private static string? GetOriginalCombinedTemplate(string? originalControllerTemplate, AttributeRouteModel actionRoute)
+        {
+            if (string.IsNullOrWhiteSpace(originalControllerTemplate))
+            {
+                return actionRoute.Template;
+            }
+
+            var originalBase = new AttributeRouteModel { Template = originalControllerTemplate };
+            return AttributeRouteModel.CombineAttributeRouteModel(originalBase, actionRoute)?.Template;
         }
 
         /// <summary>

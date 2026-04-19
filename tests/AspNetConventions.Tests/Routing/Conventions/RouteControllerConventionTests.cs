@@ -86,25 +86,19 @@ public class RouteControllerConventionTests
     }
 
     [Fact]
-    public void Apply_Hooks_BeforeAndAfterFireWithCorrectTemplates_ShouldTransformCanSkip()
+    public void Apply_Hooks_BeforeAndAfterFireWithCorrectTemplates()
     {
         string? before = null, afterOld = null, afterNew = null;
         _options.Route.CaseStyle = CasingStyle.KebabCase;
         _options.Route.Hooks.BeforeRouteTransform = (route, _) => before = route;
         _options.Route.Hooks.AfterRouteTransform  = (route, old, _) => { afterNew = route; afterOld = old; };
-        
+
         new RouteControllerConvention(_optionsMock.Object)
             .Apply(CreateControllerModel("Api/TestController", "GetTest"));
 
         Assert.Equal("Api/TestController/GetTest", before);
         Assert.Equal("Api/TestController/GetTest", afterOld);
         Assert.Equal("api/test-controller/get-test", afterNew);
-
-        _options.Route.Hooks.ShouldTransformRoute = (_, _) => false;
-        var controller = CreateControllerModel("Api/TestController", "GetTest");
-        new RouteControllerConvention(_optionsMock.Object).Apply(controller);
-
-        Assert.Equal("Api/TestController/GetTest", GetTemplate(controller));
     }
 
     [Fact]

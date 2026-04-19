@@ -206,17 +206,12 @@ Hooks provide fine-grained control over the transformation pipeline. They allow 
 ### When to Use Hooks {#when-to-use-hooks}
 
 - **Versioned routes** — Preserve `/v1/`, `/v2/` segments as-is
-- **Internal endpoints** — Skip transformation for admin or debug routes
 - **Specific parameters** — Keep `{id}` unchanged while transforming others
 - **Logging/Debugging** — Track all transformations at startup
 
 ### Quick Example {#quick-example}
 
 ```csharp
-// Skip transformation for routes containing "/internal"
-options.Route.Hooks.ShouldTransformRoute = (template, model) =>
-    !template.Contains("/internal");
-
 // Preserve version tokens (v1, v2, v3...)
 options.Route.Hooks.ShouldTransformToken = token =>
     !Regex.IsMatch(token, @"^v\d+$");
