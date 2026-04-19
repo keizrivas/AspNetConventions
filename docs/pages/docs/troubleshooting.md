@@ -31,9 +31,9 @@ options.Route.MinimalApi.ExcludeRoutePatterns
 
 3. **A hook is returning `false`** — add a debug log to confirm:
 ```csharp
-options.Route.Hooks.ShouldTransformRoute = (template, model) =>
+options.Route.Hooks.ShouldTransformToken = token =>
 {
-    Console.WriteLine($"Checking: {template}");
+    Console.WriteLine($"Checking token: {token}");
     return true;
 };
 ```

@@ -76,7 +76,7 @@ public class RazorPageRouteConventionTests
     }
 
     [Fact]
-    public void Apply_Hooks_BeforeAndAfterFireWithCorrectTemplates_ShouldTransformCanSkip()
+    public void Apply_Hooks_BeforeAndAfterFireWithCorrectTemplates()
     {
         string? before = null, afterOld = null, afterNew = null;
 
@@ -90,12 +90,6 @@ public class RazorPageRouteConventionTests
         Assert.Equal("Pages/TestPage", before);
         Assert.Equal("Pages/TestPage", afterOld);
         Assert.Equal("pages/test-page", afterNew);
-
-        _options.Route.Hooks.ShouldTransformRoute = (_, _) => false;
-        var page2 = CreatePageModel("Pages/TestPage");
-        new RazorPageRouteConvention(_optionsMock.Object).Apply(page2);
-
-        Assert.Equal("Pages/TestPage", page2.Selectors[0].AttributeRouteModel?.Template);
     }
 
     [Fact]

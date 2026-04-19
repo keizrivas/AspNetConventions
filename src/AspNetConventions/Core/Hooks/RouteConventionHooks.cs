@@ -13,14 +13,6 @@ namespace AspNetConventions.Core.Hooks
     public class RouteConventionHooks : ICloneable
     {
         /// <summary>
-        /// Represents a callback method to determine whether a route should be transformed.
-        /// </summary>
-        /// <param name="template">The route template to evaluate.</param>
-        /// <param name="model">The route model context containing route information.</param>
-        /// <returns>true if the route should be transformed; otherwise, false.</returns>
-        public delegate bool ShouldTransformRouteCallback(string template, RouteModelContext model);
-
-        /// <summary>
         /// Represents a callback method to determine whether a route parameter should be transformed.
         /// </summary>
         /// <param name="model">The route parameter context containing parameter information.</param>
@@ -48,12 +40,6 @@ namespace AspNetConventions.Core.Hooks
         /// <param name="originalRoute">The original route template before transformation.</param>
         /// <param name="model">The route model context containing route information.</param>
         public delegate void AfterRouteTransformCallback(string route, string originalRoute, RouteModelContext model);
-
-        /// <summary>
-        /// Gets or sets the callback to determine whether a route should be transformed.
-        /// </summary>
-        /// <value>A callback that returns false to skip transformation of the specified route.</value>
-        public ShouldTransformRouteCallback? ShouldTransformRoute { get; set; }
 
         /// <summary>
         /// Gets or sets the callback to determine whether a route parameter should be transformed.
@@ -87,7 +73,6 @@ namespace AspNetConventions.Core.Hooks
         {
             return new RouteConventionHooks
             {
-                ShouldTransformRoute = ShouldTransformRoute,
                 ShouldTransformParameter = ShouldTransformParameter,
                 ShouldTransformToken = ShouldTransformToken,
                 BeforeRouteTransform = BeforeRouteTransform,

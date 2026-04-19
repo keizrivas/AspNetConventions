@@ -174,20 +174,13 @@ Hooks provide fine-grained control over the transformation pipeline. Each hook i
 
 | Property | Delegate signature | Description |
 |---|---|---|
-| `ShouldTransformRoute` | `(string template, `{.code-left}[`RouteModelContext`{.code-left .code-right}](#routemodelcontext)` model) → bool`{.code-right} | Return `false` to skip transformation of a specific route template |
 | `ShouldTransformParameter` | `(`{.code-left}[`RouteParameterContext`{.code-left .code-right}](#routeparametercontext)` model) → bool`{.code-right} | Return `false` to skip transformation of a specific route parameter |
 | `ShouldTransformToken` | `(string token) → bool` | Return `false` to skip transformation of a specific route token/segment |
 | `BeforeRouteTransform` | `(string route, `{.code-left}[`RouteModelContext`{.code-left .code-right}](#routemodelcontext)` model) → void`{.code-right} | Called before a route is transformed. Use for logging or pre-processing |
 | `AfterRouteTransform` | `(string route, string originalRoute, `{.code-left}[`RouteModelContext`{.code-left .code-right}](#routemodelcontext)` model) → void`{.code-right} | Called after a route is transformed. Receives both the new and original template |
 
-**Example — skip transformation for versioned or internal routes:**
+**Example — skip transformation for versioned tokens and log all transformations:**
 ```csharp
-options.Route.Hooks.ShouldTransformRoute = (template, model) =>
-{
-    // Skip any route that starts with /internal
-    return !template.StartsWith("/internal");
-};
-
 options.Route.Hooks.ShouldTransformToken = token =>
 {
     // Preserve version tokens as-is (v1, v2, ...)

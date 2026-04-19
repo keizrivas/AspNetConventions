@@ -67,15 +67,6 @@ namespace AspNetConventions.Routing.Conventions
 
                 var modelContext = RouteModelContext.FromRazorPage(selector, pageModel);
 
-                // Determine if route should be transformed
-                var shouldTransformRoute = Options.Route.Hooks.ShouldTransformRoute
-                        ?.Invoke(template, modelContext) ?? true;
-
-                if (!shouldTransformRoute)
-                {
-                    continue;
-                }
-
                 Options.Route.Hooks.BeforeRouteTransform?.Invoke(template, modelContext);
 
                 var newTemplate = RouteTransformer.TransformRouteTemplate(template, caseConverter);
