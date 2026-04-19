@@ -39,7 +39,7 @@ export default {
     appearance: "system",
     codeHighlight: true,
     customCss: [
-      "/assets/css/asp_net_conventions.theme.css"
+      "/assets/images/asp_net_conventions.theme.css"
     ]
   },
   minify: true,
