@@ -4,12 +4,12 @@ export default {
   base: "/AspNetConventions/",
 
   logo: {
-    light: "assets/images/logo_light.svg",
-    dark: "assets/images/logo_dark.svg",
+    light: "/assets/images/logo_light.svg",
+    dark: "/assets/images/logo_dark.svg",
     alt: "AspNetConventions",
     href: "https://keizrivas.github.io/AspNetConventions/"
   },
-  favicon: "assets/favicon.ico",
+  favicon: "/assets/favicon.ico",
   src: "pages",
   out: "site",
   layout: {
@@ -39,7 +39,7 @@ export default {
     appearance: "system",
     codeHighlight: true,
     customCss: [
-      "/assets/images/asp_net_conventions.theme.css"
+      "/assets/css/asp_net_conventions.theme.css"
     ]
   },
   minify: true,
@@ -56,7 +56,7 @@ export default {
     seo: {
       defaultDescription: "Convention-driven standardization for ASP.NET Core",
       openGraph: {
-        defaultImage: "assets/images/asp_net_conventions.png"
+        defaultImage: "/assets/images/asp_net_conventions.png"
       },
       twitter: {
         cardType: "summary_large_image"
