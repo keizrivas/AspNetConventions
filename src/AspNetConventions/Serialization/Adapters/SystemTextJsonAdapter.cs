@@ -260,7 +260,7 @@ namespace AspNetConventions.Serialization.Adapters
             {
                 IgnoreCondition.Never => JsonIgnoreCondition.Never,
                 IgnoreCondition.Always => JsonIgnoreCondition.Always,
-                IgnoreCondition.WhenWritingNull => IgnoreCondition.WhenWritingNull,
+                IgnoreCondition.WhenWritingNull => JsonIgnoreCondition.WhenWritingNull,
                 IgnoreCondition.WhenWritingDefault => JsonIgnoreCondition.WhenWritingDefault,
                 _ => JsonIgnoreCondition.Never
             };
