@@ -115,12 +115,12 @@ export default {
           path: "docs/route-standardization"
         },
         {
-          title: "Configuration",
-          path: "docs/route-standardization/configuration"
-        },
-        {
           title: "Parameter Binding",
           path: "docs/route-standardization/parameter-binding"
+        },
+        {
+          title: "Configuration",
+          path: "docs/route-standardization/configuration"
         },
       ]
     },
@@ -134,10 +134,6 @@ export default {
           path: "docs/response-formatting"
         },
         {
-          title: "Configuration",
-          path: "docs/response-formatting/configuration"
-        },
-        {
           title: "ApiResults",
           path: "docs/response-formatting/api-results"
         },
@@ -148,6 +144,10 @@ export default {
         {
           title: "Metadata",
           path: "docs/response-formatting/metadata"
+        },
+        {
+          title: "Configuration",
+          path: "docs/response-formatting/configuration"
         },
       ]
     },
@@ -161,12 +161,12 @@ export default {
           path: "docs/exception-handling"
         },
         {
-          title: "Configuration",
-          path: "docs/exception-handling/configuration"
-        },
-        {
           title: "Exception Mappers",
           path: "docs/exception-handling/exception-mappers"
+        },
+        {
+          title: "Configuration",
+          path: "docs/exception-handling/configuration"
         },
       ]
     },
@@ -180,12 +180,12 @@ export default {
           path: "docs/json-serialization"
         },
         {
-          title: "Configuration",
-          path: "docs/json-serialization/configuration"
-        },
-        {
           title: "Features",
           path: "docs/json-serialization/features"
+        },
+        {
+          title: "Configuration",
+          path: "docs/json-serialization/configuration"
         },
       ]
     },
