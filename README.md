@@ -57,10 +57,10 @@ builder.Services
 
 var app = builder.Build();
 
-app.MapGet("/GetUser/{UserId}", (int UserId) => new { userId = UserId });
-
 // Apply conventions to Minimal APIs
-app.UseAspNetConventions();
+var api = app.UseAspNetConventions();
+
+api.MapGet("/GetUser/{UserId}", (int UserId) => new { userId = UserId });
 
 app.Run();
 ```
