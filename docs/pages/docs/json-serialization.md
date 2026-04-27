@@ -10,11 +10,16 @@ ASP.NET Core's JSON configuration is scattered: casing policies live on `JsonSer
 
 **Without AspNetConventions:**
 ```csharp
-// Casing policy on AddControllers
+// Program.cs
 builder.Services.AddControllers()
-    .AddJsonOptions(o => o.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase);
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.WriteIndented = true;
+        options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower;
+    });
 
 // Property behavior scattered across model classes
+// No central control over serialization behavior
 public class User
 {
     [JsonPropertyOrder(0)]
@@ -33,6 +38,7 @@ public class User
 builder.Services.AddControllers()
     .AddAspNetConventions(options =>
     {
+        options.Json.WriteIndented = true;
         options.Json.CaseStyle = CasingStyle.SnakeCase;
 
         options.Json.ConfigureTypes = cfg =>
@@ -73,8 +79,10 @@ No attributes on your models. No scattered options. One place.
 **Without AspNetConventions:**
 ```csharp
 builder.Services.AddControllers()
-    .AddJsonOptions(o =>
-        o.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower);
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower;
+    });
 ```
 
 **With AspNetConventions:**
@@ -90,6 +98,8 @@ builder.Services.AddControllers()
 
 **Without AspNetConventions:**
 ```csharp
+using System.Text.Json;
+
 public class OrderSummary
 {
     [JsonPropertyName("id")]
@@ -122,7 +132,7 @@ Your model class stays clean.
 
 == tab "Class-Based Config"
 
-**Inline (Program.cs gets crowded):**
+**Inline (Program.cs):**
 ```csharp
 options.Json.ConfigureTypes = cfg =>
 {

@@ -129,4 +129,4 @@ public class DotCaseConverter : ICaseConverter
 // "UserProfileId" → "user.profile.id"
 ```
 
-See [Custom Case Converter](./json-serialization/features.md#custom-case-converter) for a full integration example.
+See [Custom Case Converter](./json-serialization/serialization-options.md#custom-case-converter) for a full integration example.
