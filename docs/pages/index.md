@@ -138,17 +138,17 @@ customHead: |
         </div>
       </div>
       <div class="mt-16 flex items-center justify-center gap-2 sm:gap-8">
-        <div class="flex items-center gap-2">
+        <div class="hidden! flex items-center gap-2">
           <i data-lucide="star" class="w-4.5 h-4.5"></i>
           <span class="font-medium font-mono" x-text="Formatter.format($store.packageMetadata.stargazersCount)"></span> 
           <span class="text-slate-500">Stars</span>
         </div>
-        <div class="flex items-center gap-2">
+        <div class="hidden! flex items-center gap-2">
           <i data-lucide="download" class="w-4.5 h-4.5"></i>
           <span class="font-medium font-mono" x-text="Formatter.format($store.packageMetadata.totalDownloads)"></span> 
           <span class="text-slate-500">Downloads</span>
         </div>
-        <div class="flex items-center gap-2">
+        <div class="hidden! flex items-center gap-2">
           <i data-lucide="git-fork" class="w-4.5 h-4.5"></i>
           <span class="font-medium font-mono" x-text="Formatter.format($store.packageMetadata.forksCount)"></span> 
           <span class="text-slate-500">Forks</span>

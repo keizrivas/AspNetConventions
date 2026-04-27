@@ -180,8 +180,16 @@ export default {
           path: "docs/json-serialization"
         },
         {
-          title: "Features",
-          path: "docs/json-serialization/features"
+          title: "Type Configuration",
+          path: "docs/json-serialization/type-configuration"
+        },
+        {
+          title: "Serialization Options",
+          path: "docs/json-serialization/serialization-options"
+        },
+        {
+          title: "Adapter & Extensions",
+          path: "docs/json-serialization/adapter-and-extensions"
         },
         {
           title: "Configuration",
