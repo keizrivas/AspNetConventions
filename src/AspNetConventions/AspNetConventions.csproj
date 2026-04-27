@@ -36,9 +36,7 @@
     <Authors>keizrivas</Authors>
     <Title>Convention-driven standardization for ASP.NET Core.</Title>
     <Description>
-      Automatically standardizes routes, parameters, responses, JSON settings, and exception
-      handling with zero boilerplate. Drop-in support for MVC Controllers, Minimal APIs, and Razor
-      Pages.
+      Automatically standardizes routes, parameters, responses, JSON serialization, and exception handling with zero boilerplate.
     </Description>
     <PackageTags>
       mvc;csharp;dotnet;aspnetcore;rest-api;conventions;json-serialization;routing;web-api;razor-pages;minimal-api;api-conventions
