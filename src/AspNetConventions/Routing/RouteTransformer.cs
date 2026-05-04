@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Text;
 using AspNetConventions.Configuration.Options;
 using AspNetConventions.Core.Abstractions.Contracts;
 using AspNetConventions.Routing.Models;
@@ -104,6 +105,14 @@ namespace AspNetConventions.Routing
                     continue;
                 }
 
+                // If the segment contains a parameter, we need to convert only
+                // the static parts while preserving the parameter syntax
+                if (segment.IndexOf('{', StringComparison.Ordinal) > -1)
+                {
+                    segments[i] = ConvertSegmentPreservingParameters(segment, caseConverter);
+                    continue;
+                }
+
                 segments[i] = caseConverter.Convert(segment);
             }
 
@@ -154,6 +163,61 @@ namespace AspNetConventions.Routing
 
                 return "{" + transformed + constraint + "}";
             });
+        }
+
+        /// <summary>
+        /// Converts a route segment while preserving its parameter syntax.
+        /// </summary>
+        /// <param name="segment">The route segment to convert.</param>
+        /// <param name="caseConverter">The case converter to use for converting static text.</param>
+        /// <returns>The converted route segment.</returns>
+        private static string ConvertSegmentPreservingParameters(string segment, ICaseConverter caseConverter)
+        {
+            if (string.IsNullOrEmpty(segment))
+            {
+                return segment;
+            }
+
+            var result = new StringBuilder();
+            int currentIndex = 0;
+
+            while (currentIndex < segment.Length)
+            {
+                int openBraceIndex = segment.IndexOf('{', currentIndex);
+
+                // No more parameters
+                if (openBraceIndex == -1)
+                {
+                    var remaining = segment.Substring(currentIndex);
+                    result.Append(caseConverter.Convert(remaining));
+                    break;
+                }
+
+                // Convert text before open brace
+                if (openBraceIndex > currentIndex)
+                {
+                    var before = segment[currentIndex..openBraceIndex];
+                    result.Append(caseConverter.Convert(before));
+                }
+
+                // Find closing
+                int closeBraceIndex = segment.IndexOf('}', openBraceIndex);
+
+                if (closeBraceIndex == -1)
+                {
+                    // Malformed route → just convert the rest safely
+                    var remaining = segment.Substring(currentIndex);
+                    result.Append(caseConverter.Convert(remaining));
+                    break;
+                }
+
+                var parameter = segment.Substring(openBraceIndex, closeBraceIndex - openBraceIndex + 1);
+                result.Append(parameter);
+
+                currentIndex = closeBraceIndex + 1;
+            }
+
+            return result.ToString();
         }
     }
 }
