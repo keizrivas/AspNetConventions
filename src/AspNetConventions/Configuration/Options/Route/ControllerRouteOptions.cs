@@ -19,6 +19,14 @@ namespace AspNetConventions.Configuration.Options.Route
         public bool IsEnabled { get; set; } = true;
 
         /// <summary>
+        /// Gets or sets a global route prefix prepended to every non-absolute controller route template.
+        /// </summary>
+        /// <value>
+        /// Default is null. Leading and trailing slashes are normalized.
+        /// </value>
+        public string? RoutePrefix { get; set; }
+
+        /// <summary>
         /// Gets or sets whether to transform parameter names in MVC controller routes.
         /// </summary>
         /// <value>Default is true. When enabled, route parameters will be converted to the configured case style.</value>

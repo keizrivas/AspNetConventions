@@ -106,7 +106,7 @@ public class RouteControllerConventionTests
     {
         _options.Route.CaseStyle = CasingStyle.KebabCase;
         _options.Route.Controllers.TransformParameterNames = true;
-        
+
         var convention = new RouteControllerConvention(_optionsMock.Object);
         var controller = CreateControllerModelWithParameters(
             "api/[controller]", "GetUser", [("id:int", typeof(int))]);
@@ -114,6 +114,134 @@ public class RouteControllerConventionTests
         convention.Apply(controller);
 
         Assert.Equal("api/[controller]/get-user/{id:int}", GetTemplate(controller));
+    }
+
+    [Fact]
+    public void Apply_WithRoutePrefix_PrependsToControllerTemplate()
+    {
+        _options.Route.CaseStyle = CasingStyle.KebabCase;
+        _options.Route.Controllers.RoutePrefix = "api";
+
+        var convention = new RouteControllerConvention(_optionsMock.Object);
+        var controller = CreateControllerModel("TestController", "GetTest");
+
+        convention.Apply(controller);
+
+        Assert.Equal("api/test-controller/get-test", GetTemplate(controller));
+    }
+
+    [Fact]
+    public void Apply_WithVersionedRoutePrefix_PreservesApiVersionToken()
+    {
+        _options.Route.CaseStyle = CasingStyle.KebabCase;
+        _options.Route.Controllers.RoutePrefix = "api/v{version:apiVersion}";
+
+        var convention = new RouteControllerConvention(_optionsMock.Object);
+        var controller = CreateControllerModel("[controller]", "GetTest");
+
+        convention.Apply(controller);
+
+        Assert.Equal("api/v{version:apiVersion}/[controller]/get-test", GetTemplate(controller));
+    }
+
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    [InlineData("   ")]
+    public void Apply_WithEmptyRoutePrefix_DoesNotPrepend(string? prefix)
+    {
+        _options.Route.CaseStyle = CasingStyle.KebabCase;
+        _options.Route.Controllers.RoutePrefix = prefix;
+
+        var convention = new RouteControllerConvention(_optionsMock.Object);
+        var controller = CreateControllerModel("TestController", "GetTest");
+
+        convention.Apply(controller);
+
+        Assert.Equal("test-controller/get-test", GetTemplate(controller));
+    }
+
+    [Theory]
+    [InlineData("/api")]
+    [InlineData("api/")]
+    [InlineData("/api/")]
+    [InlineData("  api  ")]
+    public void Apply_WithRoutePrefix_NormalizesSlashesAndWhitespace(string prefix)
+    {
+        _options.Route.CaseStyle = CasingStyle.KebabCase;
+        _options.Route.Controllers.RoutePrefix = prefix;
+
+        var convention = new RouteControllerConvention(_optionsMock.Object);
+        var controller = CreateControllerModel("TestController", "GetTest");
+
+        convention.Apply(controller);
+
+        Assert.Equal("api/test-controller/get-test", GetTemplate(controller));
+    }
+
+    [Theory]
+    [InlineData("/users")]
+    [InlineData("~/users")]
+    public void Apply_WithRoutePrefix_SkipsAbsoluteControllerTemplates(string absoluteRoute)
+    {
+        _options.Route.CaseStyle = CasingStyle.KebabCase;
+        _options.Route.Controllers.RoutePrefix = "api/v1";
+
+        var convention = new RouteControllerConvention(_optionsMock.Object);
+        var controller = CreateControllerModel(absoluteRoute, "GetTest");
+
+        convention.Apply(controller);
+
+        var template = GetTemplate(controller);
+        Assert.NotNull(template);
+        Assert.DoesNotContain("api/v1", template);
+        Assert.Contains("users", template);
+    }
+
+    [Fact]
+    public void Apply_WithRoutePrefix_AppliesCaseConversion()
+    {
+        _options.Route.CaseStyle = CasingStyle.PascalCase;
+        _options.Route.Controllers.RoutePrefix = "api";
+
+        var convention = new RouteControllerConvention(_optionsMock.Object);
+        var controller = CreateControllerModel("test-controller", "GetTest");
+
+        convention.Apply(controller);
+
+        Assert.Equal("Api/TestController/GetTest", GetTemplate(controller));
+    }
+
+    [Fact]
+    public void Apply_WithRoutePrefix_SkipsExcludedControllers()
+    {
+        _options.Route.CaseStyle = CasingStyle.KebabCase;
+        _options.Route.Controllers.RoutePrefix = "api";
+        _options.Route.Controllers.ExcludeControllers.Add("Test");
+
+        var convention = new RouteControllerConvention(_optionsMock.Object);
+        var controller = CreateControllerModel("TestController", "GetTest");
+
+        convention.Apply(controller);
+
+        Assert.Equal("TestController/GetTest", GetTemplate(controller));
+    }
+
+    [Fact]
+    public void Apply_WithRoutePrefix_HooksReceiveOriginalAndPrefixedTemplates()
+    {
+        string? before = null, afterOld = null, afterNew = null;
+        _options.Route.CaseStyle = CasingStyle.KebabCase;
+        _options.Route.Controllers.RoutePrefix = "api/v1";
+        _options.Route.Hooks.BeforeRouteTransform = (route, _) => before = route;
+        _options.Route.Hooks.AfterRouteTransform  = (route, old, _) => { afterNew = route; afterOld = old; };
+
+        new RouteControllerConvention(_optionsMock.Object)
+            .Apply(CreateControllerModel("TestController", "GetTest"));
+
+        Assert.Equal("TestController/GetTest", before);
+        Assert.Equal("TestController/GetTest", afterOld);
+        Assert.Equal("api/v1/test-controller/get-test", afterNew);
     }
 
     private ControllerModel CreateAndApply(CasingStyle style, string route, string action)

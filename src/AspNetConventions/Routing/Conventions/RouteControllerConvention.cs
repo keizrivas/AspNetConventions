@@ -127,6 +127,8 @@ namespace AspNetConventions.Routing.Conventions
         /// <param name="controller">The controller model to which the conventions are applied.</param>
         private void ApplyConventionToController(ControllerModel controller)
         {
+            var prefix = NormalizeRoutePrefix(Options.Route.Controllers.RoutePrefix);
+
             // Transform controller route templates
             foreach (var selector in controller.Selectors)
             {
@@ -136,10 +138,28 @@ namespace AspNetConventions.Routing.Conventions
                     continue;
                 }
 
+                if (prefix.Length > 0 && !IsAbsoluteTemplate(template))
+                {
+                    template = $"{prefix}/{template}";
+                }
+
                 selector.AttributeRouteModel.Template =
                     RouteTransformer.TransformRouteTemplate(template, Options.Route.GetCaseConverter());
             }
         }
+
+        private static string NormalizeRoutePrefix(string? prefix)
+        {
+            if (string.IsNullOrWhiteSpace(prefix))
+            {
+                return string.Empty;
+            }
+
+            return prefix.Trim().Trim('/');
+        }
+
+        private static bool IsAbsoluteTemplate(string template) =>
+            template.StartsWith('/') || template.StartsWith("~/", StringComparison.Ordinal);
 
         /// <summary>
         /// Applies route and parameter transformation conventions to the specified action model.
@@ -250,10 +270,7 @@ namespace AspNetConventions.Routing.Conventions
         /// <returns>The transformed parameter name according to the configured conventions.</returns>
         private string TransformParameterName(RouteModelContext modelContext, string name, bool isExplicitName)
         {
-            if (string.IsNullOrWhiteSpace(name))
-            {
-                throw new ArgumentNullException(nameof(name), "The \"name\" param can't be null or white space");
-            }
+            ArgumentException.ThrowIfNullOrWhiteSpace(name, "The \"name\" param can't be null or white space");
 
             // Skip if preserving explicit names
             if (isExplicitName && Options.Route.Controllers.PreserveExplicitBindingNames)
