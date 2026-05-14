@@ -148,19 +148,6 @@ namespace AspNetConventions.Routing.Conventions
             }
         }
 
-        private static string NormalizeRoutePrefix(string? prefix)
-        {
-            if (string.IsNullOrWhiteSpace(prefix))
-            {
-                return string.Empty;
-            }
-
-            return prefix.Trim().Trim('/');
-        }
-
-        private static bool IsAbsoluteTemplate(string template) =>
-            template.StartsWith('/') || template.StartsWith("~/", StringComparison.Ordinal);
-
         /// <summary>
         /// Applies route and parameter transformation conventions to the specified action model.
         /// </summary>
@@ -328,6 +315,18 @@ namespace AspNetConventions.Routing.Conventions
                 }
             }
             return false;
+        }
+
+        private static string NormalizeRoutePrefix(string? prefix)
+        {
+            return string.IsNullOrWhiteSpace(prefix) ?
+                string.Empty :
+                prefix.Trim().Trim('/');
+        }
+
+        private static bool IsAbsoluteTemplate(string template)
+        {
+            return template.StartsWith('/') || template.StartsWith("~/", StringComparison.Ordinal);
         }
     }
 }

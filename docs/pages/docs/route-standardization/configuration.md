@@ -60,6 +60,7 @@ See [Custom Case Converter](../route-standardization.md#custom-case-converter) f
 | Property | Type | Default | Description |
 |---|---|---|---|
 | `IsEnabled` | `bool` | `true` | Enables or disables route transformations for MVC controllers |
+| `RoutePrefix` | `string?` | `null` | Global prefix prepended to every non-absolute controller route template (e.g. `"api"` or `"api/v{version:apiVersion}"`). See [Global Route Prefix](../route-standardization.md#global-route-prefix) |
 | `TransformParameterNames` | `bool` | `true` | Transforms route parameter names to the configured casing style |
 | `TransformRouteTokens` | `bool` | `true` | Transforms route segment tokens  (e.g. `"[area]"`, `"[action]"`, `"[controller]"`, etc.) to the configured casing style |
 | `PreserveExplicitBindingNames` | `bool` | `false` | When `true`, parameters with an explicit binding name are not transformed |
@@ -70,15 +71,19 @@ See [Custom Case Converter](../route-standardization.md#custom-case-converter) f
 
 **Example:**
 ```csharp
+// Route prefix
+options.Route.Controllers.RoutePrefix = "api";
+// Remove action prefixes/suffixes
 options.Route.Controllers.RemoveActionPrefixes.Add("Get");
 options.Route.Controllers.RemoveActionPrefixes.Add("Post");
 options.Route.Controllers.RemoveActionSuffixes.Add("Async");
+// Exclude controllers and areas
 options.Route.Controllers.ExcludeControllers.Add("Health");
 options.Route.Controllers.ExcludeAreas.Add("Admin");
 ```
 ```
 // Before: GET /api/profile/get-user/{user-id}
-// After (prefix removed): GET /api/profile/user/{user-id}
+// After : GET /api/profile/user/{user-id}
 ```
 
 ---
@@ -175,17 +180,19 @@ Hooks provide fine-grained control over the transformation pipeline. Each hook i
 | Property | Delegate signature | Description |
 |---|---|---|
 | `ShouldTransformParameter` | `(`{.code-left}[`RouteParameterContext`{.code-left .code-right}](#routeparametercontext)` model) → bool`{.code-right} | Return `false` to skip transformation of a specific route parameter |
-| `ShouldTransformToken` | `(string token) → bool` | Return `false` to skip transformation of a specific route token/segment |
+| `ShouldTransformToken` | `(string token) → bool` | Return `false` to skip transformation of a resolved `[controller]` / `[action]` / `[area]` value. |
 | `BeforeRouteTransform` | `(string route, `{.code-left}[`RouteModelContext`{.code-left .code-right}](#routemodelcontext)` model) → void`{.code-right} | Called before a route is transformed. Use for logging or pre-processing |
 | `AfterRouteTransform` | `(string route, string originalRoute, `{.code-left}[`RouteModelContext`{.code-left .code-right}](#routemodelcontext)` model) → void`{.code-right} | Called after a route is transformed. Receives both the new and original template |
 
-**Example — skip transformation for versioned tokens and log all transformations:**
+**Example — preserve acronyms in resolved `[controller]` / `[action]` tokens and log all transformations:**
 ```csharp
-options.Route.Hooks.ShouldTransformToken = token =>
+// e.g. OAuthController.GetJWT → "OAuth" and "JWT" remain unchanged
+// instead of becoming "o-auth" / "j-w-t" under kebab-case
+var preserved = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
 {
-    // Preserve version tokens as-is (v1, v2, ...)
-    return !System.Text.RegularExpressions.Regex.IsMatch(token, @"^v\d+$");
+    "JWT", "OAuth", "SSO", "API"
 };
+options.Route.Hooks.ShouldTransformToken = token => !preserved.Contains(token);
 
 options.Route.Hooks.AfterRouteTransform = (route, originalRoute, model) =>
 {
@@ -225,6 +232,7 @@ The `RouteParameterContext` provides information about the parameter being trans
 | `Route.CaseStyle` | `KebabCase` |
 | `Route.MaxRouteTemplateLength` | `2048` |
 | `Controllers.IsEnabled` | `true` |
+| `Controllers.RoutePrefix` | `null` |
 | `Controllers.TransformParameterNames` | `true` |
 | `Controllers.TransformRouteTokens` | `true` |
 | `Controllers.PreserveExplicitBindingNames` | `false` |
