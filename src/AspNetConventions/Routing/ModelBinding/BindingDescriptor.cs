@@ -202,7 +202,9 @@ namespace AspNetConventions.Routing.ModelBinding
                 {
                     var name = provider.Name;
                     if (!string.IsNullOrWhiteSpace(name))
+                    {
                         return name;
+                    }
                 }
             }
 

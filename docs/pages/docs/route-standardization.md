@@ -154,6 +154,65 @@ api/user-profile/get-user-by-id/{user-id}
 
 ---
 
+## Global Route Prefix {#global-route-prefix}
+
+For **MVC controllers**, you can configure a global prefix that is prepended to every controller route template — useful for centralizing a common base path like `api` or an API version segment such as `api/v{version:apiVersion}`.
+
+**Configuration:**
+```csharp
+builder.Services.AddControllers()
+    .AddAspNetConventions(options =>
+    {
+        options.Route.Controllers.RoutePrefix = "api/v{version:apiVersion}";
+    });
+```
+
+**Controller:**
+```csharp
+[ApiController]
+[Route("[controller]")]
+public class UsersController : ControllerBase
+{
+    [HttpGet("{id}")]
+    public IActionResult Get(int id) => Ok();
+}
+```
+
+**Route generated:**
+```
+GET /api/v{version:apiVersion}/users/{id}
+```
+
+The prefix participates in the configured case conversion and is normalized at startup.
+
+::: callout warning <u>Absolute Routes Bypass the Prefix</u>
+Controller route templates that start with `/` or `~/` are treated as **absolute paths** and **skip** the global prefix entirely, matching ASP.NET's built-in absolute-route convention.
+
+```csharp
+options.Route.Controllers.RoutePrefix = "api";
+```
+```csharp
+[Route("/health")]         // → /health           (prefix skipped)
+[Route("~/diagnostics")]   // → ~/diagnostics     (prefix skipped)
+[Route("[controller]")]    // → api/[controller]
+```
+
+Use this as an opt-out for endpoints that need to live outside the global prefix (health checks, diagnostics, well-known endpoints). For per-controller opt-out by name, use [`ExcludeControllers`](./route-standardization/configuration.md#controllerrouteoptions) instead.
+:::
+
+::: callout info <u>MVC Controllers Only</u>
+`RoutePrefix` applies to **MVC controllers only**. For Minimal APIs, pass a prefix directly to [`.UseAspNetConventions()`](./getting-started.md#useaspnetconventions) method, it returns a prefixed `RouteGroupBuilder` for all subsequent endpoint registrations.
+
+```csharp
+var api = app.UseAspNetConventions("api/");
+
+api.MapGet("/users/{id}", (int id) => Results.Ok());
+// → GET /api/users/{id}
+```
+:::
+
+---
+
 ## Parameter Binding {#parameter-binding}
 
 When a parameter name is transformed in the URL, you might wonder: how does ASP.NET Core still bind the value to your C# parameter?
@@ -205,16 +264,24 @@ Hooks provide fine-grained control over the transformation pipeline. They allow 
 
 ### When to Use Hooks {#when-to-use-hooks}
 
-- **Versioned routes** — Preserve `/v1/`, `/v2/` segments as-is
+- **Acronyms in `[controller]` / `[action]` tokens** — Keep `JWT`, `OAuth`, `SSO` intact instead of being kebab-cased
 - **Specific parameters** — Keep `{id}` unchanged while transforming others
 - **Logging/Debugging** — Track all transformations at startup
+
+::: callout info <u>Scope of `ShouldTransformToken`</u>
+`ShouldTransformToken` is invoked by the `IOutboundParameterTransformer` pipeline **only for `[controller]`, `[action]`, and `[area]` token-replacement values** at URL generation / matching time. Static route segments (e.g. `api`, `v1`) are transformed at startup and do **not** pass through this hook.
+:::
 
 ### Quick Example {#quick-example}
 
 ```csharp
-// Preserve version tokens (v1, v2, v3...)
-options.Route.Hooks.ShouldTransformToken = token =>
-    !Regex.IsMatch(token, @"^v\d+$");
+// Preserve acronyms in resolved [controller] / [action] tokens
+// e.g. OAuthController → "OAuth" stays "OAuth" instead of becoming "o-auth"
+var preserved = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+{
+    "JWT", "OAuth", "SSO", "API"
+};
+options.Route.Hooks.ShouldTransformToken = token => !preserved.Contains(token);
 
 // Log all transformations
 options.Route.Hooks.AfterRouteTransform = (newRoute, originalRoute, model) =>

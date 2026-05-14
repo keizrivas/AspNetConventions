@@ -133,10 +133,8 @@ namespace AspNetConventions.Routing
             AspNetConventionOptions options,
             Dictionary<RouteParameterContext, bool>? cache = null)
         {
-            if (string.IsNullOrWhiteSpace(template))
-            {
-                throw new ArgumentNullException(nameof(template), "The \"template\" param can't be null or white space");
-            }
+
+            ArgumentException.ThrowIfNullOrWhiteSpace(template, "The \"template\" param can't be null or white space");
 
             var caseConverter = options.Route.GetCaseConverter();
             return RouteParameterPatterns.ForEachParam(template, (name, constraint) =>
